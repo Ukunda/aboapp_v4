@@ -1,0 +1,90 @@
+name: aboapp
+description: "A Flutter app for subscription management, refactored for clarity and maintainability."
+publish_to: 'none' # Prevent accidental publishing
+
+version: 3.0.0+1 # Starting fresh version for the refactor
+
+environment:
+  sdk: '>=3.3.0 <4.0.0' # Targeting a recent Dart SDK
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations: # For internationalization
+    sdk: flutter
+
+  # State Management
+  flutter_bloc: ^8.1.6 # Or provider ^6.1.2 if you strongly prefer. BLoC/Cubit is great for scalability.
+                      # For this refactor, I'll use flutter_bloc.
+
+  # Dependency Injection
+  get_it: ^7.7.0
+  injectable: ^2.5.0
+
+  # Immutable Data Classes & Serialization
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+  # Routing
+  go_router: ^14.2.0 # Modern and powerful routing
+
+  # UI & Utility
+  intl: ^0.19.0 # For date/number formatting
+  uuid: ^4.4.0 # For generating unique IDs
+  cached_network_image: ^3.3.1 # For network images with caching
+  fl_chart: ^0.68.0 # For charts in statistics
+  shimmer: ^3.0.0 # For loading skeletons
+  flutter_native_splash: ^2.4.0 # For native splash screens
+  cupertino_icons: ^1.0.8 # iOS style icons
+  animations: ^2.0.11 # Pre-built animations
+
+  # Local Storage
+  shared_preferences: ^2.2.3
+
+  # Local Notifications (if reminders are a feature)
+  # flutter_local_notifications: ^17.0.0 
+
+  # Optional: Device Info, Path Provider (if needed for advanced local storage/caching)
+  # path_provider: ^2.0.15
+  # device_info_plus: ^9.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  
+  flutter_lints: ^4.0.0 # Enforces good coding practices
+  build_runner: ^2.4.11
+  freezed: ^2.5.2 # Generator for freezed_annotation
+  json_serializable: ^6.8.0 # Generator for json_annotation
+  injectable_generator: ^2.5.0 # Generator for injectable
+  go_router_builder: ^2.7.0 # Generator for go_router type-safe routes
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    # Ensure these directories exist in your project's `assets` folder
+    - assets/images/ # For general images, app logo, onboarding illustrations
+    - assets/icons/  # For custom SVG or PNG icons if any
+    # - assets/service_logos/ # If you have a predefined set of local service logos
+
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+
+# flutter_native_splash configuration (optional, but good for polish)
+# Ensure you have a splash_logo.png in assets/images/
+flutter_native_splash:
+  color: "#121212" # Dark background consistent with a potential dark theme
+  image: assets/images/app_logo_splash.png # Your app's logo for the splash screen
+  android_12:
+    color: "#121212"
+    image: assets/images/app_logo_splash.png
+  fullscreen: true
