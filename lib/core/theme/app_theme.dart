@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_colors.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
 
-// This class is not meant to be instantiated.
-// It provides static ThemeData configurations for light and dark themes.
 abstract class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
@@ -17,13 +15,13 @@ abstract class AppTheme {
         brightness: Brightness.light,
         primary: AppColors.primary,
         onPrimary: AppColors.onPrimary,
-        primaryContainer: AppColors.primaryLight, // Or a lighter variant
-        onPrimaryContainer: AppColors.primaryDark, // Text on primary container
-        secondary: AppColors.accent, // Using accent as secondary
+        primaryContainer: AppColors.primaryLight,
+        onPrimaryContainer: AppColors.primaryDark,
+        secondary: AppColors.accent,
         onSecondary: AppColors.onAccent,
-        secondaryContainer: Color(0xFFFDE2EC), // Lighter accent
-        onSecondaryContainer: Color(0xFF7C2454), // Text on accent container
-        tertiary: AppColors.info, // Example, can be another color
+        secondaryContainer: Color(0xFFFDE2EC),
+        onSecondaryContainer: Color(0xFF7C2454),
+        tertiary: AppColors.info,
         onTertiary: AppColors.onInfo,
         tertiaryContainer: Color(0xFFD8E6FD),
         onTertiaryContainer: Color(0xFF0F4C81),
@@ -31,34 +29,32 @@ abstract class AppTheme {
         onError: AppColors.onError,
         errorContainer: Color(0xFFFFDAD6),
         onErrorContainer: Color(0xFF410002),
-        background: AppColors.backgroundLight,
-        onBackground: AppColors.onSurfaceLight,
-        surface: AppColors.surfaceLight,
-        onSurface: AppColors.onSurfaceLight,
-        surfaceVariant: AppColors.borderLight, // For cards, dividers, etc.
+        surface: AppColors.backgroundLight, // Was background
+        onSurface: AppColors.onSurfaceLight, // Was onBackground
+        surfaceContainerHighest: AppColors.borderLight, // Was surfaceVariant
         onSurfaceVariant: AppColors.onSurfaceVariantLight,
         outline: AppColors.borderLight,
-        outlineVariant: Color(0xFFCAC4D0), // Slightly darker outline
-        shadow: Colors.black.withOpacity(0.1),
-        scrim: Colors.black.withOpacity(0.3),
+        outlineVariant: Color(0xFFCAC4D0),
+        shadow: Color(0x1A000000), // Colors.black.withOpacity(0.1)
+        scrim: Color(0x4D000000),  // Colors.black.withOpacity(0.3)
         inverseSurface: AppColors.surfaceDark,
         onInverseSurface: AppColors.onSurfaceDark,
         inversePrimary: AppColors.primaryDark,
-        surfaceTint: AppColors.primary, // Color used for elevation overlays
+        surfaceTint: AppColors.primary,
       ),
       textTheme: _buildTextTheme(base: ThemeData.light().textTheme, onSurfaceColor: AppColors.onSurfaceLight),
       appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: AppColors.backgroundLight, // Or surfaceLight
-        foregroundColor: AppColors.onSurfaceLight, // Icon and title color
-        systemOverlayStyle: SystemUiOverlayStyle.dark, // For light status bar icons
-        titleTextStyle: AppTypography.titleLarge, // Use a specific style
+        backgroundColor: AppColors.backgroundLight,
+        foregroundColor: AppColors.onSurfaceLight,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: AppTypography.titleLarge,
         iconTheme: IconThemeData(color: AppColors.onSurfaceLight),
       ),
       cardTheme: CardTheme(
         elevation: 1.0,
         color: AppColors.surfaceLight,
-        surfaceTintColor: Colors.transparent, // To avoid tinting based on elevation overlay
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
           side: const BorderSide(color: AppColors.borderLight, width: 0.5),
@@ -84,7 +80,7 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceLight.withOpacity(0.5), // Slightly transparent fill
+        fillColor: const Color(0x80FFFFFF), // AppColors.surfaceLight.withOpacity(0.5)
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -107,17 +103,17 @@ abstract class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 2.0),
         ),
         labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantLight),
-        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)),
+        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)), // Kept withOpacity as it's not const
         floatingLabelStyle: AppTypography.bodySmall.copyWith(color: AppColors.primary),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.borderLight,
         selectedColor: AppColors.primary,
         labelStyle: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariantLight),
-        secondaryLabelStyle: AppTypography.labelMedium.copyWith(color: AppColors.onPrimary), // For selected chip
+        secondaryLabelStyle: AppTypography.labelMedium.copyWith(color: AppColors.onPrimary),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        iconTheme: IconThemeData(color: AppColors.onSurfaceVariantLight, size: 18),
+        iconTheme: const IconThemeData(color: AppColors.onSurfaceVariantLight, size: 18),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
@@ -130,9 +126,8 @@ abstract class AppTheme {
         unselectedItemColor: AppColors.onSurfaceVariantLight,
         selectedLabelStyle: AppTypography.labelSmall,
         unselectedLabelStyle: AppTypography.labelSmall,
-        elevation: 2.0, // Subtle elevation
+        elevation: 2.0,
       ),
-      // Add other theme properties as needed
     );
   }
 
@@ -141,36 +136,34 @@ abstract class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: AppTypography.fontFamily,
-      primaryColor: AppColors.primary, // Or a slightly lighter primary for dark theme
+      primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.backgroundDark,
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,
-        primary: AppColors.primaryLight, // Lighter primary for dark theme
-        onPrimary: AppColors.onPrimary, // Often black or very dark gray on light primary
+        primary: AppColors.primaryLight,
+        onPrimary: AppColors.onPrimary,
         primaryContainer: AppColors.primaryDark,
         onPrimaryContainer: AppColors.primaryLight,
-        secondary: AppColors.accent, // Lighter accent
+        secondary: AppColors.accent,
         onSecondary: AppColors.onAccent,
-        secondaryContainer: Color(0xFF7C2454), // Darker accent container
+        secondaryContainer: Color(0xFF7C2454),
         onSecondaryContainer: Color(0xFFFDE2EC),
-        tertiary: AppColors.info, // Lighter info
+        tertiary: AppColors.info,
         onTertiary: AppColors.onInfo,
         tertiaryContainer: Color(0xFF0F4C81),
         onTertiaryContainer: Color(0xFFD8E6FD),
-        error: AppColors.error, // Often a lighter red
+        error: AppColors.error,
         onError: AppColors.onError,
-        errorContainer: Color(0xFF93000A), // Dark error container
+        errorContainer: Color(0xFF93000A),
         onErrorContainer: Color(0xFFFFDAD6),
-        background: AppColors.backgroundDark,
-        onBackground: AppColors.onSurfaceDark,
-        surface: AppColors.surfaceDark,
-        onSurface: AppColors.onSurfaceDark,
-        surfaceVariant: AppColors.borderDark,
+        surface: AppColors.backgroundDark, // Was background
+        onSurface: AppColors.onSurfaceDark, // Was onBackground
+        surfaceContainerHighest: AppColors.borderDark, // Was surfaceVariant
         onSurfaceVariant: AppColors.onSurfaceVariantDark,
         outline: AppColors.borderDark,
         outlineVariant: Color(0xFF49454F),
-        shadow: Colors.black.withOpacity(0.2),
-        scrim: Colors.black.withOpacity(0.4),
+        shadow: Color(0x33000000), // Colors.black.withOpacity(0.2)
+        scrim: Color(0x66000000),  // Colors.black.withOpacity(0.4)
         inverseSurface: AppColors.surfaceLight,
         onInverseSurface: AppColors.onSurfaceLight,
         inversePrimary: AppColors.primary,
@@ -179,9 +172,9 @@ abstract class AppTheme {
       textTheme: _buildTextTheme(base: ThemeData.dark().textTheme, onSurfaceColor: AppColors.onSurfaceDark),
       appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: AppColors.backgroundDark, // Or surfaceDark
+        backgroundColor: AppColors.backgroundDark,
         foregroundColor: AppColors.onSurfaceDark,
-        systemOverlayStyle: SystemUiOverlayStyle.light, // For dark status bar icons
+        systemOverlayStyle: SystemUiOverlayStyle.light,
         titleTextStyle: AppTypography.titleLarge,
         iconTheme: IconThemeData(color: AppColors.onSurfaceDark),
       ),
@@ -198,7 +191,7 @@ abstract class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryLight,
-          foregroundColor: AppColors.primaryDark, // Good contrast
+          foregroundColor: AppColors.primaryDark,
           textStyle: AppTypography.labelLarge,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
@@ -214,7 +207,7 @@ abstract class AppTheme {
       ),
        inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceDark.withOpacity(0.5),
+        fillColor: const Color(0x801F2937), // AppColors.surfaceDark.withOpacity(0.5)
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -237,7 +230,7 @@ abstract class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 2.0),
         ),
         labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantDark),
-        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)),
+        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)), // Kept withOpacity
         floatingLabelStyle: AppTypography.bodySmall.copyWith(color: AppColors.primaryLight),
       ),
       chipTheme: ChipThemeData(
@@ -247,7 +240,7 @@ abstract class AppTheme {
         secondaryLabelStyle: AppTypography.labelMedium.copyWith(color: AppColors.primaryDark),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        iconTheme: IconThemeData(color: AppColors.onSurfaceVariantDark, size: 18),
+        iconTheme: const IconThemeData(color: AppColors.onSurfaceVariantDark, size: 18),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primaryLight,
@@ -262,11 +255,9 @@ abstract class AppTheme {
         unselectedLabelStyle: AppTypography.labelSmall,
         elevation: 2.0,
       ),
-      // Add other theme properties as needed
     );
   }
 
-  // Helper to build TextTheme with consistent font family and color application
   static TextTheme _buildTextTheme({required TextTheme base, required Color onSurfaceColor}) {
     return base.copyWith(
       displayLarge: AppTypography.displayLarge.copyWith(color: onSurfaceColor),
@@ -291,9 +282,8 @@ abstract class AppTheme {
   }
 }
 
-// Optional: Theme Extension for easy access to semantic colors if not using ColorScheme directly
 extension SemanticThemeColors on ThemeData {
-  Color get success => brightness == Brightness.light ? AppColors.success : AppColors.success; // Or a lighter/darker variant for dark theme
+  Color get success => brightness == Brightness.light ? AppColors.success : AppColors.success; 
   Color get onSuccess => brightness == Brightness.light ? AppColors.onSuccess : AppColors.onSuccess;
   Color get warning => brightness == Brightness.light ? AppColors.warning : AppColors.warning;
   Color get onWarning => brightness == Brightness.light ? AppColors.onWarning : AppColors.onWarning;

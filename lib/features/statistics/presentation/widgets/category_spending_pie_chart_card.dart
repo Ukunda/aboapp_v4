@@ -1,8 +1,9 @@
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; // For CategorySpending
-import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // For SubscriptionCategory extension
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // Import for CategoryDisplayHelpers
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+// import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // Unused import
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -23,7 +24,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0); // No decimals for chart legend amounts
+    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0); 
 
     if (widget.categorySpendingData.isEmpty) {
       return Card(
@@ -40,7 +41,6 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       );
     }
     
-    // Filter out categories with zero spending for cleaner chart
     final relevantData = widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
     if (relevantData.isEmpty) {
        return Card(
@@ -71,7 +71,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
             ),
             const SizedBox(height: 24),
             SizedBox(
-              height: 180, // Adjust height as needed
+              height: 180, 
               child: PieChart(
                 PieChartData(
                   pieTouchData: PieTouchData(
@@ -89,7 +89,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
                   ),
                   borderData: FlBorderData(show: false),
                   sectionsSpace: 2,
-                  centerSpaceRadius: 45, // Doughnut hole
+                  centerSpaceRadius: 45, 
                   sections: _generatePieChartSections(theme, relevantData),
                 ),
               ),
@@ -110,7 +110,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       final categoryData = data[i];
 
       return PieChartSectionData(
-        color: categoryData.category.categoryDisplayIconColor(theme), // Using helper from entity file
+        color: categoryData.category.categoryDisplayIconColor(theme), 
         value: categoryData.totalAmount,
         title: '${(categoryData.percentage * 100).toStringAsFixed(0)}%',
         radius: radius,
@@ -152,7 +152,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
               ),
               const SizedBox(width: 6),
               Text(
-                categoryData.category.categoryDisplayName, // From entity
+                categoryData.category.displayName, // Using extension getter
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),

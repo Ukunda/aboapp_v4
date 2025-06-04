@@ -6,15 +6,40 @@ part of 'subscription_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+
+const _$BillingCycleEnumMap = {
+  BillingCycle.weekly: 'weekly',
+  BillingCycle.monthly: 'monthly',
+  BillingCycle.quarterly: 'quarterly',
+  BillingCycle.biAnnual: 'biAnnual',
+  BillingCycle.yearly: 'yearly',
+  BillingCycle.custom: 'custom',
+};
+
+const _$SubscriptionCategoryEnumMap = {
+  SubscriptionCategory.streaming: 'streaming',
+  SubscriptionCategory.software: 'software',
+  SubscriptionCategory.gaming: 'gaming',
+  SubscriptionCategory.fitness: 'fitness',
+  SubscriptionCategory.music: 'music',
+  SubscriptionCategory.news: 'news',
+  SubscriptionCategory.cloud: 'cloud',
+  SubscriptionCategory.utilities: 'utilities',
+  SubscriptionCategory.education: 'education',
+  SubscriptionCategory.other: 'other',
+};
+
 _$SubscriptionModelImpl _$$SubscriptionModelImplFromJson(
         Map<String, dynamic> json) =>
     _$SubscriptionModelImpl(
       id: json['id'] as String,
       name: json['name'] as String,
       price: (json['price'] as num).toDouble(),
-      billingCycle: $enumDecode(_$BillingCycleEnumMap, json['billingCycle']),
+      billingCycle: $enumDecode(_$BillingCycleEnumMap, json['billingCycle'],
+          unknownValue: BillingCycle.custom),
       nextBillingDate: DateTime.parse(json['nextBillingDate'] as String),
-      category: $enumDecode(_$SubscriptionCategoryEnumMap, json['category']),
+      category: $enumDecode(_$SubscriptionCategoryEnumMap, json['category'],
+          unknownValue: SubscriptionCategory.other),
       startDate: json['startDate'] == null
           ? null
           : DateTime.parse(json['startDate'] as String),
@@ -52,25 +77,3 @@ Map<String, dynamic> _$$SubscriptionModelImplToJson(
       'customCycleDetails': instance.customCycleDetails,
       'notes': instance.notes,
     };
-
-const _$BillingCycleEnumMap = {
-  BillingCycle.weekly: 'weekly',
-  BillingCycle.monthly: 'monthly',
-  BillingCycle.quarterly: 'quarterly',
-  BillingCycle.biAnnual: 'biAnnual',
-  BillingCycle.yearly: 'yearly',
-  BillingCycle.custom: 'custom',
-};
-
-const _$SubscriptionCategoryEnumMap = {
-  SubscriptionCategory.streaming: 'streaming',
-  SubscriptionCategory.software: 'software',
-  SubscriptionCategory.gaming: 'gaming',
-  SubscriptionCategory.fitness: 'fitness',
-  SubscriptionCategory.music: 'music',
-  SubscriptionCategory.news: 'news',
-  SubscriptionCategory.cloud: 'cloud',
-  SubscriptionCategory.utilities: 'utilities',
-  SubscriptionCategory.education: 'education',
-  SubscriptionCategory.other: 'other',
-};

@@ -1,18 +1,18 @@
-import 'package:aboapp/core/routing/app_router.dart';
+// import 'package:aboapp/core/routing/app_router.dart'; // Unused import
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
-// Import a color picker if you add that feature, e.g., flutter_colorpicker
+import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics; 
 
 class AddEditSubscriptionScreen extends StatefulWidget {
-  final SubscriptionEntity? subscription; // Passed if editing
-  final String? subscriptionId; // Passed via path parameter if editing
+  final SubscriptionEntity? subscription; 
+  final String? subscriptionId; 
 
   const AddEditSubscriptionScreen({
     super.key,
@@ -26,9 +26,8 @@ class AddEditSubscriptionScreen extends StatefulWidget {
 
 class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _uuid = const Uuid(); // For new subscription IDs
+  final _uuid = const Uuid(); 
 
-  // Form field controllers
   late TextEditingController _nameController;
   late TextEditingController _priceController;
   late TextEditingController _descriptionController;
@@ -36,7 +35,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
   late TextEditingController _notesController;
   late TextEditingController _customCycleDaysController;
 
-  // Form field values
   late String _currentId;
   SubscriptionCategory _category = SubscriptionCategory.other;
   BillingCycle _billingCycle = BillingCycle.monthly;
@@ -62,25 +60,21 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
     _notesController = TextEditingController();
     _customCycleDaysController = TextEditingController();
 
-    final initialSub = widget.subscription; // Entity passed via `extra`
+    final initialSub = widget.subscription; 
 
     if (initialSub != null) {
       _loadSubscriptionData(initialSub);
     } else if (widget.subscriptionId != null) {
-      // If only ID is passed, ideally fetch from Cubit/Repository.
-      // For this refactor, we assume `extra` is used or Cubit handles fetching if needed.
-      // This part might need adjustment based on how you fetch data for editing.
       final subFromState = context.read<SubscriptionCubit>().state.maybeWhen(
             loaded: (all, filtered, _, __, ___, ____) =>
                 all.firstWhere((s) => s.id == widget.subscriptionId, orElse: () => _createEmptySubscription()),
-            orElse: () => _createEmptySubscription(), // Fallback
+            orElse: () => _createEmptySubscription(), 
           );
        _loadSubscriptionData(subFromState);
     } else {
-      // Creating a new subscription
       _currentId = _uuid.v4();
-      _startDate = DateTime.now(); // Default start date
-      _nextBillingDate = DateTime.now().add(const Duration(days: 30)); // Default next billing
+      _startDate = DateTime.now(); 
+      _nextBillingDate = DateTime.now().add(const Duration(days: 30)); 
     }
   }
   
@@ -161,11 +155,10 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
         if (days != null && days > 0) {
           customCycleDetails = {'type': 'days', 'value': days};
         } else {
-          // Handle invalid custom cycle input, perhaps show an error or default
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid custom cycle days. Defaulting or please correct.')), // TODO: Localize
+            const SnackBar(content: Text('Invalid custom cycle days.')), // TODO: Localize
           );
-          return; // Prevent saving with invalid custom cycle
+          return; 
         }
       }
 
@@ -180,7 +173,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
         description: description.isEmpty ? null : description,
         logoUrl: logoUrl.isEmpty ? null : logoUrl,
         color: _selectedColor,
-        isActive: _isActive, // Important for editing existing
+        isActive: _isActive, 
         notificationsEnabled: _notificationsEnabled,
         notificationDaysBefore: _notificationDaysBefore,
         trialEndDate: _isInTrial ? _trialEndDate : null,
@@ -194,9 +187,9 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
         context.read<SubscriptionCubit>().addSubscription(subscriptionEntity);
       }
       app_haptics.HapticFeedback.lightImpact();
-      context.pop(); // GoRouter pop
+      context.pop(); 
     } else {
-      app_haptics.HapticFeedback.warningImpact(); // Indicate validation error
+      app_haptics.HapticFeedback.warningImpact(); 
     }
   }
   
@@ -216,16 +209,15 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context);
-    final dateFormat = DateFormat('dd MMM yyyy'); // TODO: Localize format
+    final dateFormat = DateFormat('dd MMM yyyy'); 
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Subscription' : 'Add Subscription'), // TODO: Localize
+        title: Text(_isEditing ? 'Edit Subscription' : 'Add Subscription'), 
         actions: [
           IconButton(
             icon: const Icon(Icons.save_alt_rounded),
-            tooltip: 'Save', // TODO: Localize
+            tooltip: 'Save', 
             onPressed: _saveSubscription,
           ),
         ],
@@ -237,38 +229,37 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              // --- Basic Information Section ---
-              _buildSectionHeader(context, 'Basic Information'), // TODO: Localize
+              _buildSectionHeader(context, 'Basic Information'), 
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Name'), 
                 textCapitalization: TextCapitalization.words,
-                validator: (value) => (value?.trim().isEmpty ?? true) ? 'Name is required' : null, // TODO: Localize
+                validator: (value) => (value?.trim().isEmpty ?? true) ? 'Name is required' : null, 
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Price', prefixText: '€ '), // TODO: Get currency from settings
+                decoration: const InputDecoration(labelText: 'Price', prefixText: '€ '), 
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                 validator: (value) {
-                  if (value?.trim().isEmpty ?? true) return 'Price is required'; // TODO: Localize
-                  if (double.tryParse(value!) == null) return 'Invalid price'; // TODO: Localize
+                  if (value?.trim().isEmpty ?? true) return 'Price is required'; 
+                  if (double.tryParse(value!) == null) return 'Invalid price'; 
                   return null;
                 },
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<SubscriptionCategory>(
                 value: _category,
-                decoration: const InputDecoration(labelText: 'Category'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Category'), 
                 items: SubscriptionCategory.values.map((cat) {
                   return DropdownMenuItem(
                     value: cat,
                     child: Row(
                       children: [
-                        Icon(cat.categoryDisplayIcon, size: 20, color: cat.categoryDisplayIconColor(theme)),
+                        Icon(cat.displayIcon, size: 20, color: cat.categoryDisplayIconColor(theme)), // Using extensions
                         const SizedBox(width: 8),
-                        Text(cat.categoryDisplayName), // TODO: Localize enum display names
+                        Text(cat.displayName), // Using extensions
                       ],
                     ),
                   );
@@ -278,17 +269,16 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description (Optional)'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Description (Optional)'), 
                 maxLines: 2,
                 textCapitalization: TextCapitalization.sentences,
               ),
               const SizedBox(height: 24),
 
-              // --- Billing Details Section ---
-              _buildSectionHeader(context, 'Billing Details'), // TODO: Localize
+              _buildSectionHeader(context, 'Billing Details'), 
               DropdownButtonFormField<BillingCycle>(
                 value: _billingCycle,
-                decoration: const InputDecoration(labelText: 'Billing Cycle'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Billing Cycle'), 
                 items: BillingCycle.values.map((cycle) {
                   return DropdownMenuItem(value: cycle, child: Text(_getBillingCycleLabel(context, cycle)));
                 }).toList(),
@@ -298,12 +288,12 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _customCycleDaysController,
-                  decoration: const InputDecoration(labelText: 'Custom Cycle (in days)'), // TODO: Localize
+                  decoration: const InputDecoration(labelText: 'Custom Cycle (in days)'), 
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value?.trim().isEmpty ?? true) return 'Cycle days required'; // TODO: Localize
-                    if ((int.tryParse(value!) ?? 0) <= 0) return 'Must be > 0 days'; // TODO: Localize
+                    if (value?.trim().isEmpty ?? true) return 'Cycle days required'; 
+                    if ((int.tryParse(value!) ?? 0) <= 0) return 'Must be > 0 days'; 
                     return null;
                   },
                 ),
@@ -311,7 +301,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
               _buildDatePickerTile(
                 context: context,
-                title: 'Next Billing Date', // TODO: Localize
+                title: 'Next Billing Date', 
                 date: _nextBillingDate,
                 dateFormat: dateFormat,
                 onTap: () => _selectDate(context,
@@ -321,28 +311,27 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
                _buildDatePickerTile(
                 context: context,
-                title: 'Subscription Start Date', // TODO: Localize
+                title: 'Subscription Start Date', 
                 date: _startDate,
                 dateFormat: dateFormat,
                 onTap: () => _selectDate(context,
                     initialDate: _startDate ?? DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365*5)), // Allow future start dates
+                    lastDate: DateTime.now().add(const Duration(days: 365*5)), 
                     onDateSelected: (date) => setState(() => _startDate = date)),
                 canBeNull: true,
               ),
               const SizedBox(height: 24),
 
-              // --- Optional Details Section ---
-              _buildSectionHeader(context, 'Optional Details'), // TODO: Localize
+              _buildSectionHeader(context, 'Optional Details'), 
                SwitchListTile.adaptive(
-                title: Text('Active Subscription', style: theme.textTheme.bodyLarge), // TODO: Localize
+                title: Text('Active Subscription', style: theme.textTheme.bodyLarge), 
                 value: _isActive,
                 onChanged: (val) => setState(() => _isActive = val),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),
               SwitchListTile.adaptive(
-                title: Text('In Trial Period', style: theme.textTheme.bodyLarge), // TODO: Localize
+                title: Text('In Trial Period', style: theme.textTheme.bodyLarge), 
                 value: _isInTrial,
                 onChanged: (val) => setState(() {
                   _isInTrial = val;
@@ -354,7 +343,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               if (_isInTrial)
                 _buildDatePickerTile(
                   context: context,
-                  title: 'Trial End Date', // TODO: Localize
+                  title: 'Trial End Date', 
                   date: _trialEndDate,
                   dateFormat: dateFormat,
                   onTap: () => _selectDate(context,
@@ -365,7 +354,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
                 ),
               const SizedBox(height: 12),
               SwitchListTile.adaptive(
-                title: Text('Enable Notifications', style: theme.textTheme.bodyLarge), // TODO: Localize
+                title: Text('Enable Notifications', style: theme.textTheme.bodyLarge), 
                 value: _notificationsEnabled,
                 onChanged: (val) => setState(() => _notificationsEnabled = val),
                 dense: true,
@@ -375,9 +364,9 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
                   value: _notificationDaysBefore,
-                  decoration: const InputDecoration(labelText: 'Notify Days Before Renewal'), // TODO: Localize
+                  decoration: const InputDecoration(labelText: 'Notify Days Before Renewal'), 
                   items: [1, 2, 3, 5, 7, 10, 14, 21, 30].map((days) {
-                    return DropdownMenuItem(value: days, child: Text('$days day${days > 1 ? "s" : ""}')); // TODO: Localize
+                    return DropdownMenuItem(value: days, child: Text('$days day${days > 1 ? "s" : ""}')); 
                   }).toList(),
                   onChanged: (val) => setState(() => _notificationDaysBefore = val!),
                 ),
@@ -385,15 +374,13 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _logoUrlController,
-                decoration: const InputDecoration(labelText: 'Logo URL (Optional)'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Logo URL (Optional)'), 
                 keyboardType: TextInputType.url,
               ),
               const SizedBox(height: 12),
-              // TODO: Add Color Picker Widget
-              // Example: ListTile(title: Text('Subscription Color'), trailing: CircleAvatar(backgroundColor: _selectedColor ?? Colors.grey), onTap: _pickColor),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(labelText: 'Notes (Optional)'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Notes (Optional)'), 
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
               ),
@@ -435,7 +422,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
       ),
       title: Text(title, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       subtitle: Text(
-        date != null ? dateFormat.format(date) : (canBeNull ? 'Not Set' : 'Please select a date'), // TODO: Localize
+        date != null ? dateFormat.format(date) : (canBeNull ? 'Not Set' : 'Please select a date'), 
         style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500, color: date != null ? theme.colorScheme.onSurface : theme.colorScheme.onSurfaceVariant),
       ),
       trailing: const Icon(Icons.calendar_month_rounded),

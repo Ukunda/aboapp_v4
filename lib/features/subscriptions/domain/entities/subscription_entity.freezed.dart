@@ -18,22 +18,18 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SubscriptionEntity {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  double get price =>
-      throw _privateConstructorUsedError; // Price for the specified billingCycle
+  double get price => throw _privateConstructorUsedError;
   BillingCycle get billingCycle => throw _privateConstructorUsedError;
   DateTime get nextBillingDate => throw _privateConstructorUsedError;
   SubscriptionCategory get category => throw _privateConstructorUsedError;
   DateTime? get startDate => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  String? get logoUrl =>
-      throw _privateConstructorUsedError; // URL for remote logo
-  Color? get color =>
-      throw _privateConstructorUsedError; // User-defined color for the subscription
+  String? get logoUrl => throw _privateConstructorUsedError;
+  Color? get color => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   bool get notificationsEnabled => throw _privateConstructorUsedError;
   int get notificationDaysBefore => throw _privateConstructorUsedError;
-  DateTime? get trialEndDate =>
-      throw _privateConstructorUsedError; // For custom billing cycle, e.g., {'type': 'days', 'value': 45}
+  DateTime? get trialEndDate => throw _privateConstructorUsedError;
   Map<String, dynamic>? get customCycleDetails =>
       throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
@@ -326,7 +322,6 @@ class _$SubscriptionEntityImpl extends _SubscriptionEntity {
   final String name;
   @override
   final double price;
-// Price for the specified billingCycle
   @override
   final BillingCycle billingCycle;
   @override
@@ -339,10 +334,8 @@ class _$SubscriptionEntityImpl extends _SubscriptionEntity {
   final String? description;
   @override
   final String? logoUrl;
-// URL for remote logo
   @override
   final Color? color;
-// User-defined color for the subscription
   @override
   @JsonKey()
   final bool isActive;
@@ -354,9 +347,7 @@ class _$SubscriptionEntityImpl extends _SubscriptionEntity {
   final int notificationDaysBefore;
   @override
   final DateTime? trialEndDate;
-// For custom billing cycle, e.g., {'type': 'days', 'value': 45}
   final Map<String, dynamic>? _customCycleDetails;
-// For custom billing cycle, e.g., {'type': 'days', 'value': 45}
   @override
   Map<String, dynamic>? get customCycleDetails {
     final value = _customCycleDetails;
@@ -463,7 +454,7 @@ abstract class _SubscriptionEntity extends SubscriptionEntity {
   @override
   String get name;
   @override
-  double get price; // Price for the specified billingCycle
+  double get price;
   @override
   BillingCycle get billingCycle;
   @override
@@ -475,9 +466,9 @@ abstract class _SubscriptionEntity extends SubscriptionEntity {
   @override
   String? get description;
   @override
-  String? get logoUrl; // URL for remote logo
+  String? get logoUrl;
   @override
-  Color? get color; // User-defined color for the subscription
+  Color? get color;
   @override
   bool get isActive;
   @override
@@ -485,8 +476,7 @@ abstract class _SubscriptionEntity extends SubscriptionEntity {
   @override
   int get notificationDaysBefore;
   @override
-  DateTime?
-      get trialEndDate; // For custom billing cycle, e.g., {'type': 'days', 'value': 45}
+  DateTime? get trialEndDate;
   @override
   Map<String, dynamic>? get customCycleDetails;
   @override

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:aboapp/features/settings/data/models/settings_model.dart';
-import 'package:aboapp/features/settings/domain/entities/settings_entity.dart'; // For default settings
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+import 'package:aboapp/features/settings/domain/entities/settings_entity.dart'; 
+import 'package:flutter/material.dart'; 
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,12 +10,9 @@ abstract class SettingsLocalDataSource {
   Future<void> saveThemeMode(ThemeMode themeMode);
   Future<void> saveLocale(Locale locale);
   Future<void> saveCurrencyCode(String currencyCode);
-  // Future<void> saveSettings(SettingsModel settings); // Alternative
 }
 
 const String settingsKey = 'APP_SETTINGS';
-// Individual keys can also be used if preferred for partial updates,
-// but saving the whole model is often simpler.
 const String themeModeKey = 'APP_THEME_MODE';
 const String localeLangKey = 'APP_LOCALE_LANG';
 const String localeCountryKey = 'APP_LOCALE_COUNTRY';
@@ -35,13 +32,11 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
       try {
         return SettingsModel.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
       } catch (e) {
-        // If parsing fails, return default and clear corrupted data
-        print('Error parsing settings from SharedPreferences: $e');
+        // print('Error parsing settings from SharedPreferences: $e'); // Avoid print
         await sharedPreferences.remove(settingsKey);
         return SettingsModel.fromEntity(SettingsEntity.defaultSettings());
       }
     } else {
-      // No settings saved yet, return default settings
       return SettingsModel.fromEntity(SettingsEntity.defaultSettings());
     }
   }

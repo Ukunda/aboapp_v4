@@ -1,63 +1,47 @@
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:aboapp/core/localization/app_localizations.dart'; // When implemented
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  // Helper to get display name for ThemeMode
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
-    // final localizations = AppLocalizations.of(context);
     switch (themeMode) {
       case ThemeMode.system:
-        return 'System Default'; // localizations.translate('theme_system');
+        return 'System Default'; 
       case ThemeMode.light:
-        return 'Light'; // localizations.translate('theme_light');
+        return 'Light'; 
       case ThemeMode.dark:
-        return 'Dark'; // localizations.translate('theme_dark');
+        return 'Dark'; 
     }
   }
 
-  // Helper to get display name for Locale
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
-    // final localizations = AppLocalizations.of(context);
-    // This is a simplified version. For a full list, you might need a map or intl package capabilities.
     if (locale.languageCode == 'en') {
-      return 'English'; // localizations.translate('language_english');
+      return 'English'; 
     } else if (locale.languageCode == 'de') {
-      return 'Deutsch (German)'; // localizations.translate('language_german');
+      return 'Deutsch (German)'; 
     }
-    return locale.toLanguageTag(); // Fallback
+    return locale.toLanguageTag(); 
   }
   
-  // Supported currencies (example)
   static const Map<String, String> _supportedCurrencies = {
     'USD': 'USD - United States Dollar (\$)',
     'EUR': 'EUR - Euro (€)',
     'GBP': 'GBP - British Pound (£)',
     'JPY': 'JPY - Japanese Yen (¥)',
     'CHF': 'CHF - Swiss Franc (CHF)',
-    // Add more as needed
   };
 
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context);
+    // final theme = Theme.of(context); // Unused variable
 
     return Scaffold(
-      // AppBar is typically part of the MainContainerScreen for shell routes
-      // If this screen can be pushed independently, it might need its own AppBar.
-      // For now, assuming it's part of the shell.
-      // appBar: AppBar(
-      //   title: Text('Settings'), // localizations.translate('settings_title')),
-      // ),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
-          if (state.isLoading && state.themeMode == ThemeMode.system && state.locale.languageCode == 'en') { // Check if it's truly initial load
-            // This condition might be too simple if initial state matches defaults
+          if (state.isLoading && state.themeMode == ThemeMode.system && state.locale.languageCode == 'en') { 
             return const Center(child: CircularProgressIndicator.adaptive());
           }
           if (state.error != null) {
@@ -67,42 +51,40 @@ class SettingsScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(8.0),
             children: <Widget>[
-              _buildSectionHeader(context, 'Appearance'), // localizations.translate('appearance')),
+              _buildSectionHeader(context, 'Appearance'), 
               ListTile(
                 leading: const Icon(Icons.brightness_6_rounded),
-                title: Text('Theme'), // localizations.translate('theme_setting_title')),
+                title: const Text('Theme'), 
                 subtitle: Text(_getThemeModeDisplayName(context, state.themeMode)),
                 onTap: () => _showThemeModeDialog(context, state.themeMode),
               ),
               const Divider(),
-              _buildSectionHeader(context, 'Regional'), // localizations.translate('regional_settings')),
+              _buildSectionHeader(context, 'Regional'), 
               ListTile(
                 leading: const Icon(Icons.language_rounded),
-                title: Text('Language'), // localizations.translate('language_setting_title')),
+                title: const Text('Language'), 
                 subtitle: Text(_getLocaleDisplayName(context, state.locale)),
                 onTap: () => _showLocaleDialog(context, state.locale),
               ),
               ListTile(
                 leading: const Icon(Icons.attach_money_rounded),
-                title: Text('Currency'), // localizations.translate('currency_setting_title')),
+                title: const Text('Currency'), 
                 subtitle: Text(_supportedCurrencies[state.currencyCode] ?? state.currencyCode),
                 onTap: () => _showCurrencyDialog(context, state.currencyCode),
               ),
               const Divider(),
-              _buildSectionHeader(context, 'About'), // localizations.translate('about_section_title')),
+              _buildSectionHeader(context, 'About'), 
               ListTile(
                 leading: const Icon(Icons.info_outline_rounded),
-                title: Text('About AboApp'), // localizations.translate('about_app_title')),
-                // subtitle: Text('Version 3.0.0'), // localizations.translate('app_version', args: {'version': '3.0.0'})),
-                subtitle: Text('Version 3.0.0 - Refactored'), // TODO: Get from package_info_plus
+                title: const Text('About AboApp'), 
+                subtitle: const Text('Version 3.0.0 - Refactored'), 
                 onTap: () {
-                  // TODO: Show an About Dialog or navigate to an About Screen
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: Text('About AboApp'), // localizations.translate('about_app_title')),
-                      content: Text('Subscription management made easy.\nVersion 3.0.0'), // localizations.translate('app_description_long')),
-                      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('Close'))], // localizations.translate('close')))],
+                      title: const Text('About AboApp'), 
+                      content: const Text('Subscription management made easy.\nVersion 3.0.0'), 
+                      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close'))], 
                     ),
                   );
                 },
@@ -128,12 +110,11 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showThemeModeDialog(BuildContext context, ThemeMode currentThemeMode) {
-    // final localizations = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Select Theme'), // localizations.translate('select_theme_dialog_title')),
+          title: const Text('Select Theme'), 
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: ThemeMode.values.map((themeMode) {
@@ -152,7 +133,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'), // localizations.translate('cancel')),
+              child: const Text('Cancel'), 
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -162,18 +143,16 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLocaleDialog(BuildContext context, Locale currentLocale) {
-    // final localizations = AppLocalizations.of(context);
-    // Define your supported locales here or get them from a config
-    final List<Locale> supportedLocales = [
-      const Locale('en', 'US'),
-      const Locale('de', 'DE'),
+    const List<Locale> supportedLocales = [
+      Locale('en', 'US'),
+      Locale('de', 'DE'),
     ];
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Select Language'), // localizations.translate('select_language_dialog_title')),
+          title: const Text('Select Language'), 
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -197,7 +176,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'), // localizations.translate('cancel')),
+              child: const Text('Cancel'), 
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -207,20 +186,19 @@ class SettingsScreen extends StatelessWidget {
   }
   
   void _showCurrencyDialog(BuildContext context, String currentCurrencyCode) {
-    // final localizations = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Select Currency'), // localizations.translate('select_currency_dialog_title')),
+          title: const Text('Select Currency'), 
           content: SizedBox(
             width: double.maxFinite,
             child: ListView(
               shrinkWrap: true,
               children: _supportedCurrencies.entries.map((entry) {
                 return RadioListTile<String>(
-                  title: Text(entry.value), // Display the full name
-                  value: entry.key, // Store the code
+                  title: Text(entry.value), 
+                  value: entry.key, 
                   groupValue: currentCurrencyCode,
                   onChanged: (String? value) {
                     if (value != null) {
@@ -234,7 +212,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'), // localizations.translate('cancel')),
+              child: const Text('Cancel'), 
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],

@@ -133,8 +133,7 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class _$SettingsModelImpl extends _SettingsModel {
   const _$SettingsModelImpl(
       {@ThemeModeConverter() required this.themeMode,

@@ -29,7 +29,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 72,
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6), // Kept withOpacity
             ),
             const SizedBox(height: 24),
             Text(
@@ -51,7 +51,7 @@ class EmptyStateWidget extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.refresh_rounded),
-                label: Text(retryText ?? 'Try Again'), // TODO: Localize
+                label: Text(retryText ?? 'Try Again'), 
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

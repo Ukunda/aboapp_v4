@@ -1,19 +1,15 @@
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
-import 'package:fl_chart/fl_chart.dart'; // For FlSpot
+import 'package:fl_chart/fl_chart.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:collection/collection.dart'; // For sumBy
+import 'package:collection/collection.dart'; 
 
 part 'statistics_state.dart';
 part 'statistics_cubit.freezed.dart';
 
 @injectable
 class StatisticsCubit extends Cubit<StatisticsState> {
-  // No direct repository needed if it processes data from subscriptions.
-  // It could listen to SubscriptionCubit or receive data.
-  // For simplicity, let's assume it takes a list of subscriptions to process.
-
   StatisticsCubit() : super(const StatisticsState.initial());
 
   void generateStatistics(List<SubscriptionEntity> allSubscriptions, {int? yearForTrend}) {
@@ -27,11 +23,9 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     }
 
     try {
-      // 1. Calculate Total Monthly and Yearly Equivalent Spending
       final totalMonthlyEquivalent = activeSubscriptions.sumByDouble((s) => s.monthlyEquivalentPrice);
       final totalYearlyEquivalent = totalMonthlyEquivalent * 12;
 
-      // 2. Category Spending
       final Map<SubscriptionCategory, double> categoryTotals = {};
       for (var sub in activeSubscriptions) {
         categoryTotals.update(
@@ -46,9 +40,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
           totalAmount: entry.value,
           percentage: totalMonthlyEquivalent > 0 ? (entry.value / totalMonthlyEquivalent) : 0.0,
         );
-      }).sortedBy<num>((cs) => cs.totalAmount).reversed.toList(); // Sort descending
+      }).sortedBy<num>((cs) => cs.totalAmount).reversed.toList(); 
 
-      // 3. Billing Type Spending
       final Map<BillingCycle, List<SubscriptionEntity>> subsByBillingCycle = {};
       for (var sub in activeSubscriptions) {
         subsByBillingCycle.putIfAbsent(sub.billingCycle, () => []).add(sub);
@@ -61,15 +54,13 @@ class StatisticsCubit extends Cubit<StatisticsState> {
           subscriptionCount: entry.value.length,
           percentageOfTotal: totalMonthlyEquivalent > 0 ? (cycleTotalMonthlyEquiv / totalMonthlyEquivalent) : 0.0,
         );
-      }).sortedBy<num>((bs) => bs.totalAmount).reversed.toList(); // Sort descending
+      }).sortedBy<num>((bs) => bs.totalAmount).reversed.toList(); 
 
 
-      // 4. Top Spending Subscriptions (e.g., Top 5)
       final List<SubscriptionEntity> topSpendingSubscriptions = List.from(activeSubscriptions)
         ..sort((a, b) => b.monthlyEquivalentPrice.compareTo(a.monthlyEquivalentPrice));
       final topN = topSpendingSubscriptions.take(5).toList();
 
-      // 5. Spending Trend Data
       final int trendYear = yearForTrend ?? DateTime.now().year;
       final List<FlSpot> spots = [];
       double maxSpendingInYear = 0.0;
@@ -78,7 +69,6 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         for (final sub in activeSubscriptions) {
           if (sub.startDate != null &&
               (sub.startDate!.year < trendYear || (sub.startDate!.year == trendYear && sub.startDate!.month <= month))) {
-            // This logic assumes continuous subscription. More complex if pauses/ends.
             monthlyTotalForTrend += sub.monthlyEquivalentPrice;
           }
         }
@@ -108,13 +98,11 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     }
   }
   
-  // Call this method if the year for the trend chart changes
   void changeTrendYear(List<SubscriptionEntity> allSubscriptions, int newYear) {
     generateStatistics(allSubscriptions, yearForTrend: newYear);
   }
 }
 
-// Helper extension for sumByDouble
 extension SumByDouble<T> on Iterable<T> {
   double sumByDouble(double Function(T element) f) {
     double sum = 0;

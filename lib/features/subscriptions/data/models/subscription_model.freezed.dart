@@ -23,17 +23,16 @@ mixin _$SubscriptionModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: BillingCycle.custom)
   BillingCycle get billingCycle => throw _privateConstructorUsedError;
   DateTime get nextBillingDate => throw _privateConstructorUsedError;
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: SubscriptionCategory.other)
   SubscriptionCategory get category => throw _privateConstructorUsedError;
   DateTime? get startDate => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get logoUrl => throw _privateConstructorUsedError;
   @ColorSerializer()
-  Color? get color =>
-      throw _privateConstructorUsedError; // Custom serializer for Color
+  Color? get color => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   bool get notificationsEnabled => throw _privateConstructorUsedError;
   int get notificationDaysBefore => throw _privateConstructorUsedError;
@@ -62,10 +61,9 @@ abstract class $SubscriptionModelCopyWith<$Res> {
       {String id,
       String name,
       double price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
-      BillingCycle billingCycle,
+      @JsonKey(unknownEnumValue: BillingCycle.custom) BillingCycle billingCycle,
       DateTime nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       SubscriptionCategory category,
       DateTime? startDate,
       String? description,
@@ -192,10 +190,9 @@ abstract class _$$SubscriptionModelImplCopyWith<$Res>
       {String id,
       String name,
       double price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
-      BillingCycle billingCycle,
+      @JsonKey(unknownEnumValue: BillingCycle.custom) BillingCycle billingCycle,
       DateTime nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       SubscriptionCategory category,
       DateTime? startDate,
       String? description,
@@ -309,17 +306,16 @@ class __$$SubscriptionModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class _$SubscriptionModelImpl extends _SubscriptionModel {
   const _$SubscriptionModelImpl(
       {required this.id,
       required this.name,
       required this.price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: BillingCycle.custom)
       required this.billingCycle,
       required this.nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       required this.category,
       this.startDate,
       this.description,
@@ -344,12 +340,12 @@ class _$SubscriptionModelImpl extends _SubscriptionModel {
   @override
   final double price;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: BillingCycle.custom)
   final BillingCycle billingCycle;
   @override
   final DateTime nextBillingDate;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: SubscriptionCategory.other)
   final SubscriptionCategory category;
   @override
   final DateTime? startDate;
@@ -360,7 +356,6 @@ class _$SubscriptionModelImpl extends _SubscriptionModel {
   @override
   @ColorSerializer()
   final Color? color;
-// Custom serializer for Color
   @override
   @JsonKey()
   final bool isActive;
@@ -467,10 +462,10 @@ abstract class _SubscriptionModel extends SubscriptionModel {
       {required final String id,
       required final String name,
       required final double price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: BillingCycle.custom)
       required final BillingCycle billingCycle,
       required final DateTime nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       required final SubscriptionCategory category,
       final DateTime? startDate,
       final String? description,
@@ -494,12 +489,12 @@ abstract class _SubscriptionModel extends SubscriptionModel {
   @override
   double get price;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: BillingCycle.custom)
   BillingCycle get billingCycle;
   @override
   DateTime get nextBillingDate;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: SubscriptionCategory.other)
   SubscriptionCategory get category;
   @override
   DateTime? get startDate;
@@ -509,7 +504,7 @@ abstract class _SubscriptionModel extends SubscriptionModel {
   String? get logoUrl;
   @override
   @ColorSerializer()
-  Color? get color; // Custom serializer for Color
+  Color? get color;
   @override
   bool get isActive;
   @override

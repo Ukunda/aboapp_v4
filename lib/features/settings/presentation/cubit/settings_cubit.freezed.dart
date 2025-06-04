@@ -19,8 +19,7 @@ mixin _$SettingsState {
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   Locale get locale => throw _privateConstructorUsedError;
   String get currencyCode => throw _privateConstructorUsedError;
-  bool get isLoading =>
-      throw _privateConstructorUsedError; // To indicate if settings are being loaded/saved
+  bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
   /// Create a copy of SettingsState
@@ -169,7 +168,6 @@ class _$SettingsStateImpl implements _SettingsState {
   @override
   @JsonKey()
   final bool isLoading;
-// To indicate if settings are being loaded/saved
   @override
   final String? error;
 
@@ -221,7 +219,7 @@ abstract class _SettingsState implements SettingsState {
   @override
   String get currencyCode;
   @override
-  bool get isLoading; // To indicate if settings are being loaded/saved
+  bool get isLoading;
   @override
   String? get error;
 

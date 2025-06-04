@@ -4,7 +4,7 @@ import 'package:aboapp/features/statistics/presentation/widgets/category_spendin
 import 'package:aboapp/features/statistics/presentation/widgets/overall_spending_summary_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/top_subscriptions_list_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart' hide Error; // Hide SubscriptionCubit's Error state
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart'; // Removed hide Error
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,8 +22,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    // Listen to SubscriptionCubit to get the latest subscriptions
-    // and trigger statistics generation.
     final subscriptionState = context.read<SubscriptionCubit>().state;
     subscriptionState.whenOrNull(
       loaded: (allSubs, _, __, ___, ____, _____) {
@@ -31,27 +29,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
         }
       },
-      // Handle other states of SubscriptionCubit if necessary, e.g., if it's still loading
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context);
 
     return Scaffold(
-      // AppBar is part of MainContainerScreen for shell routes.
-      // If this screen needs a specific AppBar when pushed independently, add it here.
-      // appBar: AppBar(title: Text('Statistics')), // localizations.translate('statistics_title'))),
       body: MultiBlocListener(
         listeners: [
-          // Listen to SubscriptionCubit for changes in subscriptions
           BlocListener<SubscriptionCubit, SubscriptionState>(
             listener: (context, subState) {
               subState.whenOrNull(
                 loaded: (allSubs, _, __, ___, ____, _____) {
-                  // Regenerate statistics when subscriptions change
                   context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
                 },
               );
@@ -65,12 +56,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               loading: () => const Center(child: CircularProgressIndicator.adaptive()),
               empty: (message) => EmptyStateWidget(
                 icon: Icons.sentiment_dissatisfied_rounded,
-                title: 'No Statistics Yet', // localizations.translate('no_stats_title'),
+                title: 'No Statistics Yet', 
                 message: message,
               ),
               error: (message) => EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: 'Error Loading Statistics', // localizations.translate('stats_error_title'),
+                title: 'Error Loading Statistics', 
                 message: message,
                 onRetry: () {
                   final subCubitState = context.read<SubscriptionCubit>().state;
@@ -79,7 +70,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend),
                   );
                 },
-                retryText: 'Retry', // localizations.translate('retry'),
+                retryText: 'Retry', 
               ),
               loaded: (
                 activeSubscriptions,
@@ -91,59 +82,55 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 totalYearlyEquivalentSpending,
                 selectedYearForTrend,
               ) {
-                // Update local state if cubit's selected year changes (e.g. via another trigger)
                 if (_selectedYearForTrend != selectedYearForTrend) {
                    _selectedYearForTrend = selectedYearForTrend;
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
                      final subCubitState = context.read<SubscriptionCubit>().state;
-                     await subCubitState.maybeWhen(
-                       loaded: (allSubs, _, __, ___, ____, _____) async => 
-                          await context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend),
-                       orElse: () async {}, // Do nothing if subs not loaded
+                     // Removed await from void result
+                     subCubitState.maybeWhen(
+                       loaded: (allSubs, _, __, ___, ____, _____) {
+                          context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
+                       } ,
+                       orElse: () {}, 
                      );
                   },
                   child: CustomScrollView(
                     slivers: <Widget>[
                       SliverAppBar(
-                        // title: Text('Statistics Overview'), // localizations.translate('statistics_title')),
-                        title: Text('Statistics'), // For individual screen AppBar
-                        floating: true, // AppBar appears when scrolling up
+                        title: const Text('Statistics'), 
+                        floating: true, 
                         snap: true,
-                        // Pinned can be true if you want it always visible at the top
-                        // pinned: true, 
                         actions: [
                           _buildYearSelector(context, theme, selectedYearForTrend),
                         ],
-                        // backgroundColor: theme.colorScheme.surface.withOpacity(0.85), // Slight transparency
-                        // elevation: 1.0,
                       ),
                       SliverPadding(
-                        padding: const EdgeInsets.all(12.0), // Reduced padding
+                        padding: const EdgeInsets.all(12.0), 
                         sliver: SliverList(
-                          delegate: SliverChildListDelegate.fixed([
+                          delegate: SliverChildListDelegate.fixed(const [ // Added const
                             OverallSpendingSummaryCard(
-                              totalMonthlySpending: totalMonthlyEquivalentSpending,
+                              totalMonthlySpending: totalMonthlyEquivalentSpending, // These are already passed
                               totalYearlySpending: totalYearlyEquivalentSpending,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             CategorySpendingPieChartCard(
-                              categorySpendingData: categorySpendingData,
+                              categorySpendingData: categorySpendingData, // Passed
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             BillingTypeBreakdownCard(
-                              billingTypeSpendingData: billingTypeSpendingData,
+                              billingTypeSpendingData: billingTypeSpendingData, // Passed
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             SpendingTrendLineChartCard(
-                              spendingTrendData: spendingTrendData,
+                              spendingTrendData: spendingTrendData, // Passed
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             TopSubscriptionsListCard(
-                              topSubscriptions: topSpendingSubscriptions,
+                              topSubscriptions: topSpendingSubscriptions, // Passed
                             ),
-                            const SizedBox(height: 24), // Bottom padding
+                            SizedBox(height: 24), 
                           ]),
                         ),
                       ),
@@ -159,7 +146,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Widget _buildYearSelector(BuildContext context, ThemeData theme, int currentYear) {
-    // final localizations = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: DropdownButtonHideUnderline(
@@ -167,7 +153,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           value: currentYear,
           icon: Icon(Icons.calendar_today_rounded, size: 18, color: theme.colorScheme.onSurfaceVariant),
           style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          dropdownColor: theme.colorScheme.surfaceVariant,
+          dropdownColor: theme.colorScheme.surfaceContainerHighest, // Corrected deprecated member
           items: List.generate(5, (index) => DateTime.now().year - index)
               .map((year) => DropdownMenuItem<int>(
                     value: year,

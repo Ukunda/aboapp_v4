@@ -1,8 +1,7 @@
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// Import SubscriptionCardWidget if you want to reuse its style or parts
-// import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 
 class TopSubscriptionsListCard extends StatelessWidget {
   final List<SubscriptionEntity> topSubscriptions;
@@ -12,18 +11,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
     required this.topSubscriptions,
   });
   
-  String _getBillingCycleShortLabel(BillingCycle cycle) {
-    // TODO: Localize
-    switch (cycle) {
-      case BillingCycle.weekly: return '/wk';
-      case BillingCycle.monthly: return '/mo';
-      case BillingCycle.quarterly: return '/qtr';
-      case BillingCycle.biAnnual: return '/6mo';
-      case BillingCycle.yearly: return '/yr';
-      case BillingCycle.custom: return '/cust';
-    }
-  }
-
+  // _getBillingCycleShortLabel removed as it was unused in this file
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +37,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0), // Less vertical padding for list
+        padding: const EdgeInsets.symmetric(vertical: 8.0), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -69,7 +57,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
             ),
             ListView.separated(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(), // List is inside CustomScrollView
+              physics: const NeverScrollableScrollPhysics(), 
               itemCount: topSubscriptions.length,
               itemBuilder: (context, index) {
                 final sub = topSubscriptions[index];
@@ -94,7 +82,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    sub.categoryDisplayName, // From entity
+                    sub.category.displayName, // Use extension from subscription_card_widget
                     style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   trailing: Column(
@@ -111,7 +99,6 @@ class TopSubscriptionsListCard extends StatelessWidget {
                       )
                     ],
                   ),
-                  // onTap: () { /* Optional: Navigate to subscription details */ },
                 );
               },
               separatorBuilder: (context, index) => const Divider(height: 1, indent: 16, endIndent: 16),

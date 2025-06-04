@@ -1,3 +1,4 @@
+import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +30,9 @@ class SubscriptionCardWidget extends StatelessWidget {
 
   Color _getDaysUntilBillingColor(BuildContext context, int days) {
     final theme = Theme.of(context);
-    if (days < 0) return theme.colorScheme.error; // Overdue
-    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8);
-    if (days <= 7) return theme.colorScheme.warning.withOpacity(0.9); // Or theme.colorScheme.tertiary
+    if (days < 0) return theme.colorScheme.error; 
+    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8); // Kept withOpacity
+    if (days <= 7) return AppColors.warning.withOpacity(0.9); // Used AppColors.warning, Kept withOpacity
     return theme.colorScheme.onSurfaceVariant;
   }
 
@@ -61,10 +62,8 @@ class SubscriptionCardWidget extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              // Logo or Initial
               _buildLogo(context, theme),
               const SizedBox(width: 12.0),
-              // Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,7 +76,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 2.0),
                     Text(
-                      subscription.categoryDisplayName, // From entity
+                      subscription.category.displayName, // Using extension
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -103,7 +102,6 @@ class SubscriptionCardWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12.0),
-              // Price and Due Date
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -151,8 +149,7 @@ class SubscriptionCardWidget extends StatelessWidget {
 
   Widget _buildLogo(BuildContext context, ThemeData theme) {
     final hasRemoteLogo = subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
-    // final hasLocalLogo = subscription.localLogoPath != null && subscription.localLogoPath!.isNotEmpty; // If using local assets
-    final Color bgColor = subscription.color ?? subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1); // Use entity's color or category color
+    final Color bgColor = subscription.color ?? subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1); // Kept withOpacity
     final Color fgColor = subscription.color != null ? (ThemeData.estimateBrightnessForColor(subscription.color!) == Brightness.dark ? Colors.white : Colors.black) : subscription.category.categoryDisplayIconColor(theme);
 
 
@@ -163,32 +160,30 @@ class SubscriptionCardWidget extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: ClipRRect( // Ensure image is clipped to rounded corners
+      child: ClipRRect( 
         borderRadius: BorderRadius.circular(10.0),
         child: hasRemoteLogo
             ? CachedNetworkImage(
                 imageUrl: subscription.logoUrl!,
                 width: 52,
                 height: 52,
-                fit: BoxFit.contain, // Or BoxFit.cover
+                fit: BoxFit.contain, 
                 placeholder: (context, url) => Center(
                   child: Icon(
-                    subscription.categoryDisplayIcon,
-                    color: fgColor.withOpacity(0.5),
+                    subscription.category.displayIcon, // Using extension
+                    color: fgColor.withOpacity(0.5), // Kept withOpacity
                     size: 28,
                   ),
                 ),
                 errorWidget: (context, url, error) => Center(
                   child: Icon(
-                    subscription.categoryDisplayIcon, // Fallback icon
-                    color: fgColor.withOpacity(0.7),
+                    subscription.category.displayIcon, // Using extension
+                    color: fgColor.withOpacity(0.7), // Kept withOpacity
                     size: 28,
                   ),
                 ),
               )
-            // : hasLocalLogo
-            //     ? Image.asset(subscription.localLogoPath!, fit: BoxFit.contain) // Example for local asset
-            : Center( // Fallback to initial or category icon
+            : Center( 
                 child: Text(
                   subscription.name.isNotEmpty ? subscription.name[0].toUpperCase() : '?',
                   style: theme.textTheme.titleLarge?.copyWith(color: fgColor, fontWeight: FontWeight.bold),
@@ -199,12 +194,9 @@ class SubscriptionCardWidget extends StatelessWidget {
   }
 }
 
-// Add this extension to your subscription_entity.dart or a shared utility file
-// to get category colors that contrast with the theme.
+// Centralized display helpers for SubscriptionCategory
 extension CategoryDisplayHelpers on SubscriptionCategory {
    Color categoryDisplayIconColor(ThemeData theme) {
-    // Simple example: use primary for light theme, onSurface for dark
-    // Or use the predefined AppColors.catXYZ
     switch (this) {
       case SubscriptionCategory.streaming: return AppColors.catStreaming;
       case SubscriptionCategory.software: return AppColors.catSoftware;
@@ -213,10 +205,41 @@ extension CategoryDisplayHelpers on SubscriptionCategory {
       case SubscriptionCategory.music: return AppColors.catMusic;
       case SubscriptionCategory.news: return AppColors.catNews;
       case SubscriptionCategory.cloud: return AppColors.catCloud;
-      case SubscriptionCategory.utilities: return Colors.teal; // Example
-      case SubscriptionCategory.education: return Colors.indigo; // Example
+      case SubscriptionCategory.utilities: return Colors.teal.shade400; // Example
+      case SubscriptionCategory.education: return Colors.indigo.shade400; // Example
       case SubscriptionCategory.other: return AppColors.catOther;
-      default: return theme.colorScheme.onSurfaceVariant;
+      // No default because all enum values are covered.
+    }
+  }
+
+  String get displayName {
+    // TODO: Localize these
+    switch (this) {
+      case SubscriptionCategory.streaming: return 'Streaming';
+      case SubscriptionCategory.software: return 'Software';
+      case SubscriptionCategory.gaming: return 'Gaming';
+      case SubscriptionCategory.fitness: return 'Fitness';
+      case SubscriptionCategory.music: return 'Music';
+      case SubscriptionCategory.news: return 'News & Mags';
+      case SubscriptionCategory.cloud: return 'Cloud Storage';
+      case SubscriptionCategory.utilities: return 'Utilities';
+      case SubscriptionCategory.education: return 'Education';
+      case SubscriptionCategory.other: return 'Other';
+    }
+  }
+
+  IconData get displayIcon {
+     switch (this) {
+      case SubscriptionCategory.streaming: return Icons.live_tv_rounded;
+      case SubscriptionCategory.software: return Icons.widgets_outlined;
+      case SubscriptionCategory.gaming: return Icons.gamepad_outlined;
+      case SubscriptionCategory.fitness: return Icons.fitness_center_rounded;
+      case SubscriptionCategory.music: return Icons.music_note_rounded;
+      case SubscriptionCategory.news: return Icons.article_outlined;
+      case SubscriptionCategory.cloud: return Icons.cloud_outlined;
+      case SubscriptionCategory.utilities: return Icons.lightbulb_outline_rounded;
+      case SubscriptionCategory.education: return Icons.school_outlined;
+      case SubscriptionCategory.other: return Icons.category_rounded;
     }
   }
 }

@@ -1,9 +1,9 @@
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'settings_model.freezed.dart';
-part 'settings_model.g.dart'; // For JSON serialization
+part 'settings_model.g.dart';
 
 // Custom converter for ThemeMode
 class ThemeModeConverter implements JsonConverter<ThemeMode, String> {
@@ -39,12 +39,11 @@ class LocaleConverter implements JsonConverter<Locale, String> {
   }
 }
 
-
+@JsonSerializable(explicitToJson: true) // Moved here, above @freezed
 @freezed
 class SettingsModel with _$SettingsModel {
   const SettingsModel._(); // For toEntity method
 
-  @JsonSerializable(explicitToJson: true)
   const factory SettingsModel({
     @ThemeModeConverter() required ThemeMode themeMode,
     @LocaleConverter() required Locale locale,

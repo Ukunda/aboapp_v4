@@ -1,31 +1,30 @@
-import 'package:aboapp/core/utils/color_serializer.dart'; // We'll create this utility
+// lib/features/subscriptions/data/models/subscription_model.dart
+import 'package:aboapp/core/utils/color_serializer.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
-import 'package:flutter/material.dart'; // For Color
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'subscription_model.freezed.dart';
-part 'subscription_model.g.dart'; // For JSON serialization
+part 'subscription_model.g.dart';
 
+@JsonSerializable(explicitToJson: true) // Annotation for the class
 @freezed
 class SubscriptionModel with _$SubscriptionModel {
-  const SubscriptionModel._(); // Private constructor for custom methods
+  const SubscriptionModel._();
 
-  // The model fields should mirror the entity, but with JSON annotations.
-  // It can also include fields purely for data storage/transfer that are not in the entity.
-  @JsonSerializable(explicitToJson: true) // Ensure nested objects are serialized
   const factory SubscriptionModel({
     required String id,
     required String name,
     required double price,
-    @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue) // Handle new/unknown enums gracefully
+    @JsonKey(unknownEnumValue: BillingCycle.custom)
     required BillingCycle billingCycle,
     required DateTime nextBillingDate,
-    @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+    @JsonKey(unknownEnumValue: SubscriptionCategory.other)
     required SubscriptionCategory category,
     DateTime? startDate,
     String? description,
     String? logoUrl,
-    @ColorSerializer() Color? color, // Custom serializer for Color
+    @ColorSerializer() Color? color,
     @Default(true) bool isActive,
     @Default(true) bool notificationsEnabled,
     @Default(7) int notificationDaysBefore,
@@ -35,9 +34,8 @@ class SubscriptionModel with _$SubscriptionModel {
   }) = _SubscriptionModel;
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) =>
-      _$SubscriptionModelFromJson(json);
+      _$SubscriptionModelFromJson(json); // Correctly calls generated method
 
-  // Conversion to Domain Entity
   SubscriptionEntity toEntity() {
     return SubscriptionEntity(
       id: id,
@@ -59,7 +57,6 @@ class SubscriptionModel with _$SubscriptionModel {
     );
   }
 
-  // Conversion from Domain Entity
   factory SubscriptionModel.fromEntity(SubscriptionEntity entity) {
     return SubscriptionModel(
       id: entity.id,

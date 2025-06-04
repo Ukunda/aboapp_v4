@@ -2,13 +2,14 @@ import 'package:aboapp/core/routing/app_router.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,8 +28,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    // Load subscriptions when the screen is initialized
-    // Ensure Cubit is available in the widget tree (usually provided higher up)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SubscriptionCubit>().loadSubscriptions();
     });
@@ -75,12 +74,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context); // For localization
 
     return Scaffold(
-      // AppBar is part of the MainContainerScreen now, 
-      // but individual screens can also have their own if needed (e.g. SliverAppBar)
-      // For this setup, assuming HomeScreen might want its own specific AppBar content
       appBar: AppBar(
         title: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -90,26 +85,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   focusNode: _searchFocusNode,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Search subscriptions...', // localizations.translate('search_subscriptions'),
+                    hintText: 'Search subscriptions...', 
                     border: InputBorder.none,
                     isDense: true,
                     hintStyle: theme.appBarTheme.titleTextStyle?.copyWith(
                       fontWeight: FontWeight.normal,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6)
+                      color: theme.colorScheme.onSurface.withOpacity(0.6) // Kept withOpacity
                     )
                   ),
                   style: theme.appBarTheme.titleTextStyle,
                   onChanged: (query) => context.read<SubscriptionCubit>().searchSubscriptions(query),
                 )
-              : Text('My Subscriptions'), // localizations.translate('my_subscriptions')),
+              : const Text('My Subscriptions'), 
         ),
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
             onPressed: () => _toggleSearch(context),
-            tooltip: _isSearching ? 'Close Search' : 'Search', // localizations.translate(_isSearching ? 'close_search' : 'search'),
+            tooltip: _isSearching ? 'Close Search' : 'Search', 
           ),
-          // Actions like navigating to Statistics/Settings are now handled by the MainContainerScreen's BottomAppBar
         ],
       ),
       body: BlocBuilder<SubscriptionCubit, SubscriptionState>(
@@ -143,12 +137,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         child: Center(
                           child: EmptyStateWidget(
                             icon: Icons.search_off_rounded,
-                            // title: localizations.translate('no_subscriptions_found'),
-                            // message: localizations.translate('try_adjusting_filters'),
                             title: 'No Subscriptions Found',
                             message: 'Try adjusting your search or filters.',
                             onRetry: () => context.read<SubscriptionCubit>().clearAllFilters(),
-                            retryText: 'Clear Filters', // localizations.translate('clear_filters'),
+                            retryText: 'Clear Filters', 
                           ),
                         ),
                       )
@@ -163,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 context.pushNamed(
                                   AppRoutes.editSubscription,
                                   pathParameters: {'id': subscription.id},
-                                  extra: subscription, // Pass the entity for immediate display
+                                  extra: subscription, 
                                 );
                               },
                               onLongPress: () => _showSubscriptionActions(context, theme, subscription),
@@ -172,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           childCount: filteredSubs.length,
                         ),
                       ),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)), // For FAB
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)), 
                   ],
                 ),
               );
@@ -180,10 +172,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             error: (message) => Center(
               child: EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: 'Error', // localizations.translate('error_occurred'),
+                title: 'Error', 
                 message: message,
                 onRetry: () => context.read<SubscriptionCubit>().loadSubscriptions(),
-                retryText: 'Retry', // localizations.translate('retry'),
+                retryText: 'Retry', 
               ),
             ),
           );
@@ -207,7 +199,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Sort Dropdown
                 DropdownButtonHideUnderline(
                   child: DropdownButton<SortOption>(
                     value: currentSort ?? SortOption.nextBillingDateAsc,
@@ -216,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     items: SortOption.values.map((option) {
                       return DropdownMenuItem<SortOption>(
                         value: option,
-                        child: Text(option.toString().split('.').last), // TODO: Localize
+                        child: Text(option.toString().split('.').last), 
                       );
                     }).toList(),
                     onChanged: (option) {
@@ -226,11 +217,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     },
                   ),
                 ),
-                // Clear All Filters Button
                 if (currentCat != null || currentBill != null || (_searchController.text.isNotEmpty && _isSearching))
                   TextButton.icon(
                     icon: const Icon(Icons.clear_all_rounded, size: 18),
-                    label: Text('Clear Filters'), // TODO: Localize
+                    label: const Text('Clear Filters'), 
                     onPressed: () => context.read<SubscriptionCubit>().clearAllFilters(),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -240,26 +230,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ],
             ),
             const SizedBox(height: 8),
-            // Category Filter Chips
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                   FilterChip(
-                    label: Text('All Cats'), // TODO: Localize
+                    label: const Text('All Cats'), 
                     selected: currentCat == null,
                     onSelected: (_) => context.read<SubscriptionCubit>().clearCategoryFilter(),
                   ),
                   ...SubscriptionCategory.values.map((category) => Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: FilterChip(
-                          avatar: Icon(category.categoryDisplayIcon, size: 16, color: category == currentCat ? theme.colorScheme.onPrimary : category.categoryDisplayIconColor(theme)),
-                          label: Text(category.categoryDisplayName), // TODO: Localize
+                          avatar: Icon(category.displayIcon, size: 16, color: category == currentCat ? theme.colorScheme.onPrimary : category.categoryDisplayIconColor(theme)),
+                          label: Text(category.displayName), 
                           selected: currentCat == category,
                           onSelected: (selected) {
                             context.read<SubscriptionCubit>().filterByCategory(selected ? category : null);
                           },
-                          selectedColor: category.categoryDisplayIconColor(theme), // Use category color for selected chip
+                          selectedColor: category.categoryDisplayIconColor(theme), 
                           checkmarkColor: theme.colorScheme.onPrimary,
                         ),
                       )),
@@ -267,13 +256,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             ),
             const SizedBox(height: 4),
-            // Billing Cycle Filter Chips
              SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                    FilterChip(
-                    label: Text('All Cycles'), // TODO: Localize
+                    label: const Text('All Cycles'), 
                     selected: currentBill == null,
                     onSelected: (_) => context.read<SubscriptionCubit>().clearBillingCycleFilter(),
                   ),
@@ -298,12 +286,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildLoadingShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-      highlightColor: theme.colorScheme.surfaceVariant.withOpacity(0.1),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3), // Corrected deprecated
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.1), // Corrected deprecated
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // Shimmer for MonthlySpendingCard
           Container(
             height: 130.0,
             decoration: BoxDecoration(
@@ -312,10 +299,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             margin: const EdgeInsets.only(bottom: 16),
           ),
-          // Shimmer for filter controls (simplified)
           Container(height: 40, color: theme.cardColor, margin: const EdgeInsets.only(bottom:8)),
           Container(height: 40, color: theme.cardColor, margin: const EdgeInsets.only(bottom:16)),
-          // Shimmer for SubscriptionCards
           ...List.generate(5, (index) => Container(
             height: 90.0,
             decoration: BoxDecoration(
@@ -336,12 +321,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
       ),
-      builder: (builderContext) { // Use a different context name
+      builder: (builderContext) { 
         return Wrap(
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.edit_rounded),
-              title: Text('Edit Subscription'), // localizations.translate('edit_subscription')),
+              title: const Text('Edit Subscription'), 
               onTap: () {
                 Navigator.pop(builderContext);
                 context.pushNamed(
@@ -353,7 +338,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             ListTile(
               leading: Icon(subscription.isActive ? Icons.pause_circle_outline_rounded : Icons.play_circle_outline_rounded),
-              title: Text(subscription.isActive ? 'Pause Subscription' : 'Resume Subscription'), // localizations.translate(subscription.isActive ? 'pause_subscription' : 'resume_subscription')),
+              title: Text(subscription.isActive ? 'Pause Subscription' : 'Resume Subscription'), 
               onTap: () {
                 Navigator.pop(builderContext);
                 context.read<SubscriptionCubit>().toggleSubscriptionActiveStatus(subscription.id);
@@ -361,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
              ListTile(
               leading: Icon(subscription.notificationsEnabled ? Icons.notifications_off_rounded : Icons.notifications_active_rounded),
-              title: Text(subscription.notificationsEnabled ? 'Disable Notifications' : 'Enable Notifications'), // localizations.translate(subscription.notificationsEnabled ? 'disable_notifications' : 'enable_notifications')),
+              title: Text(subscription.notificationsEnabled ? 'Disable Notifications' : 'Enable Notifications'), 
               onTap: () {
                 Navigator.pop(builderContext);
                 context.read<SubscriptionCubit>().toggleSubscriptionNotification(subscription.id);
@@ -369,27 +354,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             ListTile(
               leading: Icon(Icons.delete_forever_rounded, color: theme.colorScheme.error),
-              title: Text('Delete Subscription', style: TextStyle(color: theme.colorScheme.error)), // localizations.translate('delete_subscription')),
+              title: Text('Delete Subscription', style: TextStyle(color: theme.colorScheme.error)), 
               onTap: () async {
                 Navigator.pop(builderContext);
                 final confirmDelete = await showDialog<bool>(
-                  context: context, // Use original context for dialog
+                  context: context, 
                   builder: (dialogContext) => AlertDialog(
-                    title: Text('Confirm Delete'), // localizations.translate('confirm_delete')),
-                    content: Text('Are you sure you want to delete "${subscription.name}"? This cannot be undone.'), // localizations.translate('delete_confirmation_message', args: {'name': subscription.name})),
+                    title: const Text('Confirm Delete'), 
+                    content: Text('Are you sure you want to delete "${subscription.name}"? This cannot be undone.'), 
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Cancel'), // localizations.translate('cancel')),
+                        child: const Text('Cancel'), 
                         onPressed: () => Navigator.of(dialogContext).pop(false),
                       ),
                       TextButton(
-                        child: Text('Delete', style: TextStyle(color: theme.colorScheme.error)), // localizations.translate('delete')),
+                        child: Text('Delete', style: TextStyle(color: theme.colorScheme.error)), 
                         onPressed: () => Navigator.of(dialogContext).pop(true),
                       ),
                     ],
                   ),
                 );
                 if (confirmDelete == true) {
+                   if (!mounted) return; // Guard context use
                   context.read<SubscriptionCubit>().deleteSubscription(subscription.id);
                 }
               },
@@ -400,12 +386,4 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 }
-// Helper extension for category colors on icons within chips
-extension CategoryDisplayExtension on SubscriptionCategory {
-  Color categoryDisplayIconColor(ThemeData theme) {
-    // Use a color that contrasts well with the chip's default background
-    // This is a simple example; you might need more sophisticated logic
-    // or define these in AppColors alongside categoryColor.
-    return theme.brightness == Brightness.light ? AppColors.onSurfaceVariantLight : AppColors.onSurfaceVariantDark;
-  }
-}
+// Removed duplicate CategoryDisplayExtension, use the one in subscription_card_widget.dart

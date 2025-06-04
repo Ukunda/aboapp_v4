@@ -4,17 +4,12 @@ import 'package:aboapp/features/subscriptions/domain/entities/subscription_entit
 import 'package:aboapp/features/subscriptions/domain/repositories/subscription_repository.dart';
 import 'package:injectable/injectable.dart';
 
-// For a real app, you might also have a SubscriptionRemoteDataSource if syncing with a backend.
-// This implementation only uses the local data source.
-
 @LazySingleton(as: SubscriptionRepository)
 class SubscriptionRepositoryImpl implements SubscriptionRepository {
   final SubscriptionLocalDataSource localDataSource;
-  // final NetworkInfo networkInfo; // If you had remote data source
 
   SubscriptionRepositoryImpl({
     required this.localDataSource,
-    // required this.networkInfo,
   });
 
   @override
@@ -23,22 +18,18 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       final localSubscriptions = await localDataSource.getAllSubscriptions();
       return localSubscriptions.map((model) => model.toEntity()).toList();
     } catch (e) {
-      // Handle exceptions from local data source, e.g., parsing errors
-      // You might want to return an empty list or a custom Failure object
-      print('Error fetching subscriptions: $e'); // Log error
-      throw Exception('Could not load subscriptions.'); // Re-throw as a domain-level error
+      // print('Error fetching subscriptions: $e'); // Avoid print
+      throw Exception('Could not load subscriptions.'); 
     }
   }
 
   @override
   Future<SubscriptionEntity?> getSubscriptionById(String id) async {
-    // Local data source might not have a direct getById if it always loads all.
-    // If performance becomes an issue with many subscriptions, optimize localDataSource.
     final allSubscriptions = await getAllSubscriptions();
     try {
       return allSubscriptions.firstWhere((sub) => sub.id == id);
     } catch (e) {
-      return null; // Not found
+      return null; 
     }
   }
 

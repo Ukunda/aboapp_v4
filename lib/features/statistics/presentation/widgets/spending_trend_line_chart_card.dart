@@ -1,4 +1,4 @@
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; // For MonthlySpendingTrendData
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -35,7 +35,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20), // Adjust right/bottom for chart labels
+        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -51,10 +51,10 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear / 4 : 50).clamp(10.0, double.infinity), // Dynamic interval
+                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear / 4 : 50.0).clamp(10.0, double.infinity), // Ensure double
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.dividerColor.withOpacity(0.5),
+                        color: theme.dividerColor.withOpacity(0.5), // Kept withOpacity for dynamic non-const color
                         strokeWidth: 0.5,
                       );
                     },
@@ -67,7 +67,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: 2, // Show every other month for less clutter
+                        interval: 2, 
                         getTitlesWidget: (value, meta) {
                           // TODO: Localize month abbreviations
                           const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -88,7 +88,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         showTitles: true,
                         reservedSize: 48,
                         getTitlesWidget: (value, meta) {
-                          if (value == meta.max || value == meta.min) return const Text(''); // Avoid clutter at top/bottom
+                          if (value == meta.max || value == meta.min) return const Text(''); 
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             space: 4.0,
@@ -102,7 +102,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   minX: 1,
                   maxX: 12,
                   minY: 0,
-                  maxY: spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear * 1.1 : 100, // Add some padding
+                  maxY: spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear * 1.1 : 100, 
                   lineBarsData: [
                     LineChartBarData(
                       spots: spendingTrendData.spots,
@@ -119,15 +119,15 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                                 radius: 4,
                                 color: Color.lerp(theme.colorScheme.primary, theme.colorScheme.secondary, percent / 100) ?? theme.colorScheme.primary,
                                 strokeWidth: 1.5,
-                                strokeColor: theme.cardColor, // Contrast with line
+                                strokeColor: theme.cardColor, 
                         ),
                       ),
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.2),
-                            theme.colorScheme.secondary.withOpacity(0.05),
+                            theme.colorScheme.primary.withOpacity(0.2),    // Kept withOpacity
+                            theme.colorScheme.secondary.withOpacity(0.05), // Kept withOpacity
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -138,7 +138,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   lineTouchData: LineTouchData(
                     handleBuiltInTouches: true,
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: theme.colorScheme.surfaceVariant,
+                      getTooltipColor: (spot) => theme.colorScheme.surfaceContainerHighest, // Corrected: was tooltipBgColor
                       getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                         return touchedBarSpots.map((barSpot) {
                           final flSpot = barSpot;
