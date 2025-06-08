@@ -1,0 +1,10 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # This is the key setting.
+          # It tells the generator to NOT create the top-level helper functions
+          # like _$ModelFromJson, because Freezed will handle that part.
+          create_to_json: false
+          create_factory: false

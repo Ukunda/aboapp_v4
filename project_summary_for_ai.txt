@@ -1,6 +1,6 @@
 ﻿============================================================
-  PROJECT SUMMARY - Relevant files for project: C:\Hobby\aboapp_v4\aboapp_v4
-  Generated: 2025-06-04 10:24:43
+  PROJECT SUMMARY - Relevant files for project: D:\Hobbies\Projects\aboappv4\aboapp_v4-main\aboapp_v4
+  Generated: 2025-06-08 11:43:59
 ============================================================
 
 ===== FILE: analysis_options.yaml =====
@@ -1365,20 +1365,17 @@ import 'package:flutter/services.dart';
 
 class AppLocalizations {
   final Locale locale;
-  Map<String, String> _localizedStrings = {}; // Initialize with an empty map
+  Map<String, String> _localizedStrings = {};
 
   AppLocalizations(this.locale);
 
-  // Helper method to keep the boilerplate Flutter.
   static AppLocalizations? of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  // Static member to have a simple access to the delegate from MaterialApp
   static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   Future<bool> load() async {
-    // Load the language JSON file from the "assets/l10n" folder
     String jsonString = await rootBundle.loadString('assets/l10n/${locale.languageCode}.json');
     Map<String, dynamic> jsonMap = json.decode(jsonString);
 
@@ -1389,13 +1386,12 @@ class AppLocalizations {
     return true;
   }
 
-  // This method will be called from every widget which needs a localized text
   String translate(String key, {Map<String, String>? args}) {
     String? translation = _localizedStrings[key];
     if (translation == null) {
       // Fallback or error handling
-      print('Localization Error: Key "$key" not found for locale "${locale.languageCode}"');
-      return key; // Return the key itself as a fallback
+      // print('Localization Error: Key "$key" not found for locale "${locale.languageCode}"'); // Avoid print
+      return key; 
     }
 
     if (args != null && args.isNotEmpty) {
@@ -1408,18 +1404,15 @@ class AppLocalizations {
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
-  // This delegate never rebuilds (it's stateless), so return false.
   const _AppLocalizationsDelegate();
 
   @override
   bool isSupported(Locale locale) {
-    // Include all of your supported language codes here
     return ['en', 'de'].contains(locale.languageCode);
   }
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
-    // AppLocalizations class is where the JSON loading actually runs
     AppLocalizations localizations = AppLocalizations(locale);
     await localizations.load();
     return localizations;
@@ -1433,38 +1426,33 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 ===== PATH: lib/core/routing/app_router.dart =====
 
 import 'package:aboapp/features/onboarding/presentation/screens/onboarding_screen.dart';
-import 'package:aboapp/features/settings/presentation/screens/settings_screen.dart';
+import 'package:aboapp/features/settings/presentation/cubit/screens/settings_screen.dart'; // Corrected path
 import 'package:aboapp/features/statistics/presentation/screens/statistics_screen.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart';
 import 'package:aboapp/features/subscriptions/presentation/screens/home_screen.dart';
-import 'package:aboapp/main_container_screen.dart'; // Your screen that holds PageView and BottomNav/Indicator
+import 'package:aboapp/main_container_screen.dart'; 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Part for GoRouterBuilder (if using type-safe routes later)
-// part 'app_router.g.dart'; // Run build_runner if you create this
-
-// Define route paths as constants for easy reference and to avoid typos
 abstract class AppRoutes {
   static const String onboarding = '/onboarding';
-  static const String home = '/home'; // Base for main content
-  static const String subscriptions = 'subscriptions'; // Relative to home or as top-level
-  static const String statistics = 'statistics';   // Relative to home
-  static const String settings = 'settings';     // Relative to home
-  static const String addSubscription = 'add'; // Relative to subscriptions
-  static const String editSubscription = 'edit/:id'; // Relative to subscriptions, with ID param
+  static const String home = '/home'; 
+  static const String subscriptions = 'subscriptions'; 
+  static const String statistics = 'statistics';   
+  static const String settings = 'settings';     
+  static const String addSubscription = 'add'; 
+  static const String editSubscription = 'edit/:id'; 
 }
 
-@singleton // Register AppRouter with GetIt
+@singleton 
 class AppRouter {
-  final SharedPreferences _sharedPreferences; // To check for onboarding status
+  final SharedPreferences _sharedPreferences; 
 
   AppRouter(this._sharedPreferences);
 
-  // ShellRoute for persistent navigation (like BottomNavigationBar)
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'ShellNavigator');
 
@@ -1475,49 +1463,45 @@ class AppRouter {
     return GoRouter(
       navigatorKey: _rootNavigatorKey,
       initialLocation: onboardingComplete ? AppRoutes.home : AppRoutes.onboarding,
-      debugLogDiagnostics: true, // Helpful for debugging routes
+      debugLogDiagnostics: true, 
       routes: [
         GoRoute(
           path: AppRoutes.onboarding,
           name: AppRoutes.onboarding,
           builder: (context, state) => const OnboardingScreen(),
         ),
-        // ShellRoute for main app sections with persistent navigation
         ShellRoute(
           navigatorKey: _shellNavigatorKey,
           builder: (context, state, child) {
-            // MainContainerScreen will contain the PageView and BottomAppBar/Indicator
             return MainContainerScreen(location: state.matchedLocation, child: child);
           },
           routes: [
             GoRoute(
-              path: AppRoutes.home, // This will be the base for the shell
-              name: AppRoutes.home, // Can also be a more generic name like 'main'
+              path: AppRoutes.home, 
+              name: AppRoutes.home, 
               pageBuilder: (context, state) => const NoTransitionPage(
-                child: HomeScreen(), // Default screen for the shell
+                child: HomeScreen(), 
               ),
               routes: [
                 GoRoute(
-                  path: AppRoutes.subscriptions, // Example: /home/subscriptions
+                  path: AppRoutes.subscriptions, 
                   name: AppRoutes.subscriptions,
-                   parentNavigatorKey: _rootNavigatorKey, // Use root if you want it to cover the shell
-                  builder: (context, state) => const HomeScreen(), // Or a dedicated SubscriptionsScreen if different from Home
+                   parentNavigatorKey: _rootNavigatorKey, 
+                  builder: (context, state) => const HomeScreen(), 
                 ),
                 GoRoute(
-                  path: AppRoutes.addSubscription, // Example: /home/subscriptions/add
+                  path: AppRoutes.addSubscription, 
                   name: AppRoutes.addSubscription,
                   parentNavigatorKey: _rootNavigatorKey,
                   builder: (context, state) => const AddEditSubscriptionScreen(),
                 ),
                 GoRoute(
-                  path: AppRoutes.editSubscription, // Example: /home/subscriptions/edit/:id
+                  path: AppRoutes.editSubscription, 
                   name: AppRoutes.editSubscription,
                   parentNavigatorKey: _rootNavigatorKey,
                   builder: (context, state) {
                     final subscription = state.extra as SubscriptionEntity?;
                     final subscriptionId = state.pathParameters['id'];
-                    // In a real app, you'd fetch the subscription by ID if not passed in extra
-                    // For this refactor, assuming it might be passed via `extra` or fetched in the screen
                     return AddEditSubscriptionScreen(
                       subscriptionId: subscriptionId,
                       subscription: subscription,
@@ -1525,28 +1509,24 @@ class AppRouter {
                   },
                 ),
                  GoRoute(
-                  path: AppRoutes.statistics, // Example: /home/statistics
+                  path: AppRoutes.statistics, 
                   name: AppRoutes.statistics,
-                  // parentNavigatorKey: _shellNavigatorKey, // Stays within shell
                   pageBuilder: (context, state) => const NoTransitionPage(
                      child: StatisticsScreen(),
                   )
                 ),
                 GoRoute(
-                  path: AppRoutes.settings, // Example: /home/settings
+                  path: AppRoutes.settings, 
                   name: AppRoutes.settings,
-                  // parentNavigatorKey: _shellNavigatorKey, // Stays within shell
                    pageBuilder: (context, state) => const NoTransitionPage(
-                     child: SettingsScreen(),
+                     child: SettingsScreen(), // Removed const, builder will handle it
                   )
                 ),
               ]
             ),
           ],
         ),
-        // Add other top-level routes here if needed (e.g., login, profile outside the main shell)
       ],
-      // Optional: Error handler for unknown routes
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(title: const Text('Page Not Found')),
         body: Center(child: Text('Error: ${state.error}')),
@@ -1617,8 +1597,6 @@ import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_colors.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
 
-// This class is not meant to be instantiated.
-// It provides static ThemeData configurations for light and dark themes.
 abstract class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
@@ -1631,13 +1609,13 @@ abstract class AppTheme {
         brightness: Brightness.light,
         primary: AppColors.primary,
         onPrimary: AppColors.onPrimary,
-        primaryContainer: AppColors.primaryLight, // Or a lighter variant
-        onPrimaryContainer: AppColors.primaryDark, // Text on primary container
-        secondary: AppColors.accent, // Using accent as secondary
+        primaryContainer: AppColors.primaryLight,
+        onPrimaryContainer: AppColors.primaryDark,
+        secondary: AppColors.accent,
         onSecondary: AppColors.onAccent,
-        secondaryContainer: Color(0xFFFDE2EC), // Lighter accent
-        onSecondaryContainer: Color(0xFF7C2454), // Text on accent container
-        tertiary: AppColors.info, // Example, can be another color
+        secondaryContainer: Color(0xFFFDE2EC),
+        onSecondaryContainer: Color(0xFF7C2454),
+        tertiary: AppColors.info,
         onTertiary: AppColors.onInfo,
         tertiaryContainer: Color(0xFFD8E6FD),
         onTertiaryContainer: Color(0xFF0F4C81),
@@ -1645,34 +1623,32 @@ abstract class AppTheme {
         onError: AppColors.onError,
         errorContainer: Color(0xFFFFDAD6),
         onErrorContainer: Color(0xFF410002),
-        background: AppColors.backgroundLight,
-        onBackground: AppColors.onSurfaceLight,
-        surface: AppColors.surfaceLight,
-        onSurface: AppColors.onSurfaceLight,
-        surfaceVariant: AppColors.borderLight, // For cards, dividers, etc.
+        surface: AppColors.backgroundLight, // Was background
+        onSurface: AppColors.onSurfaceLight, // Was onBackground
+        surfaceContainerHighest: AppColors.borderLight, // Was surfaceVariant
         onSurfaceVariant: AppColors.onSurfaceVariantLight,
         outline: AppColors.borderLight,
-        outlineVariant: Color(0xFFCAC4D0), // Slightly darker outline
-        shadow: Colors.black.withOpacity(0.1),
-        scrim: Colors.black.withOpacity(0.3),
+        outlineVariant: Color(0xFFCAC4D0),
+        shadow: Color(0x1A000000), // Colors.black.withOpacity(0.1)
+        scrim: Color(0x4D000000),  // Colors.black.withOpacity(0.3)
         inverseSurface: AppColors.surfaceDark,
         onInverseSurface: AppColors.onSurfaceDark,
         inversePrimary: AppColors.primaryDark,
-        surfaceTint: AppColors.primary, // Color used for elevation overlays
+        surfaceTint: AppColors.primary,
       ),
       textTheme: _buildTextTheme(base: ThemeData.light().textTheme, onSurfaceColor: AppColors.onSurfaceLight),
       appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: AppColors.backgroundLight, // Or surfaceLight
-        foregroundColor: AppColors.onSurfaceLight, // Icon and title color
-        systemOverlayStyle: SystemUiOverlayStyle.dark, // For light status bar icons
-        titleTextStyle: AppTypography.titleLarge, // Use a specific style
+        backgroundColor: AppColors.backgroundLight,
+        foregroundColor: AppColors.onSurfaceLight,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle: AppTypography.titleLarge,
         iconTheme: IconThemeData(color: AppColors.onSurfaceLight),
       ),
       cardTheme: CardTheme(
         elevation: 1.0,
         color: AppColors.surfaceLight,
-        surfaceTintColor: Colors.transparent, // To avoid tinting based on elevation overlay
+        surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
           side: const BorderSide(color: AppColors.borderLight, width: 0.5),
@@ -1698,7 +1674,7 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceLight.withOpacity(0.5), // Slightly transparent fill
+        fillColor: const Color(0x80FFFFFF), // AppColors.surfaceLight.withOpacity(0.5)
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -1721,17 +1697,17 @@ abstract class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 2.0),
         ),
         labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantLight),
-        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)),
+        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)), // Kept withOpacity as it's not const
         floatingLabelStyle: AppTypography.bodySmall.copyWith(color: AppColors.primary),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.borderLight,
         selectedColor: AppColors.primary,
         labelStyle: AppTypography.labelMedium.copyWith(color: AppColors.onSurfaceVariantLight),
-        secondaryLabelStyle: AppTypography.labelMedium.copyWith(color: AppColors.onPrimary), // For selected chip
+        secondaryLabelStyle: AppTypography.labelMedium.copyWith(color: AppColors.onPrimary),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        iconTheme: IconThemeData(color: AppColors.onSurfaceVariantLight, size: 18),
+        iconTheme: const IconThemeData(color: AppColors.onSurfaceVariantLight, size: 18),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
@@ -1744,9 +1720,8 @@ abstract class AppTheme {
         unselectedItemColor: AppColors.onSurfaceVariantLight,
         selectedLabelStyle: AppTypography.labelSmall,
         unselectedLabelStyle: AppTypography.labelSmall,
-        elevation: 2.0, // Subtle elevation
+        elevation: 2.0,
       ),
-      // Add other theme properties as needed
     );
   }
 
@@ -1755,36 +1730,34 @@ abstract class AppTheme {
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: AppTypography.fontFamily,
-      primaryColor: AppColors.primary, // Or a slightly lighter primary for dark theme
+      primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.backgroundDark,
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,
-        primary: AppColors.primaryLight, // Lighter primary for dark theme
-        onPrimary: AppColors.onPrimary, // Often black or very dark gray on light primary
+        primary: AppColors.primaryLight,
+        onPrimary: AppColors.onPrimary,
         primaryContainer: AppColors.primaryDark,
         onPrimaryContainer: AppColors.primaryLight,
-        secondary: AppColors.accent, // Lighter accent
+        secondary: AppColors.accent,
         onSecondary: AppColors.onAccent,
-        secondaryContainer: Color(0xFF7C2454), // Darker accent container
+        secondaryContainer: Color(0xFF7C2454),
         onSecondaryContainer: Color(0xFFFDE2EC),
-        tertiary: AppColors.info, // Lighter info
+        tertiary: AppColors.info,
         onTertiary: AppColors.onInfo,
         tertiaryContainer: Color(0xFF0F4C81),
         onTertiaryContainer: Color(0xFFD8E6FD),
-        error: AppColors.error, // Often a lighter red
+        error: AppColors.error,
         onError: AppColors.onError,
-        errorContainer: Color(0xFF93000A), // Dark error container
+        errorContainer: Color(0xFF93000A),
         onErrorContainer: Color(0xFFFFDAD6),
-        background: AppColors.backgroundDark,
-        onBackground: AppColors.onSurfaceDark,
-        surface: AppColors.surfaceDark,
-        onSurface: AppColors.onSurfaceDark,
-        surfaceVariant: AppColors.borderDark,
+        surface: AppColors.backgroundDark, // Was background
+        onSurface: AppColors.onSurfaceDark, // Was onBackground
+        surfaceContainerHighest: AppColors.borderDark, // Was surfaceVariant
         onSurfaceVariant: AppColors.onSurfaceVariantDark,
         outline: AppColors.borderDark,
         outlineVariant: Color(0xFF49454F),
-        shadow: Colors.black.withOpacity(0.2),
-        scrim: Colors.black.withOpacity(0.4),
+        shadow: Color(0x33000000), // Colors.black.withOpacity(0.2)
+        scrim: Color(0x66000000),  // Colors.black.withOpacity(0.4)
         inverseSurface: AppColors.surfaceLight,
         onInverseSurface: AppColors.onSurfaceLight,
         inversePrimary: AppColors.primary,
@@ -1793,9 +1766,9 @@ abstract class AppTheme {
       textTheme: _buildTextTheme(base: ThemeData.dark().textTheme, onSurfaceColor: AppColors.onSurfaceDark),
       appBarTheme: const AppBarTheme(
         elevation: 0,
-        backgroundColor: AppColors.backgroundDark, // Or surfaceDark
+        backgroundColor: AppColors.backgroundDark,
         foregroundColor: AppColors.onSurfaceDark,
-        systemOverlayStyle: SystemUiOverlayStyle.light, // For dark status bar icons
+        systemOverlayStyle: SystemUiOverlayStyle.light,
         titleTextStyle: AppTypography.titleLarge,
         iconTheme: IconThemeData(color: AppColors.onSurfaceDark),
       ),
@@ -1812,7 +1785,7 @@ abstract class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryLight,
-          foregroundColor: AppColors.primaryDark, // Good contrast
+          foregroundColor: AppColors.primaryDark,
           textStyle: AppTypography.labelLarge,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24.0)),
@@ -1828,7 +1801,7 @@ abstract class AppTheme {
       ),
        inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceDark.withOpacity(0.5),
+        fillColor: const Color(0x801F2937), // AppColors.surfaceDark.withOpacity(0.5)
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12.0),
@@ -1851,7 +1824,7 @@ abstract class AppTheme {
           borderSide: const BorderSide(color: AppColors.error, width: 2.0),
         ),
         labelStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantDark),
-        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)),
+        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)), // Kept withOpacity
         floatingLabelStyle: AppTypography.bodySmall.copyWith(color: AppColors.primaryLight),
       ),
       chipTheme: ChipThemeData(
@@ -1861,7 +1834,7 @@ abstract class AppTheme {
         secondaryLabelStyle: AppTypography.labelMedium.copyWith(color: AppColors.primaryDark),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-        iconTheme: IconThemeData(color: AppColors.onSurfaceVariantDark, size: 18),
+        iconTheme: const IconThemeData(color: AppColors.onSurfaceVariantDark, size: 18),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primaryLight,
@@ -1876,11 +1849,9 @@ abstract class AppTheme {
         unselectedLabelStyle: AppTypography.labelSmall,
         elevation: 2.0,
       ),
-      // Add other theme properties as needed
     );
   }
 
-  // Helper to build TextTheme with consistent font family and color application
   static TextTheme _buildTextTheme({required TextTheme base, required Color onSurfaceColor}) {
     return base.copyWith(
       displayLarge: AppTypography.displayLarge.copyWith(color: onSurfaceColor),
@@ -1905,9 +1876,8 @@ abstract class AppTheme {
   }
 }
 
-// Optional: Theme Extension for easy access to semantic colors if not using ColorScheme directly
 extension SemanticThemeColors on ThemeData {
-  Color get success => brightness == Brightness.light ? AppColors.success : AppColors.success; // Or a lighter/darker variant for dark theme
+  Color get success => brightness == Brightness.light ? AppColors.success : AppColors.success; 
   Color get onSuccess => brightness == Brightness.light ? AppColors.onSuccess : AppColors.onSuccess;
   Color get warning => brightness == Brightness.light ? AppColors.warning : AppColors.warning;
   Color get onWarning => brightness == Brightness.light ? AppColors.onWarning : AppColors.onWarning;
@@ -2066,24 +2036,19 @@ class ColorSerializer implements JsonConverter<Color?, int?> {
 ===== PATH: lib/core/utils/currency_formatter.dart =====
 
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart'; // For Locale, though intl handles most
+import 'package:flutter/material.dart'; // For Locale
 
 class CurrencyFormatter {
-  // Formats a double value into a currency string based on currencyCode and locale.
   static String format(
     double amount, {
-    required String currencyCode, // e.g., "USD", "EUR"
-    Locale? locale,             // For locale-specific formatting rules (e.g., decimal separators)
-    int? decimalDigits,         // Override default decimal digits for the currency
+    required String currencyCode, 
+    Locale? locale,             
+    int? decimalDigits,         
   }) {
-    // Determine the locale string for NumberFormat.
-    // If a specific locale is provided, use it. Otherwise, try to infer from currency or default.
     String localeString;
     if (locale != null) {
       localeString = locale.toLanguageTag().replaceAll('-', '_');
     } else {
-      // Basic inference for common currencies if no locale is passed.
-      // For a robust solution, a larger mapping or relying on device locale might be needed.
       switch (currencyCode.toUpperCase()) {
         case 'USD':
         case 'CAD':
@@ -2091,7 +2056,7 @@ class CurrencyFormatter {
           localeString = 'en_US';
           break;
         case 'EUR':
-          localeString = 'de_DE'; // Or 'fr_FR', 'es_ES' etc. Defaulting to one.
+          localeString = 'de_DE'; 
           break;
         case 'GBP':
           localeString = 'en_GB';
@@ -2103,47 +2068,40 @@ class CurrencyFormatter {
           localeString = 'de_CH';
           break;
         default:
-          localeString = 'en_US'; // A general fallback
+          localeString = 'en_US'; 
       }
     }
 
     try {
       final format = NumberFormat.currency(
         locale: localeString,
-        symbol: getCurrencySymbol(currencyCode), // Use our helper for the symbol
+        symbol: getCurrencySymbol(currencyCode), 
         decimalDigits: decimalDigits ?? _getDefaultDecimalDigits(currencyCode),
       );
       return format.format(amount);
     } catch (e) {
-      // Fallback if NumberFormat fails for some reason (e.g., unsupported locale for currency)
-      print("Currency formatting error for $currencyCode with locale $localeString: $e");
+      // print("Currency formatting error for $currencyCode with locale $localeString: $e"); // Avoid print
       return '${getCurrencySymbol(currencyCode)}${amount.toStringAsFixed(decimalDigits ?? 2)}';
     }
   }
 
-  // Provides the currency symbol for a given code.
   static String getCurrencySymbol(String currencyCode) {
-    // This is a simplified map. For comprehensive coverage, consider a dedicated library
-    // or a more extensive map.
     final Map<String, String> symbols = {
       'USD': '\$',
       'EUR': '€',
       'GBP': '£',
       'JPY': '¥',
-      'CHF': 'CHF', // Swiss Franc often uses the code itself as symbol
+      'CHF': 'CHF', 
       'CAD': 'CA\$',
       'AUD': 'A\$',
-      // Add more as needed
     };
-    return symbols[currencyCode.toUpperCase()] ?? currencyCode; // Fallback to code if symbol not found
+    return symbols[currencyCode.toUpperCase()] ?? currencyCode;
   }
 
-  // Provides default decimal digits for common currencies.
   static int _getDefaultDecimalDigits(String currencyCode) {
     switch (currencyCode.toUpperCase()) {
       case 'JPY':
-        return 0; // Japanese Yen typically has no decimals
-      // Most other currencies
+        return 0; 
       case 'USD':
       case 'EUR':
       case 'GBP':
@@ -2155,20 +2113,11 @@ class CurrencyFormatter {
     }
   }
 
-  // Parses a formatted currency string back to a double.
-  // This can be complex due to different formatting. This is a simplified version.
   static double? tryParse(String formattedAmount) {
-    // Remove common currency symbols and grouping separators.
-    // This is a very basic approach and might not cover all locales/formats.
     String cleaned = formattedAmount
-        .replaceAll(RegExp(r'[$\€£¥CHF]'), '') // Common symbols
-        .replaceAll(',', '') // Remove thousands separators (assuming '.' is decimal)
+        .replaceAll(RegExp(r'[$\€£¥CHF]'), '') 
+        .replaceAll(',', '') 
         .trim();
-    
-    // If your app uses specific locales where '.' is a thousands separator and ',' is decimal,
-    // you'll need more sophisticated parsing based on the current locale.
-    // For example, for German locale: cleaned = cleaned.replaceAll('.', '').replaceAll(',', '.');
-    
     return double.tryParse(cleaned);
   }
 }
@@ -2177,44 +2126,37 @@ class CurrencyFormatter {
 ===== PATH: lib/core/utils/date_formatter.dart =====
 
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart'; // For Locale, though intl handles most locale-specific formatting
+import 'package:flutter/material.dart'; // For Locale
 
 class DateFormatter {
-  // Default date format, e.g., "15 Oct, 2023"
   static String formatDate(DateTime? date, {Locale? locale}) {
-    if (date == null) return 'N/A'; // Or handle as an error, or return empty string
-    // The locale string for DateFormat can be like 'en_US', 'de_DE'
-    final String localeString = locale?.toLanguageTag().replaceAll('-', '_') ?? 'en_US'; // Default if no locale
+    if (date == null) return 'N/A'; 
+    final String localeString = locale?.toLanguageTag().replaceAll('-', '_') ?? 'en_US'; 
     return DateFormat('dd MMM, yyyy', localeString).format(date);
   }
 
-  // Short date format, e.g., "10/15/2023" (US) or "15.10.2023" (DE)
   static String formatShortDate(DateTime? date, {Locale? locale}) {
     if (date == null) return 'N/A';
     final String localeString = locale?.toLanguageTag().replaceAll('-', '_') ?? 'en_US';
-    return DateFormat.yMd(localeString).format(date); // yMd is locale-aware
+    return DateFormat.yMd(localeString).format(date); 
   }
   
-  // Month and Year, e.g., "October 2023"
   static String formatMonthYear(DateTime? date, {Locale? locale}) {
     if (date == null) return 'N/A';
     final String localeString = locale?.toLanguageTag().replaceAll('-', '_') ?? 'en_US';
-    return DateFormat.yMMMM(localeString).format(date); // yMMMM for full month name and year
+    return DateFormat.yMMMM(localeString).format(date); 
   }
 
-  // Relative date for "days until" or "days ago" logic
-  // This is a simplified version. For more complex relative time, consider a package like `timeago`.
   static String formatDaysUntil(DateTime date, {Locale? locale, String? overdueText, String? todayText, String? tomorrowText, String? daysAgoText, String? daysFutureText}) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final targetDay = DateTime(date.year, date.month, date.day);
     final differenceInDays = targetDay.difference(today).inDays;
 
-    // TODO: Use AppLocalizations for these default texts
-    final currentOverdueText = overdueText ?? '{days} days ago';
+    // final String currentOverdueText = overdueText ?? '{days} days ago'; // Variable was unused
     final currentTodayText = todayText ?? 'Today';
     final currentTomorrowText = tomorrowText ?? 'Tomorrow';
-    final currentDaysAgoText = daysAgoText ?? '{days} days ago'; // For past dates beyond yesterday
+    final currentDaysAgoText = daysAgoText ?? '{days} days ago'; 
     final currentDaysFutureText = daysFutureText ?? 'in {days} days';
 
     if (differenceInDays < 0) {
@@ -2228,18 +2170,67 @@ class DateFormatter {
     }
   }
 
-  // Time format, e.g., "10:30 AM"
   static String formatTime(DateTime? time, {Locale? locale}) {
     if (time == null) return 'N/A';
     final String localeString = locale?.toLanguageTag().replaceAll('-', '_') ?? 'en_US';
-    return DateFormat.jm(localeString).format(time); // jm is locale-aware for time (e.g., 10:30 AM / 10:30 Uhr)
+    return DateFormat.jm(localeString).format(time); 
   }
 
-  // Full date and time
   static String formatDateTime(DateTime? dateTime, {Locale? locale}) {
     if (dateTime == null) return 'N/A';
     final String localeString = locale?.toLanguageTag().replaceAll('-', '_') ?? 'en_US';
-    return DateFormat.yMMMMEEEEd(localeString).add_jm().format(dateTime); // Example: "Wed, Oct 15, 2023, 10:30 AM"
+    return DateFormat.yMMMMEEEEd(localeString).add_jm().format(dateTime); 
+  }
+}
+
+===== FILE: haptic_feedback.dart =====
+===== PATH: lib/core/utils/haptic_feedback.dart =====
+
+import 'package:flutter/services.dart';
+
+/// A utility class for providing haptic feedback.
+/// This wraps the standard Flutter HapticFeedback methods for consistent use.
+class HapticFeedback {
+  HapticFeedback._(); // Private constructor to prevent instantiation.
+
+  /// Provides a light haptic feedback.
+  /// Typically used for minor interactions or successes.
+  static Future<void> lightImpact() async {
+    await SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate', 'HapticFeedbackType.lightImpact');
+    // Or using the direct method if you prefer and it suits your Flutter version's direct support:
+    // await SystemSound.play(SystemSoundType.click); // This is more of a sound, but often used similarly
+    // await HapticFeedback.lightImpact(); // Use this if your Flutter version has it directly and it's reliable.
+  }
+
+  /// Provides a medium haptic feedback.
+  /// Suitable for more significant actions or confirmations.
+  static Future<void> mediumImpact() async {
+    await SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate', 'HapticFeedbackType.mediumImpact');
+    // await HapticFeedback.mediumImpact();
+  }
+
+  /// Provides a heavy haptic feedback.
+  /// Best reserved for critical actions or errors.
+  static Future<void> heavyImpact() async {
+    await SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate', 'HapticFeedbackType.heavyImpact');
+    // await HapticFeedback.heavyImpact();
+  }
+
+  /// Provides a haptic feedback for a selection change.
+  /// Commonly used in pickers or when an item selection changes.
+  static Future<void> selectionClick() async {
+    await SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate', 'HapticFeedbackType.selectionClick');
+    // await HapticFeedback.selectionClick();
+  }
+
+  /// Provides a warning haptic feedback pattern (not standard on all platforms).
+  /// If specific warning patterns are needed, they might require platform-specific implementations
+  /// or a plugin that offers more advanced haptics.
+  /// For a simple alternative, you might use heavyImpact or a custom short vibration sequence.
+  static Future<void> warningImpact() async {
+    // iOS often has specific notification feedback types (success, warning, error)
+    // Android is more generic. Heavy impact can serve as a general strong feedback.
+    await heavyImpact(); 
   }
 }
 
@@ -2252,8 +2243,7 @@ import 'package:aboapp/features/onboarding/presentation/widgets/page_indicator_w
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:aboapp/core/di/injection.dart'; // For GetIt to access SharedPreferences
-// import 'package:aboapp/core/localization/app_localizations.dart'; // When implemented
+import 'package:aboapp/core/di/injection.dart'; 
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -2280,39 +2270,44 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPageIndex = 0;
 
-  // Define onboarding page data
-  // Keys would be used with AppLocalizations.translate(key)
   late final List<_OnboardingScreenData> _onboardingPages;
 
 
   @override
   void initState() {
     super.initState();
-    // Initialize _onboardingPages here because it might depend on Theme or context for colors
-    // For simplicity, defining colors directly for now.
-    // In a real app, these colors might come from AppColors or theme.
-    _onboardingPages = [
+    // Initialized here because context is needed for Theme.of(context)
+    // Deferring full context-dependent initialization to build or didChangeDependencies might be safer for Theme access
+    // For now, direct color usage is replaced for simplicity for this fix.
+    // It's better to initialize this in didChangeDependencies if theme colors are used.
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize _onboardingPages here if they depend on Theme.of(context)
+     _onboardingPages = [
       _OnboardingScreenData(
-        titleKey: 'onboarding_page1_title', // "Welcome to AboApp!"
-        descriptionKey: 'onboarding_page1_desc', // "Track your subscriptions and save money effortlessly."
+        titleKey: 'onboarding_page1_title',
+        descriptionKey: 'onboarding_page1_desc',
         iconData: Icons.account_balance_wallet_outlined,
-        iconColor: Theme.of(context).colorScheme.primary, // Use theme color
+        iconColor: Theme.of(context).colorScheme.primary, 
       ),
       _OnboardingScreenData(
-        titleKey: 'onboarding_page2_title', // "Add Subscriptions Easily"
-        descriptionKey: 'onboarding_page2_desc', // "Quickly add all your recurring payments from various services."
+        titleKey: 'onboarding_page2_title',
+        descriptionKey: 'onboarding_page2_desc', 
         iconData: Icons.add_circle_outline_rounded,
         iconColor: Colors.green.shade600,
       ),
       _OnboardingScreenData(
-        titleKey: 'onboarding_page3_title', // "Stay on Top of Costs"
-        descriptionKey: 'onboarding_page3_desc', // "See clear summaries of your monthly and yearly expenses."
+        titleKey: 'onboarding_page3_title',
+        descriptionKey: 'onboarding_page3_desc',
         iconData: Icons.pie_chart_outline_rounded,
         iconColor: Colors.orange.shade700,
       ),
       _OnboardingScreenData(
-        titleKey: 'onboarding_page4_title', // "Never Miss a Payment"
-        descriptionKey: 'onboarding_page4_desc', // "Get timely reminders before your subscriptions are due."
+        titleKey: 'onboarding_page4_title',
+        descriptionKey: 'onboarding_page4_desc',
         iconData: Icons.notifications_active_outlined,
         iconColor: Colors.purple.shade600,
       ),
@@ -2329,8 +2324,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _completeOnboarding() async {
     final prefs = getIt<SharedPreferences>();
     await prefs.setBool('onboarding_complete', true);
-    // Navigate to the home screen and replace the onboarding route
-    // so the user cannot go back to it.
     if (mounted) {
       context.goNamed(AppRoutes.home);
     }
@@ -2339,13 +2332,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context)!; // Enable when localization is fully integrated
 
     return Scaffold(
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            // Skip Button
             if (_currentPageIndex < _onboardingPages.length - 1)
               Align(
                 alignment: Alignment.topRight,
@@ -2353,14 +2344,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   padding: const EdgeInsets.only(top: 8.0, right: 16.0),
                   child: TextButton(
                     onPressed: _completeOnboarding,
-                    child: Text('Skip', style: TextStyle(color: theme.colorScheme.primary)), // localizations.translate('skip')),
+                    child: Text('Skip', style: TextStyle(color: theme.colorScheme.primary)), 
                   ),
                 ),
               )
             else
-              const SizedBox(height: 56), // Placeholder to maintain layout consistency
+              const SizedBox(height: 56), 
 
-            // PageView for onboarding content
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -2373,10 +2363,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final pageData = _onboardingPages[index];
                   return OnboardingPageContentWidget(
-                    // title: localizations.translate(pageData.titleKey),
-                    // description: localizations.translate(pageData.descriptionKey),
-                    title: pageData.titleKey.replaceAll('_', ' ').split(' ').map((e) => e[0].toUpperCase() + e.substring(1)).join(' '), // Placeholder
-                    description: pageData.descriptionKey.replaceAll('_', ' ').split(' ').map((e) => e[0].toUpperCase() + e.substring(1)).join(' '), // Placeholder
+                    title: pageData.titleKey.replaceAll('_', ' ').split(' ').map((e) => e[0].toUpperCase() + e.substring(1)).join(' '), 
+                    description: pageData.descriptionKey.replaceAll('_', ' ').split(' ').map((e) => e[0].toUpperCase() + e.substring(1)).join(' '), 
                     iconData: pageData.iconData,
                     iconColor: pageData.iconColor,
                   );
@@ -2384,18 +2372,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-            // Page Indicator
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24.0),
               child: PageIndicatorWidget(
                 currentPageIndex: _currentPageIndex,
                 pageCount: _onboardingPages.length,
                 activeColor: theme.colorScheme.primary,
-                inactiveColor: theme.colorScheme.onSurface.withOpacity(0.2),
+                inactiveColor: theme.colorScheme.onSurface.withOpacity(0.2), // Kept withOpacity for non-const dynamic color
               ),
             ),
 
-            // Navigation Buttons (Next / Get Started)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: SizedBox(
@@ -2419,14 +2405,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     _currentPageIndex < _onboardingPages.length - 1
-                        ? 'Next' // localizations.translate('next_button')
-                        : 'Get Started', // localizations.translate('get_started_button'),
+                        ? 'Next' 
+                        : 'Get Started', 
                     style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Bottom padding
+            const SizedBox(height: 16), 
           ],
         ),
       ),
@@ -2546,8 +2532,8 @@ class PageIndicatorWidget extends StatelessWidget {
 
 import 'dart:convert';
 import 'package:aboapp/features/settings/data/models/settings_model.dart';
-import 'package:aboapp/features/settings/domain/entities/settings_entity.dart'; // For default settings
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+import 'package:aboapp/features/settings/domain/entities/settings_entity.dart'; 
+import 'package:flutter/material.dart'; 
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -2556,12 +2542,9 @@ abstract class SettingsLocalDataSource {
   Future<void> saveThemeMode(ThemeMode themeMode);
   Future<void> saveLocale(Locale locale);
   Future<void> saveCurrencyCode(String currencyCode);
-  // Future<void> saveSettings(SettingsModel settings); // Alternative
 }
 
 const String settingsKey = 'APP_SETTINGS';
-// Individual keys can also be used if preferred for partial updates,
-// but saving the whole model is often simpler.
 const String themeModeKey = 'APP_THEME_MODE';
 const String localeLangKey = 'APP_LOCALE_LANG';
 const String localeCountryKey = 'APP_LOCALE_COUNTRY';
@@ -2581,13 +2564,11 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
       try {
         return SettingsModel.fromJson(jsonDecode(jsonString) as Map<String, dynamic>);
       } catch (e) {
-        // If parsing fails, return default and clear corrupted data
-        print('Error parsing settings from SharedPreferences: $e');
+        // print('Error parsing settings from SharedPreferences: $e'); // Avoid print
         await sharedPreferences.remove(settingsKey);
         return SettingsModel.fromEntity(SettingsEntity.defaultSettings());
       }
     } else {
-      // No settings saved yet, return default settings
       return SettingsModel.fromEntity(SettingsEntity.defaultSettings());
     }
   }
@@ -2619,52 +2600,42 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
 ===== PATH: lib/features/settings/data/models/settings_model.dart =====
 
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'settings_model.freezed.dart';
-part 'settings_model.g.dart'; // For JSON serialization
+part 'settings_model.g.dart';
 
-// Custom converter for ThemeMode
+// --- Custom converters (no changes) ---
 class ThemeModeConverter implements JsonConverter<ThemeMode, String> {
   const ThemeModeConverter();
-
   @override
-  ThemeMode fromJson(String json) {
-    return ThemeMode.values.firstWhere((e) => e.toString() == json, orElse: () => ThemeMode.system);
-  }
-
+  ThemeMode fromJson(String json) => ThemeMode.values
+      .firstWhere((e) => e.toString() == json, orElse: () => ThemeMode.system);
   @override
-  String toJson(ThemeMode object) {
-    return object.toString();
-  }
+  String toJson(ThemeMode object) => object.toString();
 }
 
-// Custom converter for Locale
 class LocaleConverter implements JsonConverter<Locale, String> {
   const LocaleConverter();
-
   @override
   Locale fromJson(String json) {
     final parts = json.split('_');
-    if (parts.length == 2) {
-      return Locale(parts[0], parts[1]);
-    }
-    return Locale(parts[0]);
+    return parts.length == 2 ? Locale(parts[0], parts[1]) : Locale(parts[0]);
   }
 
   @override
-  String toJson(Locale object) {
-    return object.toLanguageTag().replaceAll('-', '_'); // Ensure consistent format
-  }
+  String toJson(Locale object) => object.toLanguageTag().replaceAll('-', '_');
 }
 
+// --- End of converters ---
 
 @freezed
+// ANNOTATION MOVED TO THE CLASS ITSELF
+@JsonSerializable(explicitToJson: true)
 class SettingsModel with _$SettingsModel {
-  const SettingsModel._(); // For toEntity method
+  // NO PRIVATE CONSTRUCTOR HERE
 
-  @JsonSerializable(explicitToJson: true)
   const factory SettingsModel({
     @ThemeModeConverter() required ThemeMode themeMode,
     @LocaleConverter() required Locale locale,
@@ -2674,7 +2645,12 @@ class SettingsModel with _$SettingsModel {
   factory SettingsModel.fromJson(Map<String, dynamic> json) =>
       _$SettingsModelFromJson(json);
 
-  // Conversion to Domain Entity
+  // Helper methods are outside the Freezed class definition
+  // We will make them extensions instead for cleanliness.
+}
+
+// --- Helper methods moved to extensions ---
+extension SettingsModelHelpers on SettingsModel {
   SettingsEntity toEntity() {
     return SettingsEntity(
       themeMode: themeMode,
@@ -2682,9 +2658,10 @@ class SettingsModel with _$SettingsModel {
       currencyCode: currencyCode,
     );
   }
+}
 
-  // Conversion from Domain Entity
-  factory SettingsModel.fromEntity(SettingsEntity entity) {
+extension SettingsModelFromEntity on SettingsModel {
+  static SettingsModel fromEntity(SettingsEntity entity) {
     return SettingsModel(
       themeMode: entity.themeMode,
       locale: entity.locale,
@@ -2692,6 +2669,7 @@ class SettingsModel with _$SettingsModel {
     );
   }
 }
+
 
 ===== FILE: settings_model.freezed.dart =====
 ===== PATH: lib/features/settings/data/models/settings_model.freezed.dart =====
@@ -2831,14 +2809,12 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
-class _$SettingsModelImpl extends _SettingsModel {
+@JsonSerializable()
+class _$SettingsModelImpl implements _SettingsModel {
   const _$SettingsModelImpl(
       {@ThemeModeConverter() required this.themeMode,
       @LocaleConverter() required this.locale,
-      required this.currencyCode})
-      : super._();
+      required this.currencyCode});
 
   factory _$SettingsModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SettingsModelImplFromJson(json);
@@ -2889,12 +2865,11 @@ class _$SettingsModelImpl extends _SettingsModel {
   }
 }
 
-abstract class _SettingsModel extends SettingsModel {
+abstract class _SettingsModel implements SettingsModel {
   const factory _SettingsModel(
       {@ThemeModeConverter() required final ThemeMode themeMode,
       @LocaleConverter() required final Locale locale,
       required final String currencyCode}) = _$SettingsModelImpl;
-  const _SettingsModel._() : super._();
 
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
       _$SettingsModelImpl.fromJson;
@@ -2917,40 +2892,13 @@ abstract class _SettingsModel extends SettingsModel {
 }
 
 
-===== FILE: settings_model.g.dart =====
-===== PATH: lib/features/settings/data/models/settings_model.g.dart =====
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'settings_model.dart';
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
-    _$SettingsModelImpl(
-      themeMode:
-          const ThemeModeConverter().fromJson(json['themeMode'] as String),
-      locale: const LocaleConverter().fromJson(json['locale'] as String),
-      currencyCode: json['currencyCode'] as String,
-    );
-
-Map<String, dynamic> _$$SettingsModelImplToJson(_$SettingsModelImpl instance) =>
-    <String, dynamic>{
-      'themeMode': const ThemeModeConverter().toJson(instance.themeMode),
-      'locale': const LocaleConverter().toJson(instance.locale),
-      'currencyCode': instance.currencyCode,
-    };
-
-
 ===== FILE: settings_repository_impl.dart =====
 ===== PATH: lib/features/settings/data/repositories/settings_repository_impl.dart =====
 
 import 'package:aboapp/features/settings/data/datasources/settings_local_datasource.dart';
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/domain/repositories/settings_repository.dart';
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+import 'package:flutter/material.dart'; 
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: SettingsRepository)
@@ -2965,9 +2913,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final settingsModel = await localDataSource.getSettings();
       return settingsModel.toEntity();
     } catch (e) {
-      // In case of an error (e.g., parsing), return default settings
-      // The local data source should ideally handle this and provide a default model
-      print('Error in SettingsRepositoryImpl.getSettings: $e');
+      // print('Error in SettingsRepositoryImpl.getSettings: $e'); // Avoid print
       return SettingsEntity.defaultSettings();
     }
   }
@@ -3294,63 +3240,47 @@ class SaveThemeSettingUseCase {
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:aboapp/core/localization/app_localizations.dart'; // When implemented
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  // Helper to get display name for ThemeMode
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
-    // final localizations = AppLocalizations.of(context);
     switch (themeMode) {
       case ThemeMode.system:
-        return 'System Default'; // localizations.translate('theme_system');
+        return 'System Default'; 
       case ThemeMode.light:
-        return 'Light'; // localizations.translate('theme_light');
+        return 'Light'; 
       case ThemeMode.dark:
-        return 'Dark'; // localizations.translate('theme_dark');
+        return 'Dark'; 
     }
   }
 
-  // Helper to get display name for Locale
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
-    // final localizations = AppLocalizations.of(context);
-    // This is a simplified version. For a full list, you might need a map or intl package capabilities.
     if (locale.languageCode == 'en') {
-      return 'English'; // localizations.translate('language_english');
+      return 'English'; 
     } else if (locale.languageCode == 'de') {
-      return 'Deutsch (German)'; // localizations.translate('language_german');
+      return 'Deutsch (German)'; 
     }
-    return locale.toLanguageTag(); // Fallback
+    return locale.toLanguageTag(); 
   }
   
-  // Supported currencies (example)
   static const Map<String, String> _supportedCurrencies = {
     'USD': 'USD - United States Dollar (\$)',
     'EUR': 'EUR - Euro (€)',
     'GBP': 'GBP - British Pound (£)',
     'JPY': 'JPY - Japanese Yen (¥)',
     'CHF': 'CHF - Swiss Franc (CHF)',
-    // Add more as needed
   };
 
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context);
+    // final theme = Theme.of(context); // Unused variable
 
     return Scaffold(
-      // AppBar is typically part of the MainContainerScreen for shell routes
-      // If this screen can be pushed independently, it might need its own AppBar.
-      // For now, assuming it's part of the shell.
-      // appBar: AppBar(
-      //   title: Text('Settings'), // localizations.translate('settings_title')),
-      // ),
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
-          if (state.isLoading && state.themeMode == ThemeMode.system && state.locale.languageCode == 'en') { // Check if it's truly initial load
-            // This condition might be too simple if initial state matches defaults
+          if (state.isLoading && state.themeMode == ThemeMode.system && state.locale.languageCode == 'en') { 
             return const Center(child: CircularProgressIndicator.adaptive());
           }
           if (state.error != null) {
@@ -3360,42 +3290,40 @@ class SettingsScreen extends StatelessWidget {
           return ListView(
             padding: const EdgeInsets.all(8.0),
             children: <Widget>[
-              _buildSectionHeader(context, 'Appearance'), // localizations.translate('appearance')),
+              _buildSectionHeader(context, 'Appearance'), 
               ListTile(
                 leading: const Icon(Icons.brightness_6_rounded),
-                title: Text('Theme'), // localizations.translate('theme_setting_title')),
+                title: const Text('Theme'), 
                 subtitle: Text(_getThemeModeDisplayName(context, state.themeMode)),
                 onTap: () => _showThemeModeDialog(context, state.themeMode),
               ),
               const Divider(),
-              _buildSectionHeader(context, 'Regional'), // localizations.translate('regional_settings')),
+              _buildSectionHeader(context, 'Regional'), 
               ListTile(
                 leading: const Icon(Icons.language_rounded),
-                title: Text('Language'), // localizations.translate('language_setting_title')),
+                title: const Text('Language'), 
                 subtitle: Text(_getLocaleDisplayName(context, state.locale)),
                 onTap: () => _showLocaleDialog(context, state.locale),
               ),
               ListTile(
                 leading: const Icon(Icons.attach_money_rounded),
-                title: Text('Currency'), // localizations.translate('currency_setting_title')),
+                title: const Text('Currency'), 
                 subtitle: Text(_supportedCurrencies[state.currencyCode] ?? state.currencyCode),
                 onTap: () => _showCurrencyDialog(context, state.currencyCode),
               ),
               const Divider(),
-              _buildSectionHeader(context, 'About'), // localizations.translate('about_section_title')),
+              _buildSectionHeader(context, 'About'), 
               ListTile(
                 leading: const Icon(Icons.info_outline_rounded),
-                title: Text('About AboApp'), // localizations.translate('about_app_title')),
-                // subtitle: Text('Version 3.0.0'), // localizations.translate('app_version', args: {'version': '3.0.0'})),
-                subtitle: Text('Version 3.0.0 - Refactored'), // TODO: Get from package_info_plus
+                title: const Text('About AboApp'), 
+                subtitle: const Text('Version 3.0.0 - Refactored'), 
                 onTap: () {
-                  // TODO: Show an About Dialog or navigate to an About Screen
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: Text('About AboApp'), // localizations.translate('about_app_title')),
-                      content: Text('Subscription management made easy.\nVersion 3.0.0'), // localizations.translate('app_description_long')),
-                      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text('Close'))], // localizations.translate('close')))],
+                      title: const Text('About AboApp'), 
+                      content: const Text('Subscription management made easy.\nVersion 3.0.0'), 
+                      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close'))], 
                     ),
                   );
                 },
@@ -3421,12 +3349,11 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showThemeModeDialog(BuildContext context, ThemeMode currentThemeMode) {
-    // final localizations = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Select Theme'), // localizations.translate('select_theme_dialog_title')),
+          title: const Text('Select Theme'), 
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: ThemeMode.values.map((themeMode) {
@@ -3445,7 +3372,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'), // localizations.translate('cancel')),
+              child: const Text('Cancel'), 
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -3455,18 +3382,16 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLocaleDialog(BuildContext context, Locale currentLocale) {
-    // final localizations = AppLocalizations.of(context);
-    // Define your supported locales here or get them from a config
-    final List<Locale> supportedLocales = [
-      const Locale('en', 'US'),
-      const Locale('de', 'DE'),
+    const List<Locale> supportedLocales = [
+      Locale('en', 'US'),
+      Locale('de', 'DE'),
     ];
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Select Language'), // localizations.translate('select_language_dialog_title')),
+          title: const Text('Select Language'), 
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -3490,7 +3415,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'), // localizations.translate('cancel')),
+              child: const Text('Cancel'), 
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -3500,20 +3425,19 @@ class SettingsScreen extends StatelessWidget {
   }
   
   void _showCurrencyDialog(BuildContext context, String currentCurrencyCode) {
-    // final localizations = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Select Currency'), // localizations.translate('select_currency_dialog_title')),
+          title: const Text('Select Currency'), 
           content: SizedBox(
             width: double.maxFinite,
             child: ListView(
               shrinkWrap: true,
               children: _supportedCurrencies.entries.map((entry) {
                 return RadioListTile<String>(
-                  title: Text(entry.value), // Display the full name
-                  value: entry.key, // Store the code
+                  title: Text(entry.value), 
+                  value: entry.key, 
                   groupValue: currentCurrencyCode,
                   onChanged: (String? value) {
                     if (value != null) {
@@ -3527,7 +3451,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'), // localizations.translate('cancel')),
+              child: const Text('Cancel'), 
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -3540,18 +3464,17 @@ class SettingsScreen extends StatelessWidget {
 ===== FILE: settings_cubit.dart =====
 ===== PATH: lib/features/settings/presentation/cubit/settings_cubit.dart =====
 
-import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_currency_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_locale_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_theme_setting_usecase.dart';
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+import 'package:flutter/material.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
 part 'settings_state.dart';
-part 'settings_cubit.freezed.dart'; // Generated by Freezed
+part 'settings_cubit.freezed.dart'; 
 
 @injectable
 class SettingsCubit extends Cubit<SettingsState> {
@@ -3589,8 +3512,6 @@ class SettingsCubit extends Cubit<SettingsState> {
       emit(state.copyWith(themeMode: newThemeMode, isLoading: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
-      // Optionally revert to previous state or reload
-      // await loadSettings(); 
     }
   }
 
@@ -3639,8 +3560,7 @@ mixin _$SettingsState {
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   Locale get locale => throw _privateConstructorUsedError;
   String get currencyCode => throw _privateConstructorUsedError;
-  bool get isLoading =>
-      throw _privateConstructorUsedError; // To indicate if settings are being loaded/saved
+  bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
   /// Create a copy of SettingsState
@@ -3789,7 +3709,6 @@ class _$SettingsStateImpl implements _SettingsState {
   @override
   @JsonKey()
   final bool isLoading;
-// To indicate if settings are being loaded/saved
   @override
   final String? error;
 
@@ -3841,7 +3760,7 @@ abstract class _SettingsState implements SettingsState {
   @override
   String get currencyCode;
   @override
-  bool get isLoading; // To indicate if settings are being loaded/saved
+  bool get isLoading;
   @override
   String? get error;
 
@@ -3857,7 +3776,7 @@ abstract class _SettingsState implements SettingsState {
 ===== FILE: settings_state.dart =====
 ===== PATH: lib/features/settings/presentation/cubit/settings_state.dart =====
 
-part of 'settings_cubit.dart'; // Generated by Cubit
+part of 'settings_cubit.dart';
 
 @freezed
 class SettingsState with _$SettingsState {
@@ -3865,15 +3784,14 @@ class SettingsState with _$SettingsState {
     required ThemeMode themeMode,
     required Locale locale,
     required String currencyCode,
-    @Default(false) bool isLoading, // To indicate if settings are being loaded/saved
-    String? error, // To display any errors
+    @Default(false) bool isLoading,
+    String? error,
   }) = _SettingsState;
 
-  // Initial state factory
-  factory SettingsState.initial() => SettingsState(
-        themeMode: ThemeMode.system, // Default
-        locale: const Locale('en', 'US'), // Default
-        currencyCode: 'USD', // Default
+  factory SettingsState.initial() => const SettingsState( // Added const
+        themeMode: ThemeMode.system, 
+        locale: Locale('en', 'US'), 
+        currencyCode: 'USD', 
       );
 }
 
@@ -3881,21 +3799,17 @@ class SettingsState with _$SettingsState {
 ===== PATH: lib/features/statistics/presentation/cubit/statistics_cubit.dart =====
 
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
-import 'package:fl_chart/fl_chart.dart'; // For FlSpot
+import 'package:fl_chart/fl_chart.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-import 'package:collection/collection.dart'; // For sumBy
+import 'package:collection/collection.dart'; 
 
 part 'statistics_state.dart';
 part 'statistics_cubit.freezed.dart';
 
 @injectable
 class StatisticsCubit extends Cubit<StatisticsState> {
-  // No direct repository needed if it processes data from subscriptions.
-  // It could listen to SubscriptionCubit or receive data.
-  // For simplicity, let's assume it takes a list of subscriptions to process.
-
   StatisticsCubit() : super(const StatisticsState.initial());
 
   void generateStatistics(List<SubscriptionEntity> allSubscriptions, {int? yearForTrend}) {
@@ -3909,11 +3823,9 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     }
 
     try {
-      // 1. Calculate Total Monthly and Yearly Equivalent Spending
       final totalMonthlyEquivalent = activeSubscriptions.sumByDouble((s) => s.monthlyEquivalentPrice);
       final totalYearlyEquivalent = totalMonthlyEquivalent * 12;
 
-      // 2. Category Spending
       final Map<SubscriptionCategory, double> categoryTotals = {};
       for (var sub in activeSubscriptions) {
         categoryTotals.update(
@@ -3928,9 +3840,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
           totalAmount: entry.value,
           percentage: totalMonthlyEquivalent > 0 ? (entry.value / totalMonthlyEquivalent) : 0.0,
         );
-      }).sortedBy<num>((cs) => cs.totalAmount).reversed.toList(); // Sort descending
+      }).sortedBy<num>((cs) => cs.totalAmount).reversed.toList(); 
 
-      // 3. Billing Type Spending
       final Map<BillingCycle, List<SubscriptionEntity>> subsByBillingCycle = {};
       for (var sub in activeSubscriptions) {
         subsByBillingCycle.putIfAbsent(sub.billingCycle, () => []).add(sub);
@@ -3943,15 +3854,13 @@ class StatisticsCubit extends Cubit<StatisticsState> {
           subscriptionCount: entry.value.length,
           percentageOfTotal: totalMonthlyEquivalent > 0 ? (cycleTotalMonthlyEquiv / totalMonthlyEquivalent) : 0.0,
         );
-      }).sortedBy<num>((bs) => bs.totalAmount).reversed.toList(); // Sort descending
+      }).sortedBy<num>((bs) => bs.totalAmount).reversed.toList(); 
 
 
-      // 4. Top Spending Subscriptions (e.g., Top 5)
       final List<SubscriptionEntity> topSpendingSubscriptions = List.from(activeSubscriptions)
         ..sort((a, b) => b.monthlyEquivalentPrice.compareTo(a.monthlyEquivalentPrice));
       final topN = topSpendingSubscriptions.take(5).toList();
 
-      // 5. Spending Trend Data
       final int trendYear = yearForTrend ?? DateTime.now().year;
       final List<FlSpot> spots = [];
       double maxSpendingInYear = 0.0;
@@ -3960,7 +3869,6 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         for (final sub in activeSubscriptions) {
           if (sub.startDate != null &&
               (sub.startDate!.year < trendYear || (sub.startDate!.year == trendYear && sub.startDate!.month <= month))) {
-            // This logic assumes continuous subscription. More complex if pauses/ends.
             monthlyTotalForTrend += sub.monthlyEquivalentPrice;
           }
         }
@@ -3990,13 +3898,11 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     }
   }
   
-  // Call this method if the year for the trend chart changes
   void changeTrendYear(List<SubscriptionEntity> allSubscriptions, int newYear) {
     generateStatistics(allSubscriptions, yearForTrend: newYear);
   }
 }
 
-// Helper extension for sumByDouble
 extension SumByDouble<T> on Iterable<T> {
   double sumByDouble(double Function(T element) f) {
     double sum = 0;
@@ -5229,7 +5135,7 @@ import 'package:aboapp/features/statistics/presentation/widgets/category_spendin
 import 'package:aboapp/features/statistics/presentation/widgets/overall_spending_summary_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/top_subscriptions_list_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart' hide Error; // Hide SubscriptionCubit's Error state
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart'; // Removed hide Error
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5247,37 +5153,31 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    // Listen to SubscriptionCubit to get the latest subscriptions
-    // and trigger statistics generation.
     final subscriptionState = context.read<SubscriptionCubit>().state;
     subscriptionState.whenOrNull(
       loaded: (allSubs, _, __, ___, ____, _____) {
         if (mounted) {
-          context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
+          context
+              .read<StatisticsCubit>()
+              .generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
         }
       },
-      // Handle other states of SubscriptionCubit if necessary, e.g., if it's still loading
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context);
 
     return Scaffold(
-      // AppBar is part of MainContainerScreen for shell routes.
-      // If this screen needs a specific AppBar when pushed independently, add it here.
-      // appBar: AppBar(title: Text('Statistics')), // localizations.translate('statistics_title'))),
       body: MultiBlocListener(
         listeners: [
-          // Listen to SubscriptionCubit for changes in subscriptions
           BlocListener<SubscriptionCubit, SubscriptionState>(
             listener: (context, subState) {
               subState.whenOrNull(
                 loaded: (allSubs, _, __, ___, ____, _____) {
-                  // Regenerate statistics when subscriptions change
-                  context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
+                  context.read<StatisticsCubit>().generateStatistics(allSubs,
+                      yearForTrend: _selectedYearForTrend);
                 },
               );
             },
@@ -5286,25 +5186,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         child: BlocBuilder<StatisticsCubit, StatisticsState>(
           builder: (context, statsState) {
             return statsState.when(
-              initial: () => const Center(child: CircularProgressIndicator.adaptive()),
-              loading: () => const Center(child: CircularProgressIndicator.adaptive()),
+              initial: () =>
+                  const Center(child: CircularProgressIndicator.adaptive()),
+              loading: () =>
+                  const Center(child: CircularProgressIndicator.adaptive()),
               empty: (message) => EmptyStateWidget(
                 icon: Icons.sentiment_dissatisfied_rounded,
-                title: 'No Statistics Yet', // localizations.translate('no_stats_title'),
+                title: 'No Statistics Yet',
                 message: message,
               ),
               error: (message) => EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: 'Error Loading Statistics', // localizations.translate('stats_error_title'),
+                title: 'Error Loading Statistics',
                 message: message,
                 onRetry: () {
                   final subCubitState = context.read<SubscriptionCubit>().state;
                   subCubitState.whenOrNull(
-                     loaded: (allSubs, _, __, ___, ____, _____) => 
-                        context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend),
+                    loaded: (allSubs, _, __, ___, ____, _____) => context
+                        .read<StatisticsCubit>()
+                        .generateStatistics(allSubs,
+                            yearForTrend: _selectedYearForTrend),
                   );
                 },
-                retryText: 'Retry', // localizations.translate('retry'),
+                retryText: 'Retry',
               ),
               loaded: (
                 activeSubscriptions,
@@ -5316,59 +5220,65 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 totalYearlyEquivalentSpending,
                 selectedYearForTrend,
               ) {
-                // Update local state if cubit's selected year changes (e.g. via another trigger)
                 if (_selectedYearForTrend != selectedYearForTrend) {
-                   _selectedYearForTrend = selectedYearForTrend;
+                  _selectedYearForTrend = selectedYearForTrend;
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
-                     final subCubitState = context.read<SubscriptionCubit>().state;
-                     await subCubitState.maybeWhen(
-                       loaded: (allSubs, _, __, ___, ____, _____) async => 
-                          await context.read<StatisticsCubit>().generateStatistics(allSubs, yearForTrend: _selectedYearForTrend),
-                       orElse: () async {}, // Do nothing if subs not loaded
-                     );
+                    final subCubitState =
+                        context.read<SubscriptionCubit>().state;
+                    // Removed await from void result
+                    subCubitState.maybeWhen(
+                      loaded: (allSubs, _, __, ___, ____, _____) {
+                        context.read<StatisticsCubit>().generateStatistics(
+                            allSubs,
+                            yearForTrend: _selectedYearForTrend);
+                      },
+                      orElse: () {},
+                    );
                   },
                   child: CustomScrollView(
                     slivers: <Widget>[
                       SliverAppBar(
-                        // title: Text('Statistics Overview'), // localizations.translate('statistics_title')),
-                        title: Text('Statistics'), // For individual screen AppBar
-                        floating: true, // AppBar appears when scrolling up
+                        title: const Text('Statistics'),
+                        floating: true,
                         snap: true,
-                        // Pinned can be true if you want it always visible at the top
-                        // pinned: true, 
                         actions: [
-                          _buildYearSelector(context, theme, selectedYearForTrend),
+                          _buildYearSelector(
+                              context, theme, selectedYearForTrend),
                         ],
-                        // backgroundColor: theme.colorScheme.surface.withOpacity(0.85), // Slight transparency
-                        // elevation: 1.0,
                       ),
                       SliverPadding(
-                        padding: const EdgeInsets.all(12.0), // Reduced padding
+                        padding: const EdgeInsets.all(12.0),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate.fixed([
+                            // Added const
                             OverallSpendingSummaryCard(
-                              totalMonthlySpending: totalMonthlyEquivalentSpending,
-                              totalYearlySpending: totalYearlyEquivalentSpending,
+                              totalMonthlySpending:
+                                  totalMonthlyEquivalentSpending, // These are already passed
+                              totalYearlySpending:
+                                  totalYearlyEquivalentSpending,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             CategorySpendingPieChartCard(
-                              categorySpendingData: categorySpendingData,
+                              categorySpendingData:
+                                  categorySpendingData, // Passed
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             BillingTypeBreakdownCard(
-                              billingTypeSpendingData: billingTypeSpendingData,
+                              billingTypeSpendingData:
+                                  billingTypeSpendingData, // Passed
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             SpendingTrendLineChartCard(
-                              spendingTrendData: spendingTrendData,
+                              spendingTrendData: spendingTrendData, // Passed
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             TopSubscriptionsListCard(
-                              topSubscriptions: topSpendingSubscriptions,
+                              topSubscriptions:
+                                  topSpendingSubscriptions, // Passed
                             ),
-                            const SizedBox(height: 24), // Bottom padding
+                            SizedBox(height: 24),
                           ]),
                         ),
                       ),
@@ -5383,16 +5293,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 
-  Widget _buildYearSelector(BuildContext context, ThemeData theme, int currentYear) {
-    // final localizations = AppLocalizations.of(context);
+  Widget _buildYearSelector(
+      BuildContext context, ThemeData theme, int currentYear) {
     return Padding(
       padding: const EdgeInsets.only(right: 8.0),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<int>(
           value: currentYear,
-          icon: Icon(Icons.calendar_today_rounded, size: 18, color: theme.colorScheme.onSurfaceVariant),
-          style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          dropdownColor: theme.colorScheme.surfaceVariant,
+          icon: Icon(Icons.calendar_today_rounded,
+              size: 18, color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          dropdownColor: theme.colorScheme
+              .surfaceContainerHighest, // Corrected deprecated member
           items: List.generate(5, (index) => DateTime.now().year - index)
               .map((year) => DropdownMenuItem<int>(
                     value: year,
@@ -5406,8 +5319,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               });
               final subCubitState = context.read<SubscriptionCubit>().state;
               subCubitState.whenOrNull(
-                 loaded: (allSubs, _, __, ___, ____, _____) => 
-                    context.read<StatisticsCubit>().changeTrendYear(allSubs, newYear),
+                loaded: (allSubs, _, __, ___, ____, _____) => context
+                    .read<StatisticsCubit>()
+                    .changeTrendYear(allSubs, newYear),
               );
             }
           },
@@ -5416,6 +5330,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     );
   }
 }
+
 
 ===== FILE: billing_type_breakdown_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/billing_type_breakdown_card.dart =====
@@ -5579,11 +5494,12 @@ class BillingTypeBreakdownCard extends StatelessWidget {
 ===== FILE: category_spending_pie_chart_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart =====
 
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; // For CategorySpending
-import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // For SubscriptionCategory extension
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // Import for CategoryDisplayHelpers
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+// import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // Unused import
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -5604,7 +5520,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0); // No decimals for chart legend amounts
+    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0); 
 
     if (widget.categorySpendingData.isEmpty) {
       return Card(
@@ -5621,7 +5537,6 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       );
     }
     
-    // Filter out categories with zero spending for cleaner chart
     final relevantData = widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
     if (relevantData.isEmpty) {
        return Card(
@@ -5652,7 +5567,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
             ),
             const SizedBox(height: 24),
             SizedBox(
-              height: 180, // Adjust height as needed
+              height: 180, 
               child: PieChart(
                 PieChartData(
                   pieTouchData: PieTouchData(
@@ -5670,7 +5585,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
                   ),
                   borderData: FlBorderData(show: false),
                   sectionsSpace: 2,
-                  centerSpaceRadius: 45, // Doughnut hole
+                  centerSpaceRadius: 45, 
                   sections: _generatePieChartSections(theme, relevantData),
                 ),
               ),
@@ -5691,7 +5606,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       final categoryData = data[i];
 
       return PieChartSectionData(
-        color: categoryData.category.categoryDisplayIconColor(theme), // Using helper from entity file
+        color: categoryData.category.categoryDisplayIconColor(theme), 
         value: categoryData.totalAmount,
         title: '${(categoryData.percentage * 100).toStringAsFixed(0)}%',
         radius: radius,
@@ -5733,7 +5648,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
               ),
               const SizedBox(width: 6),
               Text(
-                categoryData.category.categoryDisplayName, // From entity
+                categoryData.category.displayName, // Using extension getter
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),
@@ -5753,6 +5668,7 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
     );
   }
 }
+
 
 ===== FILE: overall_spending_summary_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/overall_spending_summary_card.dart =====
@@ -5852,7 +5768,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
 ===== FILE: spending_trend_line_chart_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart =====
 
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; // For MonthlySpendingTrendData
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -5889,7 +5805,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20), // Adjust right/bottom for chart labels
+        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -5905,10 +5821,10 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear / 4 : 50).clamp(10.0, double.infinity), // Dynamic interval
+                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear / 4 : 50.0).clamp(10.0, double.infinity), // Ensure double
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.dividerColor.withOpacity(0.5),
+                        color: theme.dividerColor.withOpacity(0.5), // Kept withOpacity for dynamic non-const color
                         strokeWidth: 0.5,
                       );
                     },
@@ -5921,7 +5837,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: 2, // Show every other month for less clutter
+                        interval: 2, 
                         getTitlesWidget: (value, meta) {
                           // TODO: Localize month abbreviations
                           const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -5942,7 +5858,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         showTitles: true,
                         reservedSize: 48,
                         getTitlesWidget: (value, meta) {
-                          if (value == meta.max || value == meta.min) return const Text(''); // Avoid clutter at top/bottom
+                          if (value == meta.max || value == meta.min) return const Text(''); 
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             space: 4.0,
@@ -5956,7 +5872,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   minX: 1,
                   maxX: 12,
                   minY: 0,
-                  maxY: spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear * 1.1 : 100, // Add some padding
+                  maxY: spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear * 1.1 : 100, 
                   lineBarsData: [
                     LineChartBarData(
                       spots: spendingTrendData.spots,
@@ -5973,15 +5889,15 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                                 radius: 4,
                                 color: Color.lerp(theme.colorScheme.primary, theme.colorScheme.secondary, percent / 100) ?? theme.colorScheme.primary,
                                 strokeWidth: 1.5,
-                                strokeColor: theme.cardColor, // Contrast with line
+                                strokeColor: theme.cardColor, 
                         ),
                       ),
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.2),
-                            theme.colorScheme.secondary.withOpacity(0.05),
+                            theme.colorScheme.primary.withOpacity(0.2),    // Kept withOpacity
+                            theme.colorScheme.secondary.withOpacity(0.05), // Kept withOpacity
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -5992,7 +5908,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   lineTouchData: LineTouchData(
                     handleBuiltInTouches: true,
                     touchTooltipData: LineTouchTooltipData(
-                      tooltipBgColor: theme.colorScheme.surfaceVariant,
+                      getTooltipColor: (spot) => theme.colorScheme.surfaceContainerHighest, // Corrected: was tooltipBgColor
                       getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                         return touchedBarSpots.map((barSpot) {
                           final flSpot = barSpot;
@@ -6023,10 +5939,9 @@ class SpendingTrendLineChartCard extends StatelessWidget {
 ===== PATH: lib/features/statistics/presentation/widgets/top_subscriptions_list_card.dart =====
 
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// Import SubscriptionCardWidget if you want to reuse its style or parts
-// import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 
 class TopSubscriptionsListCard extends StatelessWidget {
   final List<SubscriptionEntity> topSubscriptions;
@@ -6036,18 +5951,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
     required this.topSubscriptions,
   });
   
-  String _getBillingCycleShortLabel(BillingCycle cycle) {
-    // TODO: Localize
-    switch (cycle) {
-      case BillingCycle.weekly: return '/wk';
-      case BillingCycle.monthly: return '/mo';
-      case BillingCycle.quarterly: return '/qtr';
-      case BillingCycle.biAnnual: return '/6mo';
-      case BillingCycle.yearly: return '/yr';
-      case BillingCycle.custom: return '/cust';
-    }
-  }
-
+  // _getBillingCycleShortLabel removed as it was unused in this file
 
   @override
   Widget build(BuildContext context) {
@@ -6073,7 +5977,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0), // Less vertical padding for list
+        padding: const EdgeInsets.symmetric(vertical: 8.0), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -6093,7 +5997,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
             ),
             ListView.separated(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(), // List is inside CustomScrollView
+              physics: const NeverScrollableScrollPhysics(), 
               itemCount: topSubscriptions.length,
               itemBuilder: (context, index) {
                 final sub = topSubscriptions[index];
@@ -6118,7 +6022,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    sub.categoryDisplayName, // From entity
+                    sub.category.displayName, // Use extension from subscription_card_widget
                     style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   trailing: Column(
@@ -6135,7 +6039,6 @@ class TopSubscriptionsListCard extends StatelessWidget {
                       )
                     ],
                   ),
-                  // onTap: () { /* Optional: Navigate to subscription details */ },
                 );
               },
               separatorBuilder: (context, index) => const Divider(height: 1, indent: 16, endIndent: 16),
@@ -6230,34 +6133,33 @@ class SubscriptionLocalDataSourceImpl implements SubscriptionLocalDataSource {
 ===== FILE: subscription_model.dart =====
 ===== PATH: lib/features/subscriptions/data/models/subscription_model.dart =====
 
-import 'package:aboapp/core/utils/color_serializer.dart'; // We'll create this utility
+import 'package:aboapp/core/utils/color_serializer.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
-import 'package:flutter/material.dart'; // For Color
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'subscription_model.freezed.dart';
-part 'subscription_model.g.dart'; // For JSON serialization
+part 'subscription_model.g.dart';
 
 @freezed
+// ANNOTATION MOVED TO THE CLASS ITSELF
+@JsonSerializable(explicitToJson: true)
 class SubscriptionModel with _$SubscriptionModel {
-  const SubscriptionModel._(); // Private constructor for custom methods
+  // NO PRIVATE CONSTRUCTOR HERE
 
-  // The model fields should mirror the entity, but with JSON annotations.
-  // It can also include fields purely for data storage/transfer that are not in the entity.
-  @JsonSerializable(explicitToJson: true) // Ensure nested objects are serialized
   const factory SubscriptionModel({
     required String id,
     required String name,
     required double price,
-    @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue) // Handle new/unknown enums gracefully
+    @JsonKey(unknownEnumValue: BillingCycle.custom)
     required BillingCycle billingCycle,
     required DateTime nextBillingDate,
-    @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+    @JsonKey(unknownEnumValue: SubscriptionCategory.other)
     required SubscriptionCategory category,
     DateTime? startDate,
     String? description,
     String? logoUrl,
-    @ColorSerializer() Color? color, // Custom serializer for Color
+    @ColorSerializer() Color? color,
     @Default(true) bool isActive,
     @Default(true) bool notificationsEnabled,
     @Default(7) int notificationDaysBefore,
@@ -6268,8 +6170,10 @@ class SubscriptionModel with _$SubscriptionModel {
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) =>
       _$SubscriptionModelFromJson(json);
+}
 
-  // Conversion to Domain Entity
+// --- Helper methods moved to extensions ---
+extension SubscriptionModelHelpers on SubscriptionModel {
   SubscriptionEntity toEntity() {
     return SubscriptionEntity(
       id: id,
@@ -6290,9 +6194,10 @@ class SubscriptionModel with _$SubscriptionModel {
       notes: notes,
     );
   }
+}
 
-  // Conversion from Domain Entity
-  factory SubscriptionModel.fromEntity(SubscriptionEntity entity) {
+extension SubscriptionModelFromEntity on SubscriptionModel {
+  static SubscriptionModel fromEntity(SubscriptionEntity entity) {
     return SubscriptionModel(
       id: entity.id,
       name: entity.name,
@@ -6313,6 +6218,7 @@ class SubscriptionModel with _$SubscriptionModel {
     );
   }
 }
+
 
 ===== FILE: subscription_model.freezed.dart =====
 ===== PATH: lib/features/subscriptions/data/models/subscription_model.freezed.dart =====
@@ -6342,17 +6248,16 @@ mixin _$SubscriptionModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   double get price => throw _privateConstructorUsedError;
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: BillingCycle.custom)
   BillingCycle get billingCycle => throw _privateConstructorUsedError;
   DateTime get nextBillingDate => throw _privateConstructorUsedError;
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: SubscriptionCategory.other)
   SubscriptionCategory get category => throw _privateConstructorUsedError;
   DateTime? get startDate => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   String? get logoUrl => throw _privateConstructorUsedError;
   @ColorSerializer()
-  Color? get color =>
-      throw _privateConstructorUsedError; // Custom serializer for Color
+  Color? get color => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   bool get notificationsEnabled => throw _privateConstructorUsedError;
   int get notificationDaysBefore => throw _privateConstructorUsedError;
@@ -6381,10 +6286,9 @@ abstract class $SubscriptionModelCopyWith<$Res> {
       {String id,
       String name,
       double price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
-      BillingCycle billingCycle,
+      @JsonKey(unknownEnumValue: BillingCycle.custom) BillingCycle billingCycle,
       DateTime nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       SubscriptionCategory category,
       DateTime? startDate,
       String? description,
@@ -6511,10 +6415,9 @@ abstract class _$$SubscriptionModelImplCopyWith<$Res>
       {String id,
       String name,
       double price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
-      BillingCycle billingCycle,
+      @JsonKey(unknownEnumValue: BillingCycle.custom) BillingCycle billingCycle,
       DateTime nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       SubscriptionCategory category,
       DateTime? startDate,
       String? description,
@@ -6628,17 +6531,16 @@ class __$$SubscriptionModelImplCopyWithImpl<$Res>
 }
 
 /// @nodoc
-
-@JsonSerializable(explicitToJson: true)
-class _$SubscriptionModelImpl extends _SubscriptionModel {
+@JsonSerializable()
+class _$SubscriptionModelImpl implements _SubscriptionModel {
   const _$SubscriptionModelImpl(
       {required this.id,
       required this.name,
       required this.price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: BillingCycle.custom)
       required this.billingCycle,
       required this.nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       required this.category,
       this.startDate,
       this.description,
@@ -6650,8 +6552,7 @@ class _$SubscriptionModelImpl extends _SubscriptionModel {
       this.trialEndDate,
       final Map<String, dynamic>? customCycleDetails,
       this.notes})
-      : _customCycleDetails = customCycleDetails,
-        super._();
+      : _customCycleDetails = customCycleDetails;
 
   factory _$SubscriptionModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SubscriptionModelImplFromJson(json);
@@ -6663,12 +6564,12 @@ class _$SubscriptionModelImpl extends _SubscriptionModel {
   @override
   final double price;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: BillingCycle.custom)
   final BillingCycle billingCycle;
   @override
   final DateTime nextBillingDate;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: SubscriptionCategory.other)
   final SubscriptionCategory category;
   @override
   final DateTime? startDate;
@@ -6679,7 +6580,6 @@ class _$SubscriptionModelImpl extends _SubscriptionModel {
   @override
   @ColorSerializer()
   final Color? color;
-// Custom serializer for Color
   @override
   @JsonKey()
   final bool isActive;
@@ -6781,15 +6681,15 @@ class _$SubscriptionModelImpl extends _SubscriptionModel {
   }
 }
 
-abstract class _SubscriptionModel extends SubscriptionModel {
+abstract class _SubscriptionModel implements SubscriptionModel {
   const factory _SubscriptionModel(
       {required final String id,
       required final String name,
       required final double price,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: BillingCycle.custom)
       required final BillingCycle billingCycle,
       required final DateTime nextBillingDate,
-      @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+      @JsonKey(unknownEnumValue: SubscriptionCategory.other)
       required final SubscriptionCategory category,
       final DateTime? startDate,
       final String? description,
@@ -6801,7 +6701,6 @@ abstract class _SubscriptionModel extends SubscriptionModel {
       final DateTime? trialEndDate,
       final Map<String, dynamic>? customCycleDetails,
       final String? notes}) = _$SubscriptionModelImpl;
-  const _SubscriptionModel._() : super._();
 
   factory _SubscriptionModel.fromJson(Map<String, dynamic> json) =
       _$SubscriptionModelImpl.fromJson;
@@ -6813,12 +6712,12 @@ abstract class _SubscriptionModel extends SubscriptionModel {
   @override
   double get price;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: BillingCycle.custom)
   BillingCycle get billingCycle;
   @override
   DateTime get nextBillingDate;
   @override
-  @JsonKey(unknownEnumValue: JsonKey.nullForUnknownEnumValue)
+  @JsonKey(unknownEnumValue: SubscriptionCategory.other)
   SubscriptionCategory get category;
   @override
   DateTime? get startDate;
@@ -6828,7 +6727,7 @@ abstract class _SubscriptionModel extends SubscriptionModel {
   String? get logoUrl;
   @override
   @ColorSerializer()
-  Color? get color; // Custom serializer for Color
+  Color? get color;
   @override
   bool get isActive;
   @override
@@ -6851,87 +6750,6 @@ abstract class _SubscriptionModel extends SubscriptionModel {
 }
 
 
-===== FILE: subscription_model.g.dart =====
-===== PATH: lib/features/subscriptions/data/models/subscription_model.g.dart =====
-
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-part of 'subscription_model.dart';
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_$SubscriptionModelImpl _$$SubscriptionModelImplFromJson(
-        Map<String, dynamic> json) =>
-    _$SubscriptionModelImpl(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      price: (json['price'] as num).toDouble(),
-      billingCycle: $enumDecode(_$BillingCycleEnumMap, json['billingCycle']),
-      nextBillingDate: DateTime.parse(json['nextBillingDate'] as String),
-      category: $enumDecode(_$SubscriptionCategoryEnumMap, json['category']),
-      startDate: json['startDate'] == null
-          ? null
-          : DateTime.parse(json['startDate'] as String),
-      description: json['description'] as String?,
-      logoUrl: json['logoUrl'] as String?,
-      color: const ColorSerializer().fromJson((json['color'] as num?)?.toInt()),
-      isActive: json['isActive'] as bool? ?? true,
-      notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
-      notificationDaysBefore:
-          (json['notificationDaysBefore'] as num?)?.toInt() ?? 7,
-      trialEndDate: json['trialEndDate'] == null
-          ? null
-          : DateTime.parse(json['trialEndDate'] as String),
-      customCycleDetails: json['customCycleDetails'] as Map<String, dynamic>?,
-      notes: json['notes'] as String?,
-    );
-
-Map<String, dynamic> _$$SubscriptionModelImplToJson(
-        _$SubscriptionModelImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'price': instance.price,
-      'billingCycle': _$BillingCycleEnumMap[instance.billingCycle]!,
-      'nextBillingDate': instance.nextBillingDate.toIso8601String(),
-      'category': _$SubscriptionCategoryEnumMap[instance.category]!,
-      'startDate': instance.startDate?.toIso8601String(),
-      'description': instance.description,
-      'logoUrl': instance.logoUrl,
-      'color': const ColorSerializer().toJson(instance.color),
-      'isActive': instance.isActive,
-      'notificationsEnabled': instance.notificationsEnabled,
-      'notificationDaysBefore': instance.notificationDaysBefore,
-      'trialEndDate': instance.trialEndDate?.toIso8601String(),
-      'customCycleDetails': instance.customCycleDetails,
-      'notes': instance.notes,
-    };
-
-const _$BillingCycleEnumMap = {
-  BillingCycle.weekly: 'weekly',
-  BillingCycle.monthly: 'monthly',
-  BillingCycle.quarterly: 'quarterly',
-  BillingCycle.biAnnual: 'biAnnual',
-  BillingCycle.yearly: 'yearly',
-  BillingCycle.custom: 'custom',
-};
-
-const _$SubscriptionCategoryEnumMap = {
-  SubscriptionCategory.streaming: 'streaming',
-  SubscriptionCategory.software: 'software',
-  SubscriptionCategory.gaming: 'gaming',
-  SubscriptionCategory.fitness: 'fitness',
-  SubscriptionCategory.music: 'music',
-  SubscriptionCategory.news: 'news',
-  SubscriptionCategory.cloud: 'cloud',
-  SubscriptionCategory.utilities: 'utilities',
-  SubscriptionCategory.education: 'education',
-  SubscriptionCategory.other: 'other',
-};
-
-
 ===== FILE: subscription_repository_impl.dart =====
 ===== PATH: lib/features/subscriptions/data/repositories/subscription_repository_impl.dart =====
 
@@ -6941,17 +6759,12 @@ import 'package:aboapp/features/subscriptions/domain/entities/subscription_entit
 import 'package:aboapp/features/subscriptions/domain/repositories/subscription_repository.dart';
 import 'package:injectable/injectable.dart';
 
-// For a real app, you might also have a SubscriptionRemoteDataSource if syncing with a backend.
-// This implementation only uses the local data source.
-
 @LazySingleton(as: SubscriptionRepository)
 class SubscriptionRepositoryImpl implements SubscriptionRepository {
   final SubscriptionLocalDataSource localDataSource;
-  // final NetworkInfo networkInfo; // If you had remote data source
 
   SubscriptionRepositoryImpl({
     required this.localDataSource,
-    // required this.networkInfo,
   });
 
   @override
@@ -6960,22 +6773,18 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
       final localSubscriptions = await localDataSource.getAllSubscriptions();
       return localSubscriptions.map((model) => model.toEntity()).toList();
     } catch (e) {
-      // Handle exceptions from local data source, e.g., parsing errors
-      // You might want to return an empty list or a custom Failure object
-      print('Error fetching subscriptions: $e'); // Log error
-      throw Exception('Could not load subscriptions.'); // Re-throw as a domain-level error
+      // print('Error fetching subscriptions: $e'); // Avoid print
+      throw Exception('Could not load subscriptions.'); 
     }
   }
 
   @override
   Future<SubscriptionEntity?> getSubscriptionById(String id) async {
-    // Local data source might not have a direct getById if it always loads all.
-    // If performance becomes an issue with many subscriptions, optimize localDataSource.
     final allSubscriptions = await getAllSubscriptions();
     try {
       return allSubscriptions.firstWhere((sub) => sub.id == id);
     } catch (e) {
-      return null; // Not found
+      return null; 
     }
   }
 
@@ -7006,19 +6815,18 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
 ===== FILE: subscription_entity.dart =====
 ===== PATH: lib/features/subscriptions/domain/entities/subscription_entity.dart =====
 
-import 'package:flutter/material.dart'; // For Color and IconData
+import 'package:flutter/material.dart'; 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'subscription_entity.freezed.dart'; // Generated by Freezed
+part 'subscription_entity.freezed.dart'; 
 
-// Enums can be defined here or in a separate core/enums file if used across features
 enum BillingCycle {
   weekly,
   monthly,
   quarterly,
-  biAnnual, // Every 6 months
+  biAnnual, 
   yearly,
-  custom, // For user-defined cycle (e.g., every X days/weeks/months)
+  custom, 
 }
 
 enum SubscriptionCategory {
@@ -7029,37 +6837,34 @@ enum SubscriptionCategory {
   music,
   news,
   cloud,
-  utilities, // Example new category
-  education, // Example new category
+  utilities, 
+  education, 
   other,
 }
 
 @freezed
 class SubscriptionEntity with _$SubscriptionEntity {
-  const SubscriptionEntity._(); // Private constructor for getters/methods
+  const SubscriptionEntity._(); 
 
   const factory SubscriptionEntity({
     required String id,
     required String name,
-    required double price, // Price for the specified billingCycle
+    required double price, 
     required BillingCycle billingCycle,
     required DateTime nextBillingDate,
     required SubscriptionCategory category,
     DateTime? startDate,
     String? description,
-    String? logoUrl, // URL for remote logo
-    Color? color,     // User-defined color for the subscription
+    String? logoUrl, 
+    Color? color,     
     @Default(true) bool isActive,
     @Default(true) bool notificationsEnabled,
     @Default(7) int notificationDaysBefore,
     DateTime? trialEndDate,
-    // For custom billing cycle, e.g., {'type': 'days', 'value': 45}
     Map<String, dynamic>? customCycleDetails, 
-    String? notes, // Additional user notes
-    // String? localLogoPath, // If you have local asset logos by path
+    String? notes, 
   }) = _SubscriptionEntity;
 
-  // Computed properties (Domain logic)
   bool get isInTrial {
     if (trialEndDate == null) return false;
     return DateTime.now().isBefore(trialEndDate!);
@@ -7073,10 +6878,9 @@ class SubscriptionEntity with _$SubscriptionEntity {
   }
 
   double get monthlyEquivalentPrice {
-    // This logic needs to be robust and handle custom cycles if they exist
     switch (billingCycle) {
       case BillingCycle.weekly:
-        return price * (365.25 / 12 / 7); // Avg weeks in month
+        return price * (365.25 / 12 / 7); 
       case BillingCycle.monthly:
         return price;
       case BillingCycle.quarterly:
@@ -7086,42 +6890,20 @@ class SubscriptionEntity with _$SubscriptionEntity {
       case BillingCycle.yearly:
         return price / 12.0;
       case BillingCycle.custom:
-        // Example: if customCycleDetails = {'type': 'days', 'value': X}
         final days = customCycleDetails?['value'] as int?;
         if (days != null && days > 0) {
-          return price * (30.4375 / days); // Average days in month / custom cycle days
+          return price * (30.4375 / days); 
         }
-        return price; // Fallback if custom details are missing/invalid
-      default:
-        return price; // Fallback for any unhandled cycle
-    }
-  }
-
-  // UI-related helpers (can also be in a separate utility or view model)
-  String get categoryDisplayName {
-    // This could be localized
-    switch (category) {
-      case SubscriptionCategory.streaming: return 'Streaming';
-      case SubscriptionCategory.software: return 'Software';
-      case SubscriptionCategory.gaming: return 'Gaming';
-      // ... add all others
-      case SubscriptionCategory.utilities: return 'Utilities';
-      case SubscriptionCategory.education: return 'Education';
-      default: return category.toString().split('.').last; // Fallback
-    }
-  }
-
-  IconData get categoryDisplayIcon {
-    switch (category) {
-      case SubscriptionCategory.streaming: return Icons.live_tv_rounded;
-      case SubscriptionCategory.software: return Icons.widgets_outlined;
-      // ... add all others
-      case SubscriptionCategory.utilities: return Icons.lightbulb_outline_rounded;
-      case SubscriptionCategory.education: return Icons.school_outlined;
-      default: return Icons.category_rounded;
+        return price; 
+      // No default needed if all cases are covered, but good for safety if enum changes.
+      // However, the linter for unreachable_switch_default will trigger if all are covered.
+      // Removing default as the error was for it being unreachable.
     }
   }
 }
+
+// Moved extensions for SubscriptionCategory to subscription_card_widget.dart
+// to keep entity cleaner and consolidate UI helpers.
 
 ===== FILE: subscription_entity.freezed.dart =====
 ===== PATH: lib/features/subscriptions/domain/entities/subscription_entity.freezed.dart =====
@@ -7146,22 +6928,18 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SubscriptionEntity {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  double get price =>
-      throw _privateConstructorUsedError; // Price for the specified billingCycle
+  double get price => throw _privateConstructorUsedError;
   BillingCycle get billingCycle => throw _privateConstructorUsedError;
   DateTime get nextBillingDate => throw _privateConstructorUsedError;
   SubscriptionCategory get category => throw _privateConstructorUsedError;
   DateTime? get startDate => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  String? get logoUrl =>
-      throw _privateConstructorUsedError; // URL for remote logo
-  Color? get color =>
-      throw _privateConstructorUsedError; // User-defined color for the subscription
+  String? get logoUrl => throw _privateConstructorUsedError;
+  Color? get color => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   bool get notificationsEnabled => throw _privateConstructorUsedError;
   int get notificationDaysBefore => throw _privateConstructorUsedError;
-  DateTime? get trialEndDate =>
-      throw _privateConstructorUsedError; // For custom billing cycle, e.g., {'type': 'days', 'value': 45}
+  DateTime? get trialEndDate => throw _privateConstructorUsedError;
   Map<String, dynamic>? get customCycleDetails =>
       throw _privateConstructorUsedError;
   String? get notes => throw _privateConstructorUsedError;
@@ -7454,7 +7232,6 @@ class _$SubscriptionEntityImpl extends _SubscriptionEntity {
   final String name;
   @override
   final double price;
-// Price for the specified billingCycle
   @override
   final BillingCycle billingCycle;
   @override
@@ -7467,10 +7244,8 @@ class _$SubscriptionEntityImpl extends _SubscriptionEntity {
   final String? description;
   @override
   final String? logoUrl;
-// URL for remote logo
   @override
   final Color? color;
-// User-defined color for the subscription
   @override
   @JsonKey()
   final bool isActive;
@@ -7482,9 +7257,7 @@ class _$SubscriptionEntityImpl extends _SubscriptionEntity {
   final int notificationDaysBefore;
   @override
   final DateTime? trialEndDate;
-// For custom billing cycle, e.g., {'type': 'days', 'value': 45}
   final Map<String, dynamic>? _customCycleDetails;
-// For custom billing cycle, e.g., {'type': 'days', 'value': 45}
   @override
   Map<String, dynamic>? get customCycleDetails {
     final value = _customCycleDetails;
@@ -7591,7 +7364,7 @@ abstract class _SubscriptionEntity extends SubscriptionEntity {
   @override
   String get name;
   @override
-  double get price; // Price for the specified billingCycle
+  double get price;
   @override
   BillingCycle get billingCycle;
   @override
@@ -7603,9 +7376,9 @@ abstract class _SubscriptionEntity extends SubscriptionEntity {
   @override
   String? get description;
   @override
-  String? get logoUrl; // URL for remote logo
+  String? get logoUrl;
   @override
-  Color? get color; // User-defined color for the subscription
+  Color? get color;
   @override
   bool get isActive;
   @override
@@ -7613,8 +7386,7 @@ abstract class _SubscriptionEntity extends SubscriptionEntity {
   @override
   int get notificationDaysBefore;
   @override
-  DateTime?
-      get trialEndDate; // For custom billing cycle, e.g., {'type': 'days', 'value': 45}
+  DateTime? get trialEndDate;
   @override
   Map<String, dynamic>? get customCycleDetails;
   @override
@@ -8822,21 +8594,21 @@ enum SortOption { nameAsc, nameDesc, priceAsc, priceDesc, nextBillingDateAsc, ne
 ===== FILE: add_edit_subscription_screen.dart =====
 ===== PATH: lib/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart =====
 
-import 'package:aboapp/core/routing/app_router.dart';
+// import 'package:aboapp/core/routing/app_router.dart'; // Unused import
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
-import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
-// Import a color picker if you add that feature, e.g., flutter_colorpicker
+import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics; 
 
 class AddEditSubscriptionScreen extends StatefulWidget {
-  final SubscriptionEntity? subscription; // Passed if editing
-  final String? subscriptionId; // Passed via path parameter if editing
+  final SubscriptionEntity? subscription; 
+  final String? subscriptionId; 
 
   const AddEditSubscriptionScreen({
     super.key,
@@ -8850,9 +8622,8 @@ class AddEditSubscriptionScreen extends StatefulWidget {
 
 class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _uuid = const Uuid(); // For new subscription IDs
+  final _uuid = const Uuid(); 
 
-  // Form field controllers
   late TextEditingController _nameController;
   late TextEditingController _priceController;
   late TextEditingController _descriptionController;
@@ -8860,7 +8631,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
   late TextEditingController _notesController;
   late TextEditingController _customCycleDaysController;
 
-  // Form field values
   late String _currentId;
   SubscriptionCategory _category = SubscriptionCategory.other;
   BillingCycle _billingCycle = BillingCycle.monthly;
@@ -8886,25 +8656,21 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
     _notesController = TextEditingController();
     _customCycleDaysController = TextEditingController();
 
-    final initialSub = widget.subscription; // Entity passed via `extra`
+    final initialSub = widget.subscription; 
 
     if (initialSub != null) {
       _loadSubscriptionData(initialSub);
     } else if (widget.subscriptionId != null) {
-      // If only ID is passed, ideally fetch from Cubit/Repository.
-      // For this refactor, we assume `extra` is used or Cubit handles fetching if needed.
-      // This part might need adjustment based on how you fetch data for editing.
       final subFromState = context.read<SubscriptionCubit>().state.maybeWhen(
             loaded: (all, filtered, _, __, ___, ____) =>
                 all.firstWhere((s) => s.id == widget.subscriptionId, orElse: () => _createEmptySubscription()),
-            orElse: () => _createEmptySubscription(), // Fallback
+            orElse: () => _createEmptySubscription(), 
           );
        _loadSubscriptionData(subFromState);
     } else {
-      // Creating a new subscription
       _currentId = _uuid.v4();
-      _startDate = DateTime.now(); // Default start date
-      _nextBillingDate = DateTime.now().add(const Duration(days: 30)); // Default next billing
+      _startDate = DateTime.now(); 
+      _nextBillingDate = DateTime.now().add(const Duration(days: 30)); 
     }
   }
   
@@ -8985,11 +8751,10 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
         if (days != null && days > 0) {
           customCycleDetails = {'type': 'days', 'value': days};
         } else {
-          // Handle invalid custom cycle input, perhaps show an error or default
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid custom cycle days. Defaulting or please correct.')), // TODO: Localize
+            const SnackBar(content: Text('Invalid custom cycle days.')), // TODO: Localize
           );
-          return; // Prevent saving with invalid custom cycle
+          return; 
         }
       }
 
@@ -9004,7 +8769,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
         description: description.isEmpty ? null : description,
         logoUrl: logoUrl.isEmpty ? null : logoUrl,
         color: _selectedColor,
-        isActive: _isActive, // Important for editing existing
+        isActive: _isActive, 
         notificationsEnabled: _notificationsEnabled,
         notificationDaysBefore: _notificationDaysBefore,
         trialEndDate: _isInTrial ? _trialEndDate : null,
@@ -9018,9 +8783,9 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
         context.read<SubscriptionCubit>().addSubscription(subscriptionEntity);
       }
       app_haptics.HapticFeedback.lightImpact();
-      context.pop(); // GoRouter pop
+      context.pop(); 
     } else {
-      app_haptics.HapticFeedback.warningImpact(); // Indicate validation error
+      app_haptics.HapticFeedback.warningImpact(); 
     }
   }
   
@@ -9040,16 +8805,15 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context);
-    final dateFormat = DateFormat('dd MMM yyyy'); // TODO: Localize format
+    final dateFormat = DateFormat('dd MMM yyyy'); 
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Subscription' : 'Add Subscription'), // TODO: Localize
+        title: Text(_isEditing ? 'Edit Subscription' : 'Add Subscription'), 
         actions: [
           IconButton(
             icon: const Icon(Icons.save_alt_rounded),
-            tooltip: 'Save', // TODO: Localize
+            tooltip: 'Save', 
             onPressed: _saveSubscription,
           ),
         ],
@@ -9061,38 +8825,37 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              // --- Basic Information Section ---
-              _buildSectionHeader(context, 'Basic Information'), // TODO: Localize
+              _buildSectionHeader(context, 'Basic Information'), 
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Name'), 
                 textCapitalization: TextCapitalization.words,
-                validator: (value) => (value?.trim().isEmpty ?? true) ? 'Name is required' : null, // TODO: Localize
+                validator: (value) => (value?.trim().isEmpty ?? true) ? 'Name is required' : null, 
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _priceController,
-                decoration: const InputDecoration(labelText: 'Price', prefixText: '€ '), // TODO: Get currency from settings
+                decoration: const InputDecoration(labelText: 'Price', prefixText: '€ '), 
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}'))],
                 validator: (value) {
-                  if (value?.trim().isEmpty ?? true) return 'Price is required'; // TODO: Localize
-                  if (double.tryParse(value!) == null) return 'Invalid price'; // TODO: Localize
+                  if (value?.trim().isEmpty ?? true) return 'Price is required'; 
+                  if (double.tryParse(value!) == null) return 'Invalid price'; 
                   return null;
                 },
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<SubscriptionCategory>(
                 value: _category,
-                decoration: const InputDecoration(labelText: 'Category'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Category'), 
                 items: SubscriptionCategory.values.map((cat) {
                   return DropdownMenuItem(
                     value: cat,
                     child: Row(
                       children: [
-                        Icon(cat.categoryDisplayIcon, size: 20, color: cat.categoryDisplayIconColor(theme)),
+                        Icon(cat.displayIcon, size: 20, color: cat.categoryDisplayIconColor(theme)), // Using extensions
                         const SizedBox(width: 8),
-                        Text(cat.categoryDisplayName), // TODO: Localize enum display names
+                        Text(cat.displayName), // Using extensions
                       ],
                     ),
                   );
@@ -9102,17 +8865,16 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description (Optional)'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Description (Optional)'), 
                 maxLines: 2,
                 textCapitalization: TextCapitalization.sentences,
               ),
               const SizedBox(height: 24),
 
-              // --- Billing Details Section ---
-              _buildSectionHeader(context, 'Billing Details'), // TODO: Localize
+              _buildSectionHeader(context, 'Billing Details'), 
               DropdownButtonFormField<BillingCycle>(
                 value: _billingCycle,
-                decoration: const InputDecoration(labelText: 'Billing Cycle'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Billing Cycle'), 
                 items: BillingCycle.values.map((cycle) {
                   return DropdownMenuItem(value: cycle, child: Text(_getBillingCycleLabel(context, cycle)));
                 }).toList(),
@@ -9122,12 +8884,12 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _customCycleDaysController,
-                  decoration: const InputDecoration(labelText: 'Custom Cycle (in days)'), // TODO: Localize
+                  decoration: const InputDecoration(labelText: 'Custom Cycle (in days)'), 
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
-                    if (value?.trim().isEmpty ?? true) return 'Cycle days required'; // TODO: Localize
-                    if ((int.tryParse(value!) ?? 0) <= 0) return 'Must be > 0 days'; // TODO: Localize
+                    if (value?.trim().isEmpty ?? true) return 'Cycle days required'; 
+                    if ((int.tryParse(value!) ?? 0) <= 0) return 'Must be > 0 days'; 
                     return null;
                   },
                 ),
@@ -9135,7 +8897,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
               _buildDatePickerTile(
                 context: context,
-                title: 'Next Billing Date', // TODO: Localize
+                title: 'Next Billing Date', 
                 date: _nextBillingDate,
                 dateFormat: dateFormat,
                 onTap: () => _selectDate(context,
@@ -9145,28 +8907,27 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
                _buildDatePickerTile(
                 context: context,
-                title: 'Subscription Start Date', // TODO: Localize
+                title: 'Subscription Start Date', 
                 date: _startDate,
                 dateFormat: dateFormat,
                 onTap: () => _selectDate(context,
                     initialDate: _startDate ?? DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365*5)), // Allow future start dates
+                    lastDate: DateTime.now().add(const Duration(days: 365*5)), 
                     onDateSelected: (date) => setState(() => _startDate = date)),
                 canBeNull: true,
               ),
               const SizedBox(height: 24),
 
-              // --- Optional Details Section ---
-              _buildSectionHeader(context, 'Optional Details'), // TODO: Localize
+              _buildSectionHeader(context, 'Optional Details'), 
                SwitchListTile.adaptive(
-                title: Text('Active Subscription', style: theme.textTheme.bodyLarge), // TODO: Localize
+                title: Text('Active Subscription', style: theme.textTheme.bodyLarge), 
                 value: _isActive,
                 onChanged: (val) => setState(() => _isActive = val),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
               ),
               SwitchListTile.adaptive(
-                title: Text('In Trial Period', style: theme.textTheme.bodyLarge), // TODO: Localize
+                title: Text('In Trial Period', style: theme.textTheme.bodyLarge), 
                 value: _isInTrial,
                 onChanged: (val) => setState(() {
                   _isInTrial = val;
@@ -9178,7 +8939,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               if (_isInTrial)
                 _buildDatePickerTile(
                   context: context,
-                  title: 'Trial End Date', // TODO: Localize
+                  title: 'Trial End Date', 
                   date: _trialEndDate,
                   dateFormat: dateFormat,
                   onTap: () => _selectDate(context,
@@ -9189,7 +8950,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
                 ),
               const SizedBox(height: 12),
               SwitchListTile.adaptive(
-                title: Text('Enable Notifications', style: theme.textTheme.bodyLarge), // TODO: Localize
+                title: Text('Enable Notifications', style: theme.textTheme.bodyLarge), 
                 value: _notificationsEnabled,
                 onChanged: (val) => setState(() => _notificationsEnabled = val),
                 dense: true,
@@ -9199,9 +8960,9 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<int>(
                   value: _notificationDaysBefore,
-                  decoration: const InputDecoration(labelText: 'Notify Days Before Renewal'), // TODO: Localize
+                  decoration: const InputDecoration(labelText: 'Notify Days Before Renewal'), 
                   items: [1, 2, 3, 5, 7, 10, 14, 21, 30].map((days) {
-                    return DropdownMenuItem(value: days, child: Text('$days day${days > 1 ? "s" : ""}')); // TODO: Localize
+                    return DropdownMenuItem(value: days, child: Text('$days day${days > 1 ? "s" : ""}')); 
                   }).toList(),
                   onChanged: (val) => setState(() => _notificationDaysBefore = val!),
                 ),
@@ -9209,15 +8970,13 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _logoUrlController,
-                decoration: const InputDecoration(labelText: 'Logo URL (Optional)'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Logo URL (Optional)'), 
                 keyboardType: TextInputType.url,
               ),
               const SizedBox(height: 12),
-              // TODO: Add Color Picker Widget
-              // Example: ListTile(title: Text('Subscription Color'), trailing: CircleAvatar(backgroundColor: _selectedColor ?? Colors.grey), onTap: _pickColor),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(labelText: 'Notes (Optional)'), // TODO: Localize
+                decoration: const InputDecoration(labelText: 'Notes (Optional)'), 
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
               ),
@@ -9259,7 +9018,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
       ),
       title: Text(title, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
       subtitle: Text(
-        date != null ? dateFormat.format(date) : (canBeNull ? 'Not Set' : 'Please select a date'), // TODO: Localize
+        date != null ? dateFormat.format(date) : (canBeNull ? 'Not Set' : 'Please select a date'), 
         style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500, color: date != null ? theme.colorScheme.onSurface : theme.colorScheme.onSurfaceVariant),
       ),
       trailing: const Icon(Icons.calendar_month_rounded),
@@ -9275,13 +9034,14 @@ import 'package:aboapp/core/routing/app_router.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9300,8 +9060,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    // Load subscriptions when the screen is initialized
-    // Ensure Cubit is available in the widget tree (usually provided higher up)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SubscriptionCubit>().loadSubscriptions();
     });
@@ -9348,12 +9106,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // final localizations = AppLocalizations.of(context); // For localization
 
     return Scaffold(
-      // AppBar is part of the MainContainerScreen now, 
-      // but individual screens can also have their own if needed (e.g. SliverAppBar)
-      // For this setup, assuming HomeScreen might want its own specific AppBar content
       appBar: AppBar(
         title: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
@@ -9363,26 +9117,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   focusNode: _searchFocusNode,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Search subscriptions...', // localizations.translate('search_subscriptions'),
+                    hintText: 'Search subscriptions...', 
                     border: InputBorder.none,
                     isDense: true,
                     hintStyle: theme.appBarTheme.titleTextStyle?.copyWith(
                       fontWeight: FontWeight.normal,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6)
+                      color: theme.colorScheme.onSurface.withOpacity(0.6) // Kept withOpacity
                     )
                   ),
                   style: theme.appBarTheme.titleTextStyle,
                   onChanged: (query) => context.read<SubscriptionCubit>().searchSubscriptions(query),
                 )
-              : Text('My Subscriptions'), // localizations.translate('my_subscriptions')),
+              : const Text('My Subscriptions'), 
         ),
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
             onPressed: () => _toggleSearch(context),
-            tooltip: _isSearching ? 'Close Search' : 'Search', // localizations.translate(_isSearching ? 'close_search' : 'search'),
+            tooltip: _isSearching ? 'Close Search' : 'Search', 
           ),
-          // Actions like navigating to Statistics/Settings are now handled by the MainContainerScreen's BottomAppBar
         ],
       ),
       body: BlocBuilder<SubscriptionCubit, SubscriptionState>(
@@ -9416,12 +9169,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         child: Center(
                           child: EmptyStateWidget(
                             icon: Icons.search_off_rounded,
-                            // title: localizations.translate('no_subscriptions_found'),
-                            // message: localizations.translate('try_adjusting_filters'),
                             title: 'No Subscriptions Found',
                             message: 'Try adjusting your search or filters.',
                             onRetry: () => context.read<SubscriptionCubit>().clearAllFilters(),
-                            retryText: 'Clear Filters', // localizations.translate('clear_filters'),
+                            retryText: 'Clear Filters', 
                           ),
                         ),
                       )
@@ -9436,7 +9187,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 context.pushNamed(
                                   AppRoutes.editSubscription,
                                   pathParameters: {'id': subscription.id},
-                                  extra: subscription, // Pass the entity for immediate display
+                                  extra: subscription, 
                                 );
                               },
                               onLongPress: () => _showSubscriptionActions(context, theme, subscription),
@@ -9445,7 +9196,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           childCount: filteredSubs.length,
                         ),
                       ),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)), // For FAB
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)), 
                   ],
                 ),
               );
@@ -9453,10 +9204,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             error: (message) => Center(
               child: EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: 'Error', // localizations.translate('error_occurred'),
+                title: 'Error', 
                 message: message,
                 onRetry: () => context.read<SubscriptionCubit>().loadSubscriptions(),
-                retryText: 'Retry', // localizations.translate('retry'),
+                retryText: 'Retry', 
               ),
             ),
           );
@@ -9480,7 +9231,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Sort Dropdown
                 DropdownButtonHideUnderline(
                   child: DropdownButton<SortOption>(
                     value: currentSort ?? SortOption.nextBillingDateAsc,
@@ -9489,7 +9239,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     items: SortOption.values.map((option) {
                       return DropdownMenuItem<SortOption>(
                         value: option,
-                        child: Text(option.toString().split('.').last), // TODO: Localize
+                        child: Text(option.toString().split('.').last), 
                       );
                     }).toList(),
                     onChanged: (option) {
@@ -9499,11 +9249,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     },
                   ),
                 ),
-                // Clear All Filters Button
                 if (currentCat != null || currentBill != null || (_searchController.text.isNotEmpty && _isSearching))
                   TextButton.icon(
                     icon: const Icon(Icons.clear_all_rounded, size: 18),
-                    label: Text('Clear Filters'), // TODO: Localize
+                    label: const Text('Clear Filters'), 
                     onPressed: () => context.read<SubscriptionCubit>().clearAllFilters(),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -9513,26 +9262,25 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ],
             ),
             const SizedBox(height: 8),
-            // Category Filter Chips
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                   FilterChip(
-                    label: Text('All Cats'), // TODO: Localize
+                    label: const Text('All Cats'), 
                     selected: currentCat == null,
                     onSelected: (_) => context.read<SubscriptionCubit>().clearCategoryFilter(),
                   ),
                   ...SubscriptionCategory.values.map((category) => Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: FilterChip(
-                          avatar: Icon(category.categoryDisplayIcon, size: 16, color: category == currentCat ? theme.colorScheme.onPrimary : category.categoryDisplayIconColor(theme)),
-                          label: Text(category.categoryDisplayName), // TODO: Localize
+                          avatar: Icon(category.displayIcon, size: 16, color: category == currentCat ? theme.colorScheme.onPrimary : category.categoryDisplayIconColor(theme)),
+                          label: Text(category.displayName), 
                           selected: currentCat == category,
                           onSelected: (selected) {
                             context.read<SubscriptionCubit>().filterByCategory(selected ? category : null);
                           },
-                          selectedColor: category.categoryDisplayIconColor(theme), // Use category color for selected chip
+                          selectedColor: category.categoryDisplayIconColor(theme), 
                           checkmarkColor: theme.colorScheme.onPrimary,
                         ),
                       )),
@@ -9540,13 +9288,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             ),
             const SizedBox(height: 4),
-            // Billing Cycle Filter Chips
              SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
                    FilterChip(
-                    label: Text('All Cycles'), // TODO: Localize
+                    label: const Text('All Cycles'), 
                     selected: currentBill == null,
                     onSelected: (_) => context.read<SubscriptionCubit>().clearBillingCycleFilter(),
                   ),
@@ -9571,12 +9318,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildLoadingShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-      highlightColor: theme.colorScheme.surfaceVariant.withOpacity(0.1),
+      baseColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3), // Corrected deprecated
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.1), // Corrected deprecated
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          // Shimmer for MonthlySpendingCard
           Container(
             height: 130.0,
             decoration: BoxDecoration(
@@ -9585,10 +9331,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             margin: const EdgeInsets.only(bottom: 16),
           ),
-          // Shimmer for filter controls (simplified)
           Container(height: 40, color: theme.cardColor, margin: const EdgeInsets.only(bottom:8)),
           Container(height: 40, color: theme.cardColor, margin: const EdgeInsets.only(bottom:16)),
-          // Shimmer for SubscriptionCards
           ...List.generate(5, (index) => Container(
             height: 90.0,
             decoration: BoxDecoration(
@@ -9609,12 +9353,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
       ),
-      builder: (builderContext) { // Use a different context name
+      builder: (builderContext) { 
         return Wrap(
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.edit_rounded),
-              title: Text('Edit Subscription'), // localizations.translate('edit_subscription')),
+              title: const Text('Edit Subscription'), 
               onTap: () {
                 Navigator.pop(builderContext);
                 context.pushNamed(
@@ -9626,7 +9370,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             ListTile(
               leading: Icon(subscription.isActive ? Icons.pause_circle_outline_rounded : Icons.play_circle_outline_rounded),
-              title: Text(subscription.isActive ? 'Pause Subscription' : 'Resume Subscription'), // localizations.translate(subscription.isActive ? 'pause_subscription' : 'resume_subscription')),
+              title: Text(subscription.isActive ? 'Pause Subscription' : 'Resume Subscription'), 
               onTap: () {
                 Navigator.pop(builderContext);
                 context.read<SubscriptionCubit>().toggleSubscriptionActiveStatus(subscription.id);
@@ -9634,7 +9378,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
              ListTile(
               leading: Icon(subscription.notificationsEnabled ? Icons.notifications_off_rounded : Icons.notifications_active_rounded),
-              title: Text(subscription.notificationsEnabled ? 'Disable Notifications' : 'Enable Notifications'), // localizations.translate(subscription.notificationsEnabled ? 'disable_notifications' : 'enable_notifications')),
+              title: Text(subscription.notificationsEnabled ? 'Disable Notifications' : 'Enable Notifications'), 
               onTap: () {
                 Navigator.pop(builderContext);
                 context.read<SubscriptionCubit>().toggleSubscriptionNotification(subscription.id);
@@ -9642,27 +9386,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             ListTile(
               leading: Icon(Icons.delete_forever_rounded, color: theme.colorScheme.error),
-              title: Text('Delete Subscription', style: TextStyle(color: theme.colorScheme.error)), // localizations.translate('delete_subscription')),
+              title: Text('Delete Subscription', style: TextStyle(color: theme.colorScheme.error)), 
               onTap: () async {
                 Navigator.pop(builderContext);
                 final confirmDelete = await showDialog<bool>(
-                  context: context, // Use original context for dialog
+                  context: context, 
                   builder: (dialogContext) => AlertDialog(
-                    title: Text('Confirm Delete'), // localizations.translate('confirm_delete')),
-                    content: Text('Are you sure you want to delete "${subscription.name}"? This cannot be undone.'), // localizations.translate('delete_confirmation_message', args: {'name': subscription.name})),
+                    title: const Text('Confirm Delete'), 
+                    content: Text('Are you sure you want to delete "${subscription.name}"? This cannot be undone.'), 
                     actions: <Widget>[
                       TextButton(
-                        child: Text('Cancel'), // localizations.translate('cancel')),
+                        child: const Text('Cancel'), 
                         onPressed: () => Navigator.of(dialogContext).pop(false),
                       ),
                       TextButton(
-                        child: Text('Delete', style: TextStyle(color: theme.colorScheme.error)), // localizations.translate('delete')),
+                        child: Text('Delete', style: TextStyle(color: theme.colorScheme.error)), 
                         onPressed: () => Navigator.of(dialogContext).pop(true),
                       ),
                     ],
                   ),
                 );
                 if (confirmDelete == true) {
+                   if (!mounted) return; // Guard context use
                   context.read<SubscriptionCubit>().deleteSubscription(subscription.id);
                 }
               },
@@ -9673,15 +9418,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 }
-// Helper extension for category colors on icons within chips
-extension CategoryDisplayExtension on SubscriptionCategory {
-  Color categoryDisplayIconColor(ThemeData theme) {
-    // Use a color that contrasts well with the chip's default background
-    // This is a simple example; you might need more sophisticated logic
-    // or define these in AppColors alongside categoryColor.
-    return theme.brightness == Brightness.light ? AppColors.onSurfaceVariantLight : AppColors.onSurfaceVariantDark;
-  }
-}
+// Removed duplicate CategoryDisplayExtension, use the one in subscription_card_widget.dart
 
 ===== FILE: monthly_spending_summary_card.dart =====
 ===== PATH: lib/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart =====
@@ -9844,6 +9581,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
 ===== FILE: subscription_card_widget.dart =====
 ===== PATH: lib/features/subscriptions/presentation/widgets/subscription_card_widget.dart =====
 
+import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -9875,9 +9613,9 @@ class SubscriptionCardWidget extends StatelessWidget {
 
   Color _getDaysUntilBillingColor(BuildContext context, int days) {
     final theme = Theme.of(context);
-    if (days < 0) return theme.colorScheme.error; // Overdue
-    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8);
-    if (days <= 7) return theme.colorScheme.warning.withOpacity(0.9); // Or theme.colorScheme.tertiary
+    if (days < 0) return theme.colorScheme.error; 
+    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8); // Kept withOpacity
+    if (days <= 7) return AppColors.warning.withOpacity(0.9); // Used AppColors.warning, Kept withOpacity
     return theme.colorScheme.onSurfaceVariant;
   }
 
@@ -9907,10 +9645,8 @@ class SubscriptionCardWidget extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: Row(
             children: [
-              // Logo or Initial
               _buildLogo(context, theme),
               const SizedBox(width: 12.0),
-              // Details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -9923,7 +9659,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 2.0),
                     Text(
-                      subscription.categoryDisplayName, // From entity
+                      subscription.category.displayName, // Using extension
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -9949,7 +9685,6 @@ class SubscriptionCardWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12.0),
-              // Price and Due Date
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -9997,8 +9732,7 @@ class SubscriptionCardWidget extends StatelessWidget {
 
   Widget _buildLogo(BuildContext context, ThemeData theme) {
     final hasRemoteLogo = subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
-    // final hasLocalLogo = subscription.localLogoPath != null && subscription.localLogoPath!.isNotEmpty; // If using local assets
-    final Color bgColor = subscription.color ?? subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1); // Use entity's color or category color
+    final Color bgColor = subscription.color ?? subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1); // Kept withOpacity
     final Color fgColor = subscription.color != null ? (ThemeData.estimateBrightnessForColor(subscription.color!) == Brightness.dark ? Colors.white : Colors.black) : subscription.category.categoryDisplayIconColor(theme);
 
 
@@ -10009,32 +9743,30 @@ class SubscriptionCardWidget extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: ClipRRect( // Ensure image is clipped to rounded corners
+      child: ClipRRect( 
         borderRadius: BorderRadius.circular(10.0),
         child: hasRemoteLogo
             ? CachedNetworkImage(
                 imageUrl: subscription.logoUrl!,
                 width: 52,
                 height: 52,
-                fit: BoxFit.contain, // Or BoxFit.cover
+                fit: BoxFit.contain, 
                 placeholder: (context, url) => Center(
                   child: Icon(
-                    subscription.categoryDisplayIcon,
-                    color: fgColor.withOpacity(0.5),
+                    subscription.category.displayIcon, // Using extension
+                    color: fgColor.withOpacity(0.5), // Kept withOpacity
                     size: 28,
                   ),
                 ),
                 errorWidget: (context, url, error) => Center(
                   child: Icon(
-                    subscription.categoryDisplayIcon, // Fallback icon
-                    color: fgColor.withOpacity(0.7),
+                    subscription.category.displayIcon, // Using extension
+                    color: fgColor.withOpacity(0.7), // Kept withOpacity
                     size: 28,
                   ),
                 ),
               )
-            // : hasLocalLogo
-            //     ? Image.asset(subscription.localLogoPath!, fit: BoxFit.contain) // Example for local asset
-            : Center( // Fallback to initial or category icon
+            : Center( 
                 child: Text(
                   subscription.name.isNotEmpty ? subscription.name[0].toUpperCase() : '?',
                   style: theme.textTheme.titleLarge?.copyWith(color: fgColor, fontWeight: FontWeight.bold),
@@ -10045,12 +9777,9 @@ class SubscriptionCardWidget extends StatelessWidget {
   }
 }
 
-// Add this extension to your subscription_entity.dart or a shared utility file
-// to get category colors that contrast with the theme.
+// Centralized display helpers for SubscriptionCategory
 extension CategoryDisplayHelpers on SubscriptionCategory {
    Color categoryDisplayIconColor(ThemeData theme) {
-    // Simple example: use primary for light theme, onSurface for dark
-    // Or use the predefined AppColors.catXYZ
     switch (this) {
       case SubscriptionCategory.streaming: return AppColors.catStreaming;
       case SubscriptionCategory.software: return AppColors.catSoftware;
@@ -10059,10 +9788,41 @@ extension CategoryDisplayHelpers on SubscriptionCategory {
       case SubscriptionCategory.music: return AppColors.catMusic;
       case SubscriptionCategory.news: return AppColors.catNews;
       case SubscriptionCategory.cloud: return AppColors.catCloud;
-      case SubscriptionCategory.utilities: return Colors.teal; // Example
-      case SubscriptionCategory.education: return Colors.indigo; // Example
+      case SubscriptionCategory.utilities: return Colors.teal.shade400; // Example
+      case SubscriptionCategory.education: return Colors.indigo.shade400; // Example
       case SubscriptionCategory.other: return AppColors.catOther;
-      default: return theme.colorScheme.onSurfaceVariant;
+      // No default because all enum values are covered.
+    }
+  }
+
+  String get displayName {
+    // TODO: Localize these
+    switch (this) {
+      case SubscriptionCategory.streaming: return 'Streaming';
+      case SubscriptionCategory.software: return 'Software';
+      case SubscriptionCategory.gaming: return 'Gaming';
+      case SubscriptionCategory.fitness: return 'Fitness';
+      case SubscriptionCategory.music: return 'Music';
+      case SubscriptionCategory.news: return 'News & Mags';
+      case SubscriptionCategory.cloud: return 'Cloud Storage';
+      case SubscriptionCategory.utilities: return 'Utilities';
+      case SubscriptionCategory.education: return 'Education';
+      case SubscriptionCategory.other: return 'Other';
+    }
+  }
+
+  IconData get displayIcon {
+     switch (this) {
+      case SubscriptionCategory.streaming: return Icons.live_tv_rounded;
+      case SubscriptionCategory.software: return Icons.widgets_outlined;
+      case SubscriptionCategory.gaming: return Icons.gamepad_outlined;
+      case SubscriptionCategory.fitness: return Icons.fitness_center_rounded;
+      case SubscriptionCategory.music: return Icons.music_note_rounded;
+      case SubscriptionCategory.news: return Icons.article_outlined;
+      case SubscriptionCategory.cloud: return Icons.cloud_outlined;
+      case SubscriptionCategory.utilities: return Icons.lightbulb_outline_rounded;
+      case SubscriptionCategory.education: return Icons.school_outlined;
+      case SubscriptionCategory.other: return Icons.category_rounded;
     }
   }
 }
@@ -10072,43 +9832,29 @@ extension CategoryDisplayHelpers on SubscriptionCategory {
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:aboapp/app.dart'; // The new root widget for your app
-import 'package:aboapp/core/di/injection.dart'; // Dependency injection setup
-import 'package:flutter_bloc/flutter_bloc.dart'; // If using BLoC observer
-// import 'package:aboapp/core/bloc/app_bloc_observer.dart'; // Optional: For observing BLoC states/events
+import 'package:aboapp/app.dart'; 
+import 'package:aboapp/core/di/injection.dart'; 
+// import 'package:flutter_bloc/flutter_bloc.dart'; // Unused import
 
 Future<void> main() async {
-  // Ensure Flutter bindings are initialized before doing any Flutter-specific setup.
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Configure dependencies (GetIt setup)
-  // This should be called once before the app runs.
   await configureDependencies();
 
-  // Set preferred orientations (optional, can be configured per screen if needed)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
-    // DeviceOrientation.landscapeLeft, // Uncomment if landscape is supported
-    // DeviceOrientation.landscapeRight,
   ]);
 
-  // Configure system UI overlay style (status bar, navigation bar)
-  // This sets a default style. It can be overridden per screen.
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent, // Transparent status bar
-      statusBarIconBrightness: Brightness.dark, // For light themes (adjust for dark)
-      systemNavigationBarColor: Colors.transparent, // Transparent navigation bar
-      systemNavigationBarIconBrightness: Brightness.dark, // For light themes
+      statusBarColor: Colors.transparent, 
+      statusBarIconBrightness: Brightness.dark, 
+      systemNavigationBarColor: Colors.transparent, 
+      systemNavigationBarIconBrightness: Brightness.dark, 
       systemNavigationBarDividerColor: Colors.transparent,
     ),
   );
 
-  // Optional: Initialize BLoC observer for debugging state changes
-  // Bloc.observer = AppBlocObserver();
-
-  // Run the app
   runApp(const AboApp());
 }
 
@@ -10116,19 +9862,17 @@ Future<void> main() async {
 ===== PATH: lib/main_container_screen.dart =====
 
 import 'package:aboapp/core/routing/app_router.dart';
-import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
-import 'package:aboapp/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart';
+// import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart'; // Unused
+// import 'package:aboapp/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart'; // Unused
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart'; // Unused
 import 'package:go_router/go_router.dart';
-// Import your AppLocalizations class
-// import 'package:aboapp/core/localization/app_localizations.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 
 
 class MainContainerScreen extends StatefulWidget {
-  final Widget child; // The current screen content from GoRouter
-  final String location; // The current route location
+  final Widget child; 
+  final String location; 
 
   const MainContainerScreen({
     super.key,
@@ -10144,13 +9888,11 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   late PageController _pageController;
   int _currentPageIndex = 0;
 
-  // Map route locations to PageView indices
-  // Ensure these paths match exactly what you define in GoRouter for the shell's direct children
-  static const List<String> _pageLocations = [
-    AppRoutes.home, // Or specifically /home/subscriptions if that's the default
-    AppRoutes.home + "/" + AppRoutes.statistics, // e.g., /home/statistics
-    AppRoutes.home + "/" + AppRoutes.settings,   // e.g., /home/settings
-  ];
+  // static const List<String> _pageLocations = [ // Unused field
+  //   AppRoutes.home, 
+  //   "${AppRoutes.home}/${AppRoutes.statistics}", 
+  //   "${AppRoutes.home}/${AppRoutes.settings}",   
+  // ];
 
   @override
   void initState() {
@@ -10166,9 +9908,6 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
       final newIndex = _calculatePageIndex(widget.location);
       if (newIndex != _currentPageIndex) {
         _currentPageIndex = newIndex;
-        // Animate PageView if navigating via GoRouter link,
-        // but jump if it's a programmatic change from BottomAppBar.
-        // For simplicity, we'll just jump here as GoRouter handles the primary nav.
         if (_pageController.hasClients && _pageController.page?.round() != _currentPageIndex) {
              _pageController.jumpToPage(_currentPageIndex);
         }
@@ -10177,26 +9916,25 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   }
 
   int _calculatePageIndex(String location) {
-    if (location.startsWith(AppRoutes.home + "/" + AppRoutes.statistics)) {
+    if (location.startsWith("${AppRoutes.home}/${AppRoutes.statistics}")) { // Used interpolation
       return 1;
-    } else if (location.startsWith(AppRoutes.home + "/" + AppRoutes.settings)) {
+    } else if (location.startsWith("${AppRoutes.home}/${AppRoutes.settings}")) { // Used interpolation
       return 2;
     }
-    // Default to home/subscriptions if no other match or just /home
     return 0; 
   }
 
-  void _onPageChanged(int index) {
-    if (_currentPageIndex == index) return;
-    setState(() {
-      _currentPageIndex = index;
-    });
+  // _onPageChanged removed as it was unused
+
+  void _onBottomNavItemTapped(int index) {
+     if (_currentPageIndex == index) return;
+    
+    // Navigate using GoRouter when BottomAppBar item is tapped
+    // This keeps the URL in sync and GoRouter handles updating the ShellRoute's child
     app_haptics.HapticFeedback.selectionClick();
-    // Navigate using GoRouter when PageView swipes
-    // This keeps the URL in sync with the PageView state.
     switch (index) {
       case 0:
-        context.goNamed(AppRoutes.home); // Or specific subscription route name
+        context.goNamed(AppRoutes.home); 
         break;
       case 1:
         context.goNamed(AppRoutes.statistics);
@@ -10204,17 +9942,35 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
       case 2:
         context.goNamed(AppRoutes.settings);
         break;
+      case 3: // For 'About' item
+        // Example action: Show a dialog or navigate to an 'About' screen (if defined)
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('About AboApp'), // TODO: Localize
+            content: const Text('Version 3.0.0\nSubscription Management Made Easy.'), // TODO: Localize
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('Close'), // TODO: Localize
+              )
+            ],
+          ),
+        );
+        // Do not change _currentPageIndex here if it's just a dialog
+        // If it were a separate page in the PageView, then update index and use _pageController.
+        return; // Return early to prevent _pageController interaction for dialogs
     }
-  }
-
-  void _onBottomNavItemTapped(int index) {
-     if (_currentPageIndex == index) return;
-    // Update PageController which will trigger _onPageChanged and then GoRouter navigation
-    _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    
+    // Animate page controller only if it's a main navigation item
+    if (index <= 2 && _pageController.hasClients) {
+       _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+     // No need to call setState here if GoRouter handles the rebuild via location change
   }
   
   @override
@@ -10225,32 +9981,23 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final localizations = AppLocalizations.of(context); // Get localizations
     final theme = Theme.of(context);
 
     return Scaffold(
-      // AppBar is now handled by individual screens within the PageView/child
-      body: widget.child, // This is where GoRouter places the current screen
-
-      // Floating Action Button (conditionally shown based on current page/route)
-      floatingActionButton: _currentPageIndex == 0 // Only show FAB on the HomeScreen (index 0)
+      body: widget.child, 
+      floatingActionButton: _currentPageIndex == 0 
           ? FloatingActionButton(
               onPressed: () {
                 app_haptics.HapticFeedback.lightImpact();
-                // Use GoRouter to navigate to the add subscription screen
-                // It will be pushed on top of the ShellRoute due to parentNavigatorKey
                 context.pushNamed(AppRoutes.addSubscription);
               },
-              // tooltip: localizations.translate('add_subscription'),
-              tooltip: 'Add Subscription', // TODO: Localize
+              tooltip: 'Add Subscription', 
               child: const Icon(Icons.add_rounded),
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      // BottomAppBar with Page Indicator or BottomNavigationBar
       bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(), // For FAB notch
+        shape: const CircularNotchedRectangle(), 
         notchMargin: 6.0,
         color: theme.bottomNavigationBarTheme.backgroundColor ?? theme.colorScheme.surface,
         elevation: theme.bottomNavigationBarTheme.elevation ?? 8.0,
@@ -10260,8 +10007,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             _buildBottomNavItem(
               context: context,
               icon: Icons.list_alt_rounded,
-              // label: localizations.translate('subscriptions'),
-              label: 'Subscriptions', // TODO: Localize
+              label: 'Subscriptions', 
               index: 0,
               isSelected: _currentPageIndex == 0,
               onTap: () => _onBottomNavItemTapped(0),
@@ -10269,32 +10015,27 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             _buildBottomNavItem(
               context: context,
               icon: Icons.bar_chart_rounded,
-              // label: localizations.translate('statistics'),
-              label: 'Statistics', // TODO: Localize
+              label: 'Statistics', 
               index: 1,
               isSelected: _currentPageIndex == 1,
               onTap: () => _onBottomNavItemTapped(1),
             ),
-            const SizedBox(width: 40), // The dummy child for the notch
+            const SizedBox(width: 40), 
             _buildBottomNavItem(
               context: context,
               icon: Icons.settings_rounded,
-              // label: localizations.translate('settings'),
-              label: 'Settings', // TODO: Localize
+              label: 'Settings', 
               index: 2,
               isSelected: _currentPageIndex == 2,
               onTap: () => _onBottomNavItemTapped(2),
             ),
-             _buildBottomNavItem( // Example of one more item if needed
+             _buildBottomNavItem( 
               context: context,
               icon: Icons.info_outline_rounded,
-              label: 'About', // TODO: Localize
-              index: 3, // This would require a 4th page
-              isSelected: _currentPageIndex == 3,
-              onTap: () {
-                 // Example: context.go('/home/about'); or show a dialog
-                 // For now, this is just a placeholder
-              },
+              label: 'About', 
+              index: 3, 
+              isSelected: false, // 'About' is not a page in PageView, so never "selected" in that sense
+              onTap: () => _onBottomNavItemTapped(3),
             ),
           ],
         ),
@@ -10318,7 +10059,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
     return Expanded(
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24.0), // For ripple effect
+        borderRadius: BorderRadius.circular(24.0), 
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
@@ -10332,7 +10073,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
                 style: (isSelected
                         ? theme.bottomNavigationBarTheme.selectedLabelStyle
                         : theme.bottomNavigationBarTheme.unselectedLabelStyle)
-                    ?.copyWith(color: color, fontSize: 10), // Ensure font size is small
+                    ?.copyWith(color: color, fontSize: 10), 
                 overflow: TextOverflow.ellipsis,
               ),
             ],
@@ -10347,7 +10088,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
 ===== PATH: lib/widgets/animated_counter_widget.dart =====
 
 import 'package:flutter/material.dart';
-import 'dart:math' as math; // For the flip animation if you choose to use it
+// import 'dart:math' as math; // Unused import
 
 class AnimatedCounterWidget extends StatelessWidget {
   final double value;
@@ -10355,7 +10096,7 @@ class AnimatedCounterWidget extends StatelessWidget {
   final TextStyle style;
   final Duration duration;
   final Curve curve;
-  final bool useFlipAnimation; // Optional: if you want a digit-flipping effect
+  final bool useFlipAnimation; 
 
   const AnimatedCounterWidget({
     super.key,
@@ -10364,26 +10105,21 @@ class AnimatedCounterWidget extends StatelessWidget {
     required this.style,
     this.duration = const Duration(milliseconds: 500),
     this.curve = Curves.easeOutCubic,
-    this.useFlipAnimation = false, // Default to simple tween animation
+    this.useFlipAnimation = false, 
   });
 
   @override
   Widget build(BuildContext context) {
     if (useFlipAnimation) {
-      // For a true digit-by-digit flip, a more complex widget is needed.
-      // This is a simplified version that animates the whole number.
-      // A package like `flutter_animate` or custom painting would be better for per-digit flips.
       return TweenAnimationBuilder<double>(
-        tween: Tween<double>(begin: 0, end: value), // Or previous value if available
+        tween: Tween<double>(begin: 0, end: value), 
         duration: duration,
         curve: curve,
         builder: (context, animatedValue, child) {
-          // Simple text animation, not per-digit flip
           return Text(formatter(animatedValue), style: style);
         },
       );
     } else {
-      // Standard TweenAnimationBuilder for the whole text
       return TweenAnimationBuilder<double>(
         tween: Tween<double>(begin: _getBeginValue(), end: value),
         duration: duration,
@@ -10395,12 +10131,8 @@ class AnimatedCounterWidget extends StatelessWidget {
     }
   }
 
-  // Helper to determine a reasonable start for the animation
-  // (e.g., 0 or a fraction of the target value)
   double _getBeginValue() {
-    // You could store a previous value if the widget is stateful
-    // For a stateless widget, starting from 0 or a fraction is common.
-    return 0.0; // Or perhaps value * 0.5 for a less drastic jump from nothing
+    return 0.0; 
   }
 }
 
@@ -10438,7 +10170,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 72,
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6), // Kept withOpacity
             ),
             const SizedBox(height: 24),
             Text(
@@ -10460,7 +10192,7 @@ class EmptyStateWidget extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.refresh_rounded),
-                label: Text(retryText ?? 'Try Again'), // TODO: Localize
+                label: Text(retryText ?? 'Try Again'), 
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -10493,8 +10225,7 @@ dependencies:
     sdk: flutter
 
   # State Management
-  flutter_bloc: ^8.1.6 # Or provider ^6.1.2 if you strongly prefer. BLoC/Cubit is great for scalability.
-                      # For this refactor, I'll use flutter_bloc.
+  flutter_bloc: ^8.1.6 
 
   # Dependency Injection
   get_it: ^7.7.0
@@ -10505,17 +10236,18 @@ dependencies:
   json_annotation: ^4.9.0
 
   # Routing
-  go_router: ^14.2.0 # Modern and powerful routing
+  go_router: ^14.2.0 
 
   # UI & Utility
-  intl: ^0.19.0 # For date/number formatting
-  uuid: ^4.4.0 # For generating unique IDs
-  cached_network_image: ^3.3.1 # For network images with caching
-  fl_chart: ^0.68.0 # For charts in statistics
-  shimmer: ^3.0.0 # For loading skeletons
-  flutter_native_splash: ^2.4.0 # For native splash screens
-  cupertino_icons: ^1.0.8 # iOS style icons
-  animations: ^2.0.11 # Pre-built animations
+  intl: ^0.19.0 
+  uuid: ^4.4.0 
+  cached_network_image: ^3.3.1 
+  fl_chart: ^0.68.0 
+  shimmer: ^3.0.0 
+  flutter_native_splash: ^2.4.0 
+  cupertino_icons: ^1.0.8 
+  animations: ^2.0.11
+  collection: ^1.18.0 # Added collection package
 
   # Local Storage
   shared_preferences: ^2.2.3
@@ -10523,29 +10255,25 @@ dependencies:
   # Local Notifications (if reminders are a feature)
   # flutter_local_notifications: ^17.0.0 
 
-  # Optional: Device Info, Path Provider (if needed for advanced local storage/caching)
-  # path_provider: ^2.0.15
-  # device_info_plus: ^9.0.2
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
-  flutter_lints: ^4.0.0 # Enforces good coding practices
+  flutter_lints: ^4.0.0 
   build_runner: ^2.4.11
-  freezed: ^2.5.2 # Generator for freezed_annotation
-  json_serializable: ^6.8.0 # Generator for json_annotation
-  injectable_generator: ^2.5.0 # Generator for injectable
-  go_router_builder: ^2.7.0 # Generator for go_router type-safe routes
+  freezed: ^2.5.2 
+  json_serializable: ^6.8.0 
+  injectable_generator: ^2.5.0 
+  go_router_builder: ^2.7.0 
 
 flutter:
   uses-material-design: true
 
   assets:
     # Ensure these directories exist in your project's `assets` folder
-    - assets/images/ # For general images, app logo, onboarding illustrations
-    - assets/icons/  # For custom SVG or PNG icons if any
-    # - assets/service_logos/ # If you have a predefined set of local service logos
+    # - assets/images/ # For general images, app logo, onboarding illustrations
+    # - assets/icons/  # For custom SVG or PNG icons if any
+    - assets/l10n/ # For localization files
 
   fonts:
     - family: Inter
@@ -10558,11 +10286,9 @@ flutter:
         - asset: assets/fonts/Inter-Bold.ttf
           weight: 700
 
-# flutter_native_splash configuration (optional, but good for polish)
-# Ensure you have a splash_logo.png in assets/images/
 flutter_native_splash:
-  color: "#121212" # Dark background consistent with a potential dark theme
-  image: assets/images/app_logo_splash.png # Your app's logo for the splash screen
+  color: "#121212" 
+  image: assets/images/app_logo_splash.png 
   android_12:
     color: "#121212"
     image: assets/images/app_logo_splash.png

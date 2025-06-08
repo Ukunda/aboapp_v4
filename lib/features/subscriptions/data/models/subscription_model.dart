@@ -1,4 +1,3 @@
-// lib/features/subscriptions/data/models/subscription_model.dart
 import 'package:aboapp/core/utils/color_serializer.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +6,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'subscription_model.freezed.dart';
 part 'subscription_model.g.dart';
 
-@JsonSerializable(explicitToJson: true) // Annotation for the class
 @freezed
+@JsonSerializable(explicitToJson: true) // Annotation moved to the class
 class SubscriptionModel with _$SubscriptionModel {
-  const SubscriptionModel._();
+  const SubscriptionModel._(); // Private constructor remains
 
   const factory SubscriptionModel({
     required String id,
@@ -34,28 +33,7 @@ class SubscriptionModel with _$SubscriptionModel {
   }) = _SubscriptionModel;
 
   factory SubscriptionModel.fromJson(Map<String, dynamic> json) =>
-      _$SubscriptionModelFromJson(json); // Correctly calls generated method
-
-  SubscriptionEntity toEntity() {
-    return SubscriptionEntity(
-      id: id,
-      name: name,
-      price: price,
-      billingCycle: billingCycle,
-      nextBillingDate: nextBillingDate,
-      category: category,
-      startDate: startDate,
-      description: description,
-      logoUrl: logoUrl,
-      color: color,
-      isActive: isActive,
-      notificationsEnabled: notificationsEnabled,
-      notificationDaysBefore: notificationDaysBefore,
-      trialEndDate: trialEndDate,
-      customCycleDetails: customCycleDetails,
-      notes: notes,
-    );
-  }
+      _$SubscriptionModelFromJson(json);
 
   factory SubscriptionModel.fromEntity(SubscriptionEntity entity) {
     return SubscriptionModel(
@@ -75,6 +53,27 @@ class SubscriptionModel with _$SubscriptionModel {
       trialEndDate: entity.trialEndDate,
       customCycleDetails: entity.customCycleDetails,
       notes: entity.notes,
+    );
+  }
+
+  SubscriptionEntity toEntity() {
+    return SubscriptionEntity(
+      id: id,
+      name: name,
+      price: price,
+      billingCycle: billingCycle,
+      nextBillingDate: nextBillingDate,
+      category: category,
+      startDate: startDate,
+      description: description,
+      logoUrl: logoUrl,
+      color: color,
+      isActive: isActive,
+      notificationsEnabled: notificationsEnabled,
+      notificationDaysBefore: notificationDaysBefore,
+      trialEndDate: trialEndDate,
+      customCycleDetails: customCycleDetails,
+      notes: notes,
     );
   }
 }
