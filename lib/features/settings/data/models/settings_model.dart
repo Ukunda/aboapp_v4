@@ -29,7 +29,12 @@ class LocaleConverter implements JsonConverter<Locale, String> {
 // --- End of converters ---
 
 @freezed
-@JsonSerializable(explicitToJson: true) // Annotation moved to the class
+@JsonSerializable(
+  explicitToJson: true,
+  createFactory: false,
+  createToJson: false,
+) // Avoid duplicate top-level functions
+
 class SettingsModel with _$SettingsModel {
   const SettingsModel._(); // Private constructor remains
 

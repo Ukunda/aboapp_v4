@@ -6,21 +6,6 @@ part of 'settings_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SettingsModel _$SettingsModelFromJson(Map<String, dynamic> json) =>
-    SettingsModel(
-      themeMode:
-          const ThemeModeConverter().fromJson(json['themeMode'] as String),
-      locale: const LocaleConverter().fromJson(json['locale'] as String),
-      currencyCode: json['currencyCode'] as String,
-    );
-
-Map<String, dynamic> _$SettingsModelToJson(SettingsModel instance) =>
-    <String, dynamic>{
-      'themeMode': const ThemeModeConverter().toJson(instance.themeMode),
-      'locale': const LocaleConverter().toJson(instance.locale),
-      'currencyCode': instance.currencyCode,
-    };
-
 _$SettingsModelImpl _$$SettingsModelImplFromJson(Map<String, dynamic> json) =>
     _$SettingsModelImpl(
       themeMode:

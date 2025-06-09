@@ -18,12 +18,12 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
   bool _isSearching = false;
   late AnimationController _fabAnimationController;
-
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SubscriptionCubit>().loadSubscriptions();
     });
-     _fabAnimationController = AnimationController(
+    _fabAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
@@ -58,16 +58,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
       }
     });
   }
-  
+
   String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
     // TODO: Localize
     switch (cycle) {
-      case BillingCycle.weekly: return 'Weekly';
-      case BillingCycle.monthly: return 'Monthly';
-      case BillingCycle.quarterly: return 'Quarterly';
-      case BillingCycle.biAnnual: return 'Bi-Annual';
-      case BillingCycle.yearly: return 'Yearly';
-      case BillingCycle.custom: return 'Custom';
+      case BillingCycle.weekly:
+        return 'Weekly';
+      case BillingCycle.monthly:
+        return 'Monthly';
+      case BillingCycle.quarterly:
+        return 'Quarterly';
+      case BillingCycle.biAnnual:
+        return 'Bi-Annual';
+      case BillingCycle.yearly:
+        return 'Yearly';
+      case BillingCycle.custom:
+        return 'Custom';
     }
   }
 
@@ -85,34 +91,40 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   focusNode: _searchFocusNode,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: 'Search subscriptions...', 
-                    border: InputBorder.none,
-                    isDense: true,
-                    hintStyle: theme.appBarTheme.titleTextStyle?.copyWith(
-                      fontWeight: FontWeight.normal,
-                      color: theme.colorScheme.onSurface.withOpacity(0.6) // Kept withOpacity
-                    )
-                  ),
+                      hintText: 'Search subscriptions...',
+                      border: InputBorder.none,
+                      isDense: true,
+                      hintStyle: theme.appBarTheme.titleTextStyle?.copyWith(
+                          fontWeight: FontWeight.normal,
+                          color: theme.colorScheme.onSurface
+                              .withOpacity(0.6) // Kept withOpacity
+                          )),
                   style: theme.appBarTheme.titleTextStyle,
-                  onChanged: (query) => context.read<SubscriptionCubit>().searchSubscriptions(query),
+                  onChanged: (query) => context
+                      .read<SubscriptionCubit>()
+                      .searchSubscriptions(query),
                 )
-              : const Text('My Subscriptions'), 
+              : const Text('My Subscriptions'),
         ),
         actions: [
           IconButton(
-            icon: Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
+            icon:
+                Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
             onPressed: () => _toggleSearch(context),
-            tooltip: _isSearching ? 'Close Search' : 'Search', 
+            tooltip: _isSearching ? 'Close Search' : 'Search',
           ),
         ],
       ),
       body: BlocBuilder<SubscriptionCubit, SubscriptionState>(
         builder: (context, state) {
           return state.when(
-            initial: () => const Center(child: CircularProgressIndicator.adaptive()),
+            initial: () =>
+                const Center(child: CircularProgressIndicator.adaptive()),
             loading: () => _buildLoadingShimmer(theme),
-            loaded: (allSubs, filteredSubs, sortOption, filterCat, filterBill, searchTerm) {
-              final activeSubscriptions = allSubs.where((s) => s.isActive).toList();
+            loaded: (allSubs, filteredSubs, sortOption, filterCat, filterBill,
+                searchTerm) {
+              final activeSubscriptions =
+                  allSubs.where((s) => s.isActive).toList();
               return RefreshIndicator(
                 onRefresh: () async {
                   app_haptics.HapticFeedback.mediumImpact();
@@ -130,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                           ),
                         ),
                       ),
-                    _buildFilterAndSortControls(context, theme, sortOption, filterCat, filterBill),
+                    _buildFilterAndSortControls(
+                        context, theme, sortOption, filterCat, filterBill),
                     if (filteredSubs.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
@@ -139,8 +152,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             icon: Icons.search_off_rounded,
                             title: 'No Subscriptions Found',
                             message: 'Try adjusting your search or filters.',
-                            onRetry: () => context.read<SubscriptionCubit>().clearAllFilters(),
-                            retryText: 'Clear Filters', 
+                            onRetry: () => context
+                                .read<SubscriptionCubit>()
+                                .clearAllFilters(),
+                            retryText: 'Clear Filters',
                           ),
                         ),
                       )
@@ -155,16 +170,17 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 context.pushNamed(
                                   AppRoutes.editSubscription,
                                   pathParameters: {'id': subscription.id},
-                                  extra: subscription, 
+                                  extra: subscription,
                                 );
                               },
-                              onLongPress: () => _showSubscriptionActions(context, theme, subscription),
+                              onLongPress: () => _showSubscriptionActions(
+                                  context, theme, subscription),
                             );
                           },
                           childCount: filteredSubs.length,
                         ),
                       ),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)), 
+                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
                   ],
                 ),
               );
@@ -172,10 +188,11 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             error: (message) => Center(
               child: EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: 'Error', 
+                title: 'Error',
                 message: message,
-                onRetry: () => context.read<SubscriptionCubit>().loadSubscriptions(),
-                retryText: 'Retry', 
+                onRetry: () =>
+                    context.read<SubscriptionCubit>().loadSubscriptions(),
+                retryText: 'Retry',
               ),
             ),
           );
@@ -185,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildFilterAndSortControls(
-    BuildContext context, 
+    BuildContext context,
     ThemeData theme,
     SortOption? currentSort,
     SubscriptionCategory? currentCat,
@@ -207,21 +224,26 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     items: SortOption.values.map((option) {
                       return DropdownMenuItem<SortOption>(
                         value: option,
-                        child: Text(option.toString().split('.').last), 
+                        child: Text(option.displayName),
                       );
                     }).toList(),
                     onChanged: (option) {
                       if (option != null) {
-                        context.read<SubscriptionCubit>().changeSortOption(option);
+                        context
+                            .read<SubscriptionCubit>()
+                            .changeSortOption(option);
                       }
                     },
                   ),
                 ),
-                if (currentCat != null || currentBill != null || (_searchController.text.isNotEmpty && _isSearching))
+                if (currentCat != null ||
+                    currentBill != null ||
+                    (_searchController.text.isNotEmpty && _isSearching))
                   TextButton.icon(
                     icon: const Icon(Icons.clear_all_rounded, size: 18),
-                    label: const Text('Clear Filters'), 
-                    onPressed: () => context.read<SubscriptionCubit>().clearAllFilters(),
+                    label: const Text('Clear Filters'),
+                    onPressed: () =>
+                        context.read<SubscriptionCubit>().clearAllFilters(),
                     style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -235,20 +257,28 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               child: Row(
                 children: [
                   FilterChip(
-                    label: const Text('All Cats'), 
+                    label: const Text('All Cats'),
                     selected: currentCat == null,
-                    onSelected: (_) => context.read<SubscriptionCubit>().clearCategoryFilter(),
+                    onSelected: (_) =>
+                        context.read<SubscriptionCubit>().clearCategoryFilter(),
                   ),
                   ...SubscriptionCategory.values.map((category) => Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: FilterChip(
-                          avatar: Icon(category.displayIcon, size: 16, color: category == currentCat ? theme.colorScheme.onPrimary : category.categoryDisplayIconColor(theme)),
-                          label: Text(category.displayName), 
+                          avatar: Icon(category.displayIcon,
+                              size: 16,
+                              color: category == currentCat
+                                  ? theme.colorScheme.onPrimary
+                                  : category.categoryDisplayIconColor(theme)),
+                          label: Text(category.displayName),
                           selected: currentCat == category,
                           onSelected: (selected) {
-                            context.read<SubscriptionCubit>().filterByCategory(selected ? category : null);
+                            context
+                                .read<SubscriptionCubit>()
+                                .filterByCategory(selected ? category : null);
                           },
-                          selectedColor: category.categoryDisplayIconColor(theme), 
+                          selectedColor:
+                              category.categoryDisplayIconColor(theme),
                           checkmarkColor: theme.colorScheme.onPrimary,
                         ),
                       )),
@@ -256,25 +286,33 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               ),
             ),
             const SizedBox(height: 4),
-             SingleChildScrollView(
+            SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                   FilterChip(
-                    label: const Text('All Cycles'), 
+                  FilterChip(
+                    label: const Text('All Cycles'),
                     selected: currentBill == null,
-                    onSelected: (_) => context.read<SubscriptionCubit>().clearBillingCycleFilter(),
+                    onSelected: (_) => context
+                        .read<SubscriptionCubit>()
+                        .clearBillingCycleFilter(),
                   ),
-                  ...BillingCycle.values.where((c) => c != BillingCycle.custom).map((cycle) => Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: FilterChip(
-                          label: Text(_getBillingCycleLabel(context, cycle)),
-                          selected: currentBill == cycle,
-                          onSelected: (selected) {
-                             context.read<SubscriptionCubit>().filterByBillingCycle(selected ? cycle : null);
-                          },
-                        ),
-                      )),
+                  ...BillingCycle.values
+                      .where((c) => c != BillingCycle.custom)
+                      .map((cycle) => Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: FilterChip(
+                              label:
+                                  Text(_getBillingCycleLabel(context, cycle)),
+                              selected: currentBill == cycle,
+                              onSelected: (selected) {
+                                context
+                                    .read<SubscriptionCubit>()
+                                    .filterByBillingCycle(
+                                        selected ? cycle : null);
+                              },
+                            ),
+                          )),
                 ],
               ),
             ),
@@ -286,8 +324,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
 
   Widget _buildLoadingShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3), // Corrected deprecated
-      highlightColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.1), // Corrected deprecated
+      baseColor: theme.colorScheme.surfaceContainerHighest
+          .withOpacity(0.3), // Corrected deprecated
+      highlightColor: theme.colorScheme.surfaceContainerHighest
+          .withOpacity(0.1), // Corrected deprecated
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -299,34 +339,43 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             ),
             margin: const EdgeInsets.only(bottom: 16),
           ),
-          Container(height: 40, color: theme.cardColor, margin: const EdgeInsets.only(bottom:8)),
-          Container(height: 40, color: theme.cardColor, margin: const EdgeInsets.only(bottom:16)),
-          ...List.generate(5, (index) => Container(
-            height: 90.0,
-            decoration: BoxDecoration(
+          Container(
+              height: 40,
               color: theme.cardColor,
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            margin: const EdgeInsets.only(bottom: 10.0),
-          )),
+              margin: const EdgeInsets.only(bottom: 8)),
+          Container(
+              height: 40,
+              color: theme.cardColor,
+              margin: const EdgeInsets.only(bottom: 16)),
+          ...List.generate(
+              5,
+              (index) => Container(
+                    height: 90.0,
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    margin: const EdgeInsets.only(bottom: 10.0),
+                  )),
         ],
       ),
     );
   }
 
-  void _showSubscriptionActions(BuildContext context, ThemeData theme, SubscriptionEntity subscription) {
+  void _showSubscriptionActions(
+      BuildContext context, ThemeData theme, SubscriptionEntity subscription) {
     app_haptics.HapticFeedback.mediumImpact();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16.0)),
       ),
-      builder: (builderContext) { 
+      builder: (builderContext) {
         return Wrap(
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.edit_rounded),
-              title: const Text('Edit Subscription'), 
+              title: const Text('Edit Subscription'),
               onTap: () {
                 Navigator.pop(builderContext);
                 context.pushNamed(
@@ -337,46 +386,64 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               },
             ),
             ListTile(
-              leading: Icon(subscription.isActive ? Icons.pause_circle_outline_rounded : Icons.play_circle_outline_rounded),
-              title: Text(subscription.isActive ? 'Pause Subscription' : 'Resume Subscription'), 
+              leading: Icon(subscription.isActive
+                  ? Icons.pause_circle_outline_rounded
+                  : Icons.play_circle_outline_rounded),
+              title: Text(subscription.isActive
+                  ? 'Pause Subscription'
+                  : 'Resume Subscription'),
               onTap: () {
                 Navigator.pop(builderContext);
-                context.read<SubscriptionCubit>().toggleSubscriptionActiveStatus(subscription.id);
-              },
-            ),
-             ListTile(
-              leading: Icon(subscription.notificationsEnabled ? Icons.notifications_off_rounded : Icons.notifications_active_rounded),
-              title: Text(subscription.notificationsEnabled ? 'Disable Notifications' : 'Enable Notifications'), 
-              onTap: () {
-                Navigator.pop(builderContext);
-                context.read<SubscriptionCubit>().toggleSubscriptionNotification(subscription.id);
+                context
+                    .read<SubscriptionCubit>()
+                    .toggleSubscriptionActiveStatus(subscription.id);
               },
             ),
             ListTile(
-              leading: Icon(Icons.delete_forever_rounded, color: theme.colorScheme.error),
-              title: Text('Delete Subscription', style: TextStyle(color: theme.colorScheme.error)), 
+              leading: Icon(subscription.notificationsEnabled
+                  ? Icons.notifications_off_rounded
+                  : Icons.notifications_active_rounded),
+              title: Text(subscription.notificationsEnabled
+                  ? 'Disable Notifications'
+                  : 'Enable Notifications'),
+              onTap: () {
+                Navigator.pop(builderContext);
+                context
+                    .read<SubscriptionCubit>()
+                    .toggleSubscriptionNotification(subscription.id);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.delete_forever_rounded,
+                  color: theme.colorScheme.error),
+              title: Text('Delete Subscription',
+                  style: TextStyle(color: theme.colorScheme.error)),
               onTap: () async {
                 Navigator.pop(builderContext);
                 final confirmDelete = await showDialog<bool>(
-                  context: context, 
+                  context: context,
                   builder: (dialogContext) => AlertDialog(
-                    title: const Text('Confirm Delete'), 
-                    content: Text('Are you sure you want to delete "${subscription.name}"? This cannot be undone.'), 
+                    title: const Text('Confirm Delete'),
+                    content: Text(
+                        'Are you sure you want to delete "${subscription.name}"? This cannot be undone.'),
                     actions: <Widget>[
                       TextButton(
-                        child: const Text('Cancel'), 
+                        child: const Text('Cancel'),
                         onPressed: () => Navigator.of(dialogContext).pop(false),
                       ),
                       TextButton(
-                        child: Text('Delete', style: TextStyle(color: theme.colorScheme.error)), 
+                        child: Text('Delete',
+                            style: TextStyle(color: theme.colorScheme.error)),
                         onPressed: () => Navigator.of(dialogContext).pop(true),
                       ),
                     ],
                   ),
                 );
                 if (confirmDelete == true) {
-                   if (!mounted) return; // Guard context use
-                  context.read<SubscriptionCubit>().deleteSubscription(subscription.id);
+                  if (!mounted) return; // Guard context use
+                  context
+                      .read<SubscriptionCubit>()
+                      .deleteSubscription(subscription.id);
                 }
               },
             ),
@@ -386,4 +453,3 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     );
   }
 }
-// Removed duplicate CategoryDisplayExtension, use the one in subscription_card_widget.dart

@@ -7,7 +7,11 @@ part 'subscription_model.freezed.dart';
 part 'subscription_model.g.dart';
 
 @freezed
-@JsonSerializable(explicitToJson: true) // Annotation moved to the class
+@JsonSerializable(
+  explicitToJson: true,
+  createFactory: false,
+  createToJson: false,
+) // Avoid duplicate top-level functions
 class SubscriptionModel with _$SubscriptionModel {
   const SubscriptionModel._(); // Private constructor remains
 

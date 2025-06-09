@@ -49,6 +49,7 @@ import '../../features/subscriptions/domain/usecases/update_subscription_usecase
 import '../../features/subscriptions/presentation/cubit/subscription_cubit.dart'
     as _i854;
 import '../routing/app_router.dart' as _i282;
+import 'injection.dart' as _i464;
 
 // initializes the registration of main-scope dependencies inside of GetIt
 _i174.GetIt $initGetIt(
@@ -61,7 +62,9 @@ _i174.GetIt $initGetIt(
     environment,
     environmentFilter,
   );
+  final registerExternalDependencies = _$RegisterExternalDependencies();
   gh.factory<_i1049.StatisticsCubit>(() => _i1049.StatisticsCubit());
+  gh.lazySingleton<_i706.Uuid>(() => registerExternalDependencies.uuid);
   gh.singleton<_i282.AppRouter>(
       () => _i282.AppRouter(gh<_i460.SharedPreferences>()));
   gh.lazySingleton<_i723.SettingsLocalDataSource>(
@@ -104,3 +107,6 @@ _i174.GetIt $initGetIt(
       ));
   return getIt;
 }
+
+class _$RegisterExternalDependencies
+    extends _i464.RegisterExternalDependencies {}

@@ -6,7 +6,8 @@ class SubscriptionState with _$SubscriptionState {
   const factory SubscriptionState.loading() = _Loading;
   const factory SubscriptionState.loaded({
     required List<SubscriptionEntity> allSubscriptions,
-    required List<SubscriptionEntity> filteredSubscriptions, // For UI display after filtering/sorting
+    required List<SubscriptionEntity>
+        filteredSubscriptions, // For UI display after filtering/sorting
     // Add other relevant data for the UI, e.g., sorting options, filter values
     SortOption? currentSortOption,
     SubscriptionCategory? filterCategory,
@@ -17,5 +18,34 @@ class SubscriptionState with _$SubscriptionState {
 }
 
 // Enums for sorting and potentially filtering (can be moved to domain if they represent business logic)
-enum SortOption { nameAsc, nameDesc, priceAsc, priceDesc, nextBillingDateAsc, nextBillingDateDesc, category }
+enum SortOption {
+  nameAsc,
+  nameDesc,
+  priceAsc,
+  priceDesc,
+  nextBillingDateAsc,
+  nextBillingDateDesc,
+  category
+}
 // Filter enums (BillingCycle, SubscriptionCategory) are already defined in subscription_entity.dart
+
+extension SortOptionDisplay on SortOption {
+  String get displayName {
+    switch (this) {
+      case SortOption.nameAsc:
+        return 'Name (A-Z)';
+      case SortOption.nameDesc:
+        return 'Name (Z-A)';
+      case SortOption.priceAsc:
+        return 'Price (Low-High)';
+      case SortOption.priceDesc:
+        return 'Price (High-Low)';
+      case SortOption.nextBillingDateAsc:
+        return 'Next Billing Date';
+      case SortOption.nextBillingDateDesc:
+        return 'Next Billing Date (Desc)';
+      case SortOption.category:
+        return 'Category';
+    }
+  }
+}
