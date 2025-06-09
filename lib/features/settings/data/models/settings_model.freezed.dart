@@ -20,6 +20,8 @@ SettingsModel _$SettingsModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SettingsModel {
+  @AppUIStyleConverter()
+  AppUIStyle get uiStyle => throw _privateConstructorUsedError;
   @ThemeModeConverter()
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   @LocaleConverter()
@@ -43,7 +45,8 @@ abstract class $SettingsModelCopyWith<$Res> {
       _$SettingsModelCopyWithImpl<$Res, SettingsModel>;
   @useResult
   $Res call(
-      {@ThemeModeConverter() ThemeMode themeMode,
+      {@AppUIStyleConverter() AppUIStyle uiStyle,
+      @ThemeModeConverter() ThemeMode themeMode,
       @LocaleConverter() Locale locale,
       String currencyCode});
 }
@@ -63,11 +66,16 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? uiStyle = null,
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
   }) {
     return _then(_value.copyWith(
+      uiStyle: null == uiStyle
+          ? _value.uiStyle
+          : uiStyle // ignore: cast_nullable_to_non_nullable
+              as AppUIStyle,
       themeMode: null == themeMode
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
@@ -93,7 +101,8 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {@ThemeModeConverter() ThemeMode themeMode,
+      {@AppUIStyleConverter() AppUIStyle uiStyle,
+      @ThemeModeConverter() ThemeMode themeMode,
       @LocaleConverter() Locale locale,
       String currencyCode});
 }
@@ -111,11 +120,16 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? uiStyle = null,
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
   }) {
     return _then(_$SettingsModelImpl(
+      uiStyle: null == uiStyle
+          ? _value.uiStyle
+          : uiStyle // ignore: cast_nullable_to_non_nullable
+              as AppUIStyle,
       themeMode: null == themeMode
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
@@ -136,7 +150,8 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$SettingsModelImpl extends _SettingsModel {
   const _$SettingsModelImpl(
-      {@ThemeModeConverter() required this.themeMode,
+      {@AppUIStyleConverter() required this.uiStyle,
+      @ThemeModeConverter() required this.themeMode,
       @LocaleConverter() required this.locale,
       required this.currencyCode})
       : super._();
@@ -144,6 +159,9 @@ class _$SettingsModelImpl extends _SettingsModel {
   factory _$SettingsModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$SettingsModelImplFromJson(json);
 
+  @override
+  @AppUIStyleConverter()
+  final AppUIStyle uiStyle;
   @override
   @ThemeModeConverter()
   final ThemeMode themeMode;
@@ -155,7 +173,7 @@ class _$SettingsModelImpl extends _SettingsModel {
 
   @override
   String toString() {
-    return 'SettingsModel(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode)';
+    return 'SettingsModel(uiStyle: $uiStyle, themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode)';
   }
 
   @override
@@ -163,6 +181,7 @@ class _$SettingsModelImpl extends _SettingsModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsModelImpl &&
+            (identical(other.uiStyle, uiStyle) || other.uiStyle == uiStyle) &&
             (identical(other.themeMode, themeMode) ||
                 other.themeMode == themeMode) &&
             (identical(other.locale, locale) || other.locale == locale) &&
@@ -172,7 +191,8 @@ class _$SettingsModelImpl extends _SettingsModel {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode);
+  int get hashCode =>
+      Object.hash(runtimeType, uiStyle, themeMode, locale, currencyCode);
 
   /// Create a copy of SettingsModel
   /// with the given fields replaced by the non-null parameter values.
@@ -192,7 +212,8 @@ class _$SettingsModelImpl extends _SettingsModel {
 
 abstract class _SettingsModel extends SettingsModel {
   const factory _SettingsModel(
-      {@ThemeModeConverter() required final ThemeMode themeMode,
+      {@AppUIStyleConverter() required final AppUIStyle uiStyle,
+      @ThemeModeConverter() required final ThemeMode themeMode,
       @LocaleConverter() required final Locale locale,
       required final String currencyCode}) = _$SettingsModelImpl;
   const _SettingsModel._() : super._();
@@ -200,6 +221,9 @@ abstract class _SettingsModel extends SettingsModel {
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
       _$SettingsModelImpl.fromJson;
 
+  @override
+  @AppUIStyleConverter()
+  AppUIStyle get uiStyle;
   @override
   @ThemeModeConverter()
   ThemeMode get themeMode;

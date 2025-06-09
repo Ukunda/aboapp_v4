@@ -1,14 +1,18 @@
+// lib/features/settings/presentation/cubit/settings_cubit.dart
+
+import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/domain/usecases/get_settings_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_currency_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_locale_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_theme_setting_usecase.dart';
-import 'package:flutter/material.dart'; 
+import 'package:aboapp/features/settings/domain/usecases/save_ui_style_setting_usecase.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
 part 'settings_state.dart';
-part 'settings_cubit.freezed.dart'; 
+part 'settings_cubit.freezed.dart';
 
 @injectable
 class SettingsCubit extends Cubit<SettingsState> {
@@ -16,12 +20,14 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SaveThemeSettingUseCase _saveThemeSetting;
   final SaveLocaleSettingUseCase _saveLocaleSetting;
   final SaveCurrencySettingUseCase _saveCurrencySetting;
+  final SaveUIStyleSettingUseCase _saveUIStyleSetting;
 
   SettingsCubit(
     this._getSettings,
     this._saveThemeSetting,
     this._saveLocaleSetting,
     this._saveCurrencySetting,
+    this._saveUIStyleSetting,
   ) : super(SettingsState.initial());
 
   Future<void> loadSettings() async {
@@ -29,6 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       final settingsEntity = await _getSettings();
       emit(state.copyWith(
+        uiStyle: settingsEntity.uiStyle,
         themeMode: settingsEntity.themeMode,
         locale: settingsEntity.locale,
         currencyCode: settingsEntity.currencyCode,
@@ -64,6 +71,16 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       await _saveCurrencySetting(newCurrencyCode);
       emit(state.copyWith(currencyCode: newCurrencyCode, isLoading: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, error: e.toString()));
+    }
+  }
+
+  Future<void> updateUIStyle(AppUIStyle newUIStyle) async {
+    emit(state.copyWith(isLoading: true, error: null));
+    try {
+      await _saveUIStyleSetting(newUIStyle);
+      emit(state.copyWith(uiStyle: newUIStyle, isLoading: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, error: e.toString()));
     }

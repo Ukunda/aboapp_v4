@@ -1,7 +1,9 @@
+// lib/features/settings/data/repositories/settings_repository_impl.dart
+
 import 'package:aboapp/features/settings/data/datasources/settings_local_datasource.dart';
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/domain/repositories/settings_repository.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
 @LazySingleton(as: SettingsRepository)
@@ -16,7 +18,6 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final settingsModel = await localDataSource.getSettings();
       return settingsModel.toEntity();
     } catch (e) {
-      // print('Error in SettingsRepositoryImpl.getSettings: $e'); // Avoid print
       return SettingsEntity.defaultSettings();
     }
   }
@@ -34,5 +35,10 @@ class SettingsRepositoryImpl implements SettingsRepository {
   @override
   Future<void> saveCurrencyCode(String currencyCode) async {
     await localDataSource.saveCurrencyCode(currencyCode);
+  }
+
+  @override
+  Future<void> saveUIStyle(AppUIStyle uiStyle) async {
+    await localDataSource.saveUIStyle(uiStyle);
   }
 }

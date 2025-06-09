@@ -1,22 +1,27 @@
-import 'package:flutter/material.dart'; // For ThemeMode and Locale
+// lib/features/settings/domain/entities/settings_entity.dart
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'settings_entity.freezed.dart';
 
+enum AppUIStyle {
+  classic,
+  modern,
+}
+
 @freezed
 class SettingsEntity with _$SettingsEntity {
   const factory SettingsEntity({
+    required AppUIStyle uiStyle,
     required ThemeMode themeMode,
     required Locale locale,
-    required String currencyCode, // e.g., "USD", "EUR"
-    // Add other app-wide settings here if needed
-    // Example: bool enableNotificationsGlobally,
+    required String currencyCode,
   }) = _SettingsEntity;
 
-  // Default settings
   factory SettingsEntity.defaultSettings() => const SettingsEntity(
+        uiStyle: AppUIStyle.classic, // Default to classic
         themeMode: ThemeMode.system,
-        locale: Locale('en', 'US'), // Default to English (US)
-        currencyCode: 'USD', // Default to USD
+        locale: Locale('en', 'US'),
+        currencyCode: 'USD',
       );
 }

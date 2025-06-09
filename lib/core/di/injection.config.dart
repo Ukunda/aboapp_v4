@@ -28,6 +28,8 @@ import '../../features/settings/domain/usecases/save_locale_setting_usecase.dart
     as _i682;
 import '../../features/settings/domain/usecases/save_theme_setting_usecase.dart'
     as _i150;
+import '../../features/settings/domain/usecases/save_ui_style_setting_usecase.dart'
+    as _i421;
 import '../../features/settings/presentation/cubit/settings_cubit.dart'
     as _i792;
 import '../../features/statistics/presentation/cubit/statistics_cubit.dart'
@@ -84,11 +86,14 @@ _i174.GetIt $initGetIt(
       () => _i682.SaveLocaleSettingUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i150.SaveThemeSettingUseCase>(
       () => _i150.SaveThemeSettingUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i421.SaveUIStyleSettingUseCase>(
+      () => _i421.SaveUIStyleSettingUseCase(gh<_i674.SettingsRepository>()));
   gh.factory<_i792.SettingsCubit>(() => _i792.SettingsCubit(
         gh<_i1029.GetSettingsUseCase>(),
         gh<_i150.SaveThemeSettingUseCase>(),
         gh<_i682.SaveLocaleSettingUseCase>(),
         gh<_i851.SaveCurrencySettingUseCase>(),
+        gh<_i421.SaveUIStyleSettingUseCase>(),
       ));
   gh.lazySingleton<_i734.AddSubscriptionUseCase>(
       () => _i734.AddSubscriptionUseCase(gh<_i384.SubscriptionRepository>()));

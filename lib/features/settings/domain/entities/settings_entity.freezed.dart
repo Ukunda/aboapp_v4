@@ -16,6 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SettingsEntity {
+  AppUIStyle get uiStyle => throw _privateConstructorUsedError;
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   Locale get locale => throw _privateConstructorUsedError;
   String get currencyCode => throw _privateConstructorUsedError;
@@ -33,7 +34,11 @@ abstract class $SettingsEntityCopyWith<$Res> {
           SettingsEntity value, $Res Function(SettingsEntity) then) =
       _$SettingsEntityCopyWithImpl<$Res, SettingsEntity>;
   @useResult
-  $Res call({ThemeMode themeMode, Locale locale, String currencyCode});
+  $Res call(
+      {AppUIStyle uiStyle,
+      ThemeMode themeMode,
+      Locale locale,
+      String currencyCode});
 }
 
 /// @nodoc
@@ -51,11 +56,16 @@ class _$SettingsEntityCopyWithImpl<$Res, $Val extends SettingsEntity>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? uiStyle = null,
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
   }) {
     return _then(_value.copyWith(
+      uiStyle: null == uiStyle
+          ? _value.uiStyle
+          : uiStyle // ignore: cast_nullable_to_non_nullable
+              as AppUIStyle,
       themeMode: null == themeMode
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
@@ -80,7 +90,11 @@ abstract class _$$SettingsEntityImplCopyWith<$Res>
       __$$SettingsEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({ThemeMode themeMode, Locale locale, String currencyCode});
+  $Res call(
+      {AppUIStyle uiStyle,
+      ThemeMode themeMode,
+      Locale locale,
+      String currencyCode});
 }
 
 /// @nodoc
@@ -96,11 +110,16 @@ class __$$SettingsEntityImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? uiStyle = null,
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
   }) {
     return _then(_$SettingsEntityImpl(
+      uiStyle: null == uiStyle
+          ? _value.uiStyle
+          : uiStyle // ignore: cast_nullable_to_non_nullable
+              as AppUIStyle,
       themeMode: null == themeMode
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
@@ -121,10 +140,13 @@ class __$$SettingsEntityImplCopyWithImpl<$Res>
 
 class _$SettingsEntityImpl implements _SettingsEntity {
   const _$SettingsEntityImpl(
-      {required this.themeMode,
+      {required this.uiStyle,
+      required this.themeMode,
       required this.locale,
       required this.currencyCode});
 
+  @override
+  final AppUIStyle uiStyle;
   @override
   final ThemeMode themeMode;
   @override
@@ -134,7 +156,7 @@ class _$SettingsEntityImpl implements _SettingsEntity {
 
   @override
   String toString() {
-    return 'SettingsEntity(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode)';
+    return 'SettingsEntity(uiStyle: $uiStyle, themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode)';
   }
 
   @override
@@ -142,6 +164,7 @@ class _$SettingsEntityImpl implements _SettingsEntity {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsEntityImpl &&
+            (identical(other.uiStyle, uiStyle) || other.uiStyle == uiStyle) &&
             (identical(other.themeMode, themeMode) ||
                 other.themeMode == themeMode) &&
             (identical(other.locale, locale) || other.locale == locale) &&
@@ -150,7 +173,8 @@ class _$SettingsEntityImpl implements _SettingsEntity {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode);
+  int get hashCode =>
+      Object.hash(runtimeType, uiStyle, themeMode, locale, currencyCode);
 
   /// Create a copy of SettingsEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -164,10 +188,13 @@ class _$SettingsEntityImpl implements _SettingsEntity {
 
 abstract class _SettingsEntity implements SettingsEntity {
   const factory _SettingsEntity(
-      {required final ThemeMode themeMode,
+      {required final AppUIStyle uiStyle,
+      required final ThemeMode themeMode,
       required final Locale locale,
       required final String currencyCode}) = _$SettingsEntityImpl;
 
+  @override
+  AppUIStyle get uiStyle;
   @override
   ThemeMode get themeMode;
   @override

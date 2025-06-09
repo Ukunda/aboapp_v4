@@ -2,10 +2,10 @@
 
 import 'package:aboapp/core/di/injection.dart';
 import 'package:aboapp/core/routing/app_router.dart';
-import 'package:aboapp/core/theme/app_theme.dart';
+import 'package:aboapp/core/theme/modern_theme.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
-import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -33,10 +33,10 @@ class AboApp extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp.router(
-            title: 'AboApp V3',
+            title: 'AboApp V4',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+            theme: ModernTheme.lightTheme,
+            darkTheme: ModernTheme.darkTheme,
             themeMode: settingsState.themeMode,
             routerConfig: appRouter.config(),
             locale: settingsState.locale,
