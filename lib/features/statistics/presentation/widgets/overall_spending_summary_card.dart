@@ -1,6 +1,10 @@
+// lib/features/statistics/presentation/widgets/overall_spending_summary_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OverallSpendingSummaryCard extends StatelessWidget {
   final double totalMonthlySpending;
@@ -15,8 +19,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     return Card(
       elevation: 1.0,
@@ -27,7 +30,8 @@ class OverallSpendingSummaryCard extends StatelessWidget {
           children: [
             Text(
               'Spending Overview', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -35,9 +39,9 @@ class OverallSpendingSummaryCard extends StatelessWidget {
               children: [
                 _buildMetric(
                   context,
+                  settingsState: settingsState,
                   label: 'Monthly Total', // TODO: Localize
                   value: totalMonthlySpending,
-                  currencyFormat: currencyFormat,
                   style: theme.textTheme.headlineSmall!.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -46,14 +50,14 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                 ),
                 _buildMetric(
                   context,
+                  settingsState: settingsState,
                   label: 'Yearly Total', // TODO: Localize
                   value: totalYearlySpending,
-                  currencyFormat: currencyFormat,
                   style: theme.textTheme.titleLarge!.copyWith(
                     color: theme.colorScheme.secondary,
-                     fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
-                   labelStyle: theme.textTheme.bodySmall!,
+                  labelStyle: theme.textTheme.bodySmall!,
                 ),
               ],
             ),
@@ -65,9 +69,9 @@ class OverallSpendingSummaryCard extends StatelessWidget {
 
   Widget _buildMetric(
     BuildContext context, {
+    required SettingsState settingsState,
     required String label,
     required double value,
-    required NumberFormat currencyFormat,
     required TextStyle style,
     required TextStyle labelStyle,
   }) {
@@ -77,13 +81,16 @@ class OverallSpendingSummaryCard extends StatelessWidget {
       children: [
         AnimatedCounterWidget(
           value: value,
-          formatter: (val) => currencyFormat.format(val),
+          formatter: (val) => CurrencyFormatter.format(val,
+              currencyCode: settingsState.currencyCode,
+              locale: settingsState.locale),
           style: style,
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: labelStyle.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: labelStyle.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );

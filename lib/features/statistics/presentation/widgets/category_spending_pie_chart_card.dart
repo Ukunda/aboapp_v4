@@ -1,9 +1,12 @@
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
+// lib/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // Import for CategoryDisplayHelpers
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-// import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // Unused import
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -14,17 +17,18 @@ class CategorySpendingPieChartCard extends StatefulWidget {
   });
 
   @override
-  State<CategorySpendingPieChartCard> createState() => _CategorySpendingPieChartCardState();
+  State<CategorySpendingPieChartCard> createState() =>
+      _CategorySpendingPieChartCardState();
 }
 
-class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartCard> {
+class _CategorySpendingPieChartCardState
+    extends State<CategorySpendingPieChartCard> {
   int? _touchedIndex;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0); 
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (widget.categorySpendingData.isEmpty) {
       return Card(
@@ -40,10 +44,11 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
         ),
       );
     }
-    
-    final relevantData = widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
+
+    final relevantData =
+        widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
     if (relevantData.isEmpty) {
-       return Card(
+      return Card(
         elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -57,7 +62,6 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       );
     }
 
-
     return Card(
       elevation: 1.0,
       child: Padding(
@@ -67,11 +71,12 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
           children: [
             Text(
               'Spending by Category', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             SizedBox(
-              height: 180, 
+              height: 180,
               child: PieChart(
                 PieChartData(
                   pieTouchData: PieTouchData(
@@ -83,26 +88,28 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
                           _touchedIndex = -1;
                           return;
                         }
-                        _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                        _touchedIndex = pieTouchResponse
+                            .touchedSection!.touchedSectionIndex;
                       });
                     },
                   ),
                   borderData: FlBorderData(show: false),
                   sectionsSpace: 2,
-                  centerSpaceRadius: 45, 
+                  centerSpaceRadius: 45,
                   sections: _generatePieChartSections(theme, relevantData),
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            _buildLegend(theme, currencyFormat, relevantData),
+            _buildLegend(theme, settingsState, relevantData),
           ],
         ),
       ),
     );
   }
 
-  List<PieChartSectionData> _generatePieChartSections(ThemeData theme, List<CategorySpending> data) {
+  List<PieChartSectionData> _generatePieChartSections(
+      ThemeData theme, List<CategorySpending> data) {
     return List.generate(data.length, (i) {
       final isTouched = i == _touchedIndex;
       final fontSize = isTouched ? 14.0 : 10.0;
@@ -110,22 +117,26 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       final categoryData = data[i];
 
       return PieChartSectionData(
-        color: categoryData.category.categoryDisplayIconColor(theme), 
+        color: categoryData.category.categoryDisplayIconColor(theme),
         value: categoryData.totalAmount,
         title: '${(categoryData.percentage * 100).toStringAsFixed(0)}%',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: ThemeData.estimateBrightnessForColor(categoryData.category.categoryDisplayIconColor(theme)) == Brightness.dark
-                 ? Colors.white : Colors.black,
+          color: ThemeData.estimateBrightnessForColor(
+                      categoryData.category.categoryDisplayIconColor(theme)) ==
+                  Brightness.dark
+              ? Colors.white
+              : Colors.black,
           shadows: const [Shadow(color: Colors.black26, blurRadius: 1)],
         ),
       );
     });
   }
 
-  Widget _buildLegend(ThemeData theme, NumberFormat currencyFormat, List<CategorySpending> data) {
+  Widget _buildLegend(ThemeData theme, SettingsState settingsState,
+      List<CategorySpending> data) {
     return Wrap(
       spacing: 16.0,
       runSpacing: 8.0,
@@ -136,7 +147,11 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: isTouched ? categoryData.category.categoryDisplayIconColor(theme).withOpacity(0.2) : Colors.transparent,
+            color: isTouched
+                ? categoryData.category
+                    .categoryDisplayIconColor(theme)
+                    .withOpacity(0.2)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
@@ -159,8 +174,8 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
               ),
               const SizedBox(width: 4),
               Text(
-                '(${currencyFormat.format(categoryData.totalAmount)})',
-                 style: theme.textTheme.labelSmall?.copyWith(
+                '(${CurrencyFormatter.format(categoryData.totalAmount, currencyCode: settingsState.currencyCode, locale: settingsState.locale, decimalDigits: 0)})',
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),

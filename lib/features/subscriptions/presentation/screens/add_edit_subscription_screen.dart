@@ -1,40 +1,43 @@
-// lib/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart
-
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
+import 'package:aboapp/widgets/animated_gradient_chip.dart';
+import 'package:aboapp/widgets/animated_gradient_input_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
-import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 
 class AddEditSubscriptionScreen extends StatefulWidget {
   final SubscriptionEntity? initialSubscription;
-
-  const AddEditSubscriptionScreen({
-    super.key,
-    this.initialSubscription,
-  });
+  const AddEditSubscriptionScreen({super.key, this.initialSubscription});
 
   @override
   State<AddEditSubscriptionScreen> createState() =>
       _AddEditSubscriptionScreenState();
 }
 
-class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _notesController = TextEditingController();
-
+  late final AnimationController _animationController;
   late SubscriptionCategory _selectedCategory;
   late BillingCycle _selectedCycle;
   late DateTime _nextBillingDate;
-
   bool get _isEditing => widget.initialSubscription != null;
 
   @override
   void initState() {
     super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+
     if (_isEditing) {
       final s = widget.initialSubscription!;
       _nameController.text = s.name;
@@ -44,9 +47,9 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
       _selectedCycle = s.billingCycle;
       _nextBillingDate = s.nextBillingDate;
     } else {
-      _selectedCategory = SubscriptionCategory.streaming;
+      _selectedCategory = SubscriptionCategory.other;
       _selectedCycle = BillingCycle.monthly;
-      _nextBillingDate = DateTime.now();
+      _nextBillingDate = DateTime.now().add(const Duration(days: 30));
     }
   }
 
@@ -55,18 +58,29 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
     _nameController.dispose();
     _priceController.dispose();
     _notesController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
+  Future<void> _pickNextBillingDate(Locale locale) async {
+    final picked = await showDatePicker(
+      context: context,
+      locale: locale,
+      initialDate: _nextBillingDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365 * 5)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
+    );
+    if (picked != null) setState(() => _nextBillingDate = picked);
+  }
+
   void _save() {
-    if (!_formKey.currentState!.validate()) return;
-
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
     final price =
-        double.tryParse(_priceController.text.trim().replaceAll(',', '.')) ??
-            0.0;
-
-    final newSubscription = SubscriptionEntity(
-      id: widget.initialSubscription?.id ?? '', // Wird im Cubit neu gesetzt
+        double.parse(_priceController.text.trim().replaceAll(',', '.'));
+    final sub = SubscriptionEntity(
+      id: widget.initialSubscription?.id ?? '',
       name: _nameController.text.trim(),
       price: price,
       category: _selectedCategory,
@@ -76,267 +90,255 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
           ? null
           : _notesController.text.trim(),
     );
-
     final cubit = context.read<SubscriptionCubit>();
-    if (_isEditing) {
-      cubit.updateSubscription(newSubscription);
-    } else {
-      cubit.addSubscription(newSubscription);
-    }
-
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    _isEditing ? cubit.updateSubscription(sub) : cubit.addSubscription(sub);
+    Navigator.of(context).pop();
   }
 
-  Future<void> _pickNextBillingDate() async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _nextBillingDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 365 * 5)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        _nextBillingDate = pickedDate;
-      });
-    }
-  }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDarkMode = theme.brightness == Brightness.dark;
+    final settingsState = context.watch<SettingsCubit>().state;
+    final currencySymbol =
+        CurrencyFormatter.getCurrencySymbol(settingsState.currencyCode);
+
+    final defaultBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: BorderSide.none,
+    );
+
+    // KORREKTUR: Farbverlauf für weichere Übergänge angepasst
+    final focusedBorder = AnimatedGradientInputBorder(
+      animation: _animationController,
+      gradientColors: [
+        Colors.pink.shade200,
+        Colors.purple.shade200,
+        Colors.blue.shade200,
+        Colors.purple.shade200,
+        Colors.pink.shade200,
+      ],
+    );
+    final errorBorder = AnimatedGradientInputBorder(
+      animation: _animationController,
+      gradientColors: [
+        theme.colorScheme.error.withAlpha(180),
+        Colors.orange.shade400.withAlpha(180),
+      ],
+    );
 
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEditing ? 'Abo bearbeiten' : 'Abo hinzufügen'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: theme.scaffoldBackgroundColor,
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                children: [
-                  _buildSectionTitle(context, 'Kategorie'),
-                  _buildCategorySelector(theme, isDarkMode),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle(context, 'Details'),
-                  _buildTextFormField(
-                    controller: _nameController,
-                    labelText: 'Abo-Name',
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              _buildSectionTitle(theme, 'Kategorie'),
+              _buildCategorySelector(theme),
+              const SizedBox(height: 24),
+              _buildSectionTitle(theme, 'Abo-Name'),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) => TextFormField(
+                  controller: _nameController,
+                  decoration: _inputDecoration(
+                    theme: theme,
                     icon: Icons.subscriptions_outlined,
-                    validator: (v) => v == null || v.trim().isEmpty
-                        ? 'Name ist ein Pflichtfeld'
-                        : null,
+                    hintText: 'z.B. Netflix, Spotify...',
+                    defaultBorder: defaultBorder,
+                    focusedBorder: focusedBorder,
+                    errorBorder: errorBorder,
                   ),
-                  const SizedBox(height: 16),
-                  _buildTextFormField(
-                    controller: _priceController,
-                    labelText: 'Preis',
-                    icon: Icons.euro_symbol_rounded,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Preis ist ein Pflichtfeld';
-                      }
-                      final val =
-                          double.tryParse(v.trim().replaceAll(',', '.'));
-                      if (val == null || val < 0) {
-                        return 'Ungültiger Betrag';
-                      }
-                      return null;
-                    },
+                  validator: (v) =>
+                      v == null || v.trim().isEmpty ? 'Pflichtfeld' : null,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildSectionTitle(theme, 'Preis ($currencySymbol)'),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) => TextFormField(
+                  controller: _priceController,
+                  decoration: _inputDecoration(
+                    theme: theme,
+                    icon: Icons.price_change_outlined,
+                    hintText: '0,00',
+                    defaultBorder: defaultBorder,
+                    focusedBorder: focusedBorder,
+                    errorBorder: errorBorder,
                   ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(child: _buildBillingCycleDropdown(theme)),
-                      const SizedBox(width: 16),
-                      Expanded(child: _buildNextBillingDatePicker(theme)),
-                    ],
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Pflichtfeld';
+                    if (double.tryParse(v.trim().replaceAll(',', '.')) == null)
+                      return 'Ungültiger Betrag';
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(theme, 'Intervall'),
+                        AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) =>
+                              DropdownButtonFormField<BillingCycle>(
+                            value: _selectedCycle,
+                            decoration: _inputDecoration(
+                              theme: theme,
+                              icon: Icons.calendar_view_month,
+                              defaultBorder: defaultBorder,
+                              focusedBorder: focusedBorder,
+                            ),
+                            items: BillingCycle.values
+                                .where((c) => c != BillingCycle.custom)
+                                .map((c) => DropdownMenuItem(
+                                    value: c, child: Text(c.displayName)))
+                                .toList(),
+                            onChanged: (v) => setState(
+                                () => _selectedCycle = v ?? _selectedCycle),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  _buildTextFormField(
-                    controller: _notesController,
-                    labelText: 'Notizen (optional)',
-                    icon: Icons.note_alt_outlined,
-                    maxLines: 3,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(theme, 'Nächste Zahlung'),
+                        InkWell(
+                          onTap: () =>
+                              _pickNextBillingDate(settingsState.locale),
+                          child: InputDecorator(
+                            decoration: _inputDecoration(
+                              theme: theme,
+                              icon: Icons.event,
+                              defaultBorder: defaultBorder,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top:
+                                      1.0), // Kleine Anpassung für vertikale Zentrierung
+                              child: Text(
+                                DateFormat.yMd(
+                                        settingsState.locale.toLanguageTag())
+                                    .format(_nextBillingDate),
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 24),
                 ],
               ),
-            ),
-            _buildSaveButton(context),
-          ],
+              const SizedBox(height: 16),
+              _buildSectionTitle(theme, 'Notizen (optional)'),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) => TextFormField(
+                  controller: _notesController,
+                  decoration: _inputDecoration(
+                    theme: theme,
+                    icon: Icons.note_alt_outlined,
+                    hintText: 'Zusätzliche Infos...',
+                    defaultBorder: defaultBorder,
+                    focusedBorder: focusedBorder,
+                  ),
+                  maxLines: 3,
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.save),
+                  label: Text(_isEditing ? 'Aktualisieren' : 'Speichern'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: _save,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildSectionTitle(BuildContext context, String title) {
+  // KORREKTUR: Hilfsmethode für das getrennte Label
+  Widget _buildSectionTitle(ThemeData theme, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
       child: Text(
         title,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(fontWeight: FontWeight.bold),
+        style:
+            theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
       ),
     );
   }
 
-  Widget _buildCategorySelector(ThemeData theme, bool isDarkMode) {
+  // KORREKTUR: InputDecoration verwendet jetzt 'hintText' statt 'labelText'
+  InputDecoration _inputDecoration({
+    required ThemeData theme,
+    required IconData icon,
+    String? hintText,
+    required InputBorder defaultBorder,
+    InputBorder? focusedBorder,
+    InputBorder? errorBorder,
+  }) {
+    return InputDecoration(
+      hintText: hintText,
+      prefixIcon: Icon(icon, color: theme.colorScheme.onSurfaceVariant),
+      filled: true,
+      fillColor: theme.colorScheme.surface,
+      border: defaultBorder,
+      enabledBorder: defaultBorder,
+      focusedBorder: focusedBorder,
+      errorBorder: errorBorder,
+      focusedErrorBorder: errorBorder,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
+  Widget _buildCategorySelector(ThemeData theme) {
     return Wrap(
-      spacing: 8.0,
-      runSpacing: 8.0,
-      children: SubscriptionCategory.values.map((category) {
-        final isSelected = _selectedCategory == category;
-        final color = category.categoryDisplayIconColor(theme);
-        return ChoiceChip(
-          label: Text(category.displayName),
-          avatar: Icon(
-            category.displayIcon,
-            size: 18,
-            color: isSelected
-                ? (ThemeData.estimateBrightnessForColor(color) ==
-                        Brightness.dark
-                    ? Colors.white
-                    : Colors.black)
-                : theme.colorScheme.onSurfaceVariant,
-          ),
-          selected: isSelected,
-          onSelected: (_) => setState(() => _selectedCategory = category),
-          backgroundColor: theme.colorScheme.surfaceContainerHighest,
-          selectedColor: color,
-          showCheckmark: false,
-          labelStyle: TextStyle(
-            color: isSelected
-                ? (ThemeData.estimateBrightnessForColor(color) ==
-                        Brightness.dark
-                    ? Colors.white
-                    : Colors.black)
-                : theme.colorScheme.onSurface,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          ),
-          side: BorderSide(color: Colors.transparent),
+      spacing: 10.0,
+      runSpacing: 10.0,
+      children: SubscriptionCategory.values.map((cat) {
+        return AnimatedGradientChip(
+          label: cat.displayName,
+          icon: cat.displayIcon,
+          isSelected: _selectedCategory == cat,
+          selectedColor: cat.categoryDisplayIconColor(theme),
+          onSelected: (_) => setState(() => _selectedCategory = cat),
         );
       }).toList(),
     );
   }
-
-  Widget _buildTextFormField({
-    required TextEditingController controller,
-    required String labelText,
-    required IconData icon,
-    int maxLines = 1,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: labelText,
-        prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none,
-        ),
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        filled: true,
-      ),
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      validator: validator,
-      textInputAction:
-          maxLines > 1 ? TextInputAction.newline : TextInputAction.next,
-    );
-  }
-
-  Widget _buildBillingCycleDropdown(ThemeData theme) {
-    return DropdownButtonFormField<BillingCycle>(
-      value: _selectedCycle,
-      decoration: InputDecoration(
-        labelText: 'Intervall',
-        prefixIcon: Icon(Icons.calendar_today_outlined,
-            color: theme.colorScheme.primary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none,
-        ),
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        filled: true,
-      ),
-      items: BillingCycle.values
-          .where((c) => c != BillingCycle.custom)
-          .map((c) => DropdownMenuItem(
-                value: c,
-                child: Text(c.displayName),
-              ))
-          .toList(),
-      onChanged: (v) => setState(() => _selectedCycle = v ?? _selectedCycle),
-    );
-  }
-
-  Widget _buildNextBillingDatePicker(ThemeData theme) {
-    return InkWell(
-      onTap: _pickNextBillingDate,
-      borderRadius: BorderRadius.circular(12.0),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Nächste Zahlung',
-          prefixIcon: Icon(Icons.event_available_outlined,
-              color: theme.colorScheme.primary),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12.0),
-            borderSide: BorderSide.none,
-          ),
-          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-          filled: true,
-        ),
-        child: Text(
-          DateFormat('dd.MM.yyyy').format(_nextBillingDate),
-          style: theme.textTheme.bodyLarge,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSaveButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          icon: Icon(_isEditing
-              ? Icons.check_circle_outline
-              : Icons.add_circle_outline),
-          label: Text(_isEditing ? 'Änderungen speichern' : 'Abo hinzufügen'),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            textStyle: Theme.of(context)
-                .textTheme
-                .titleMedium
-                ?.copyWith(fontWeight: FontWeight.bold),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-          ),
-          onPressed: _save,
-        ),
-      ),
-    );
-  }
 }
 
-// Kleine Erweiterung für die Anzeige der BillingCycle-Namen
 extension on BillingCycle {
   String get displayName {
     switch (this) {

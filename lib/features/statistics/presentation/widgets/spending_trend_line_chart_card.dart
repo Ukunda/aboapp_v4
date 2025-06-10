@@ -1,6 +1,11 @@
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
+// lib/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class SpendingTrendLineChartCard extends StatelessWidget {
@@ -14,11 +19,10 @@ class SpendingTrendLineChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (spendingTrendData.spots.isEmpty) {
-       return Card(
+      return Card(
         elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -35,13 +39,14 @@ class SpendingTrendLineChartCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20), 
+        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Spending Trend - ${spendingTrendData.year}', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -51,32 +56,51 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear / 4 : 50.0).clamp(10.0, double.infinity), // Ensure double
+                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0
+                            ? spendingTrendData.maxSpendingInYear / 4
+                            : 50.0)
+                        .clamp(10.0, double.infinity),
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.dividerColor.withOpacity(0.5), // Kept withOpacity for dynamic non-const color
+                        color: theme.dividerColor.withOpacity(0.5),
                         strokeWidth: 0.5,
                       );
                     },
                   ),
                   titlesData: FlTitlesData(
                     show: true,
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: 2, 
+                        interval: 2,
                         getTitlesWidget: (value, meta) {
                           // TODO: Localize month abbreviations
-                          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                          const months = [
+                            'Jan',
+                            'Feb',
+                            'Mar',
+                            'Apr',
+                            'May',
+                            'Jun',
+                            'Jul',
+                            'Aug',
+                            'Sep',
+                            'Oct',
+                            'Nov',
+                            'Dec'
+                          ];
                           final int monthIndex = value.toInt() - 1;
                           if (monthIndex >= 0 && monthIndex < months.length) {
                             return SideTitleWidget(
                               axisSide: meta.axisSide,
                               space: 8.0,
-                              child: Text(months[monthIndex], style: theme.textTheme.bodySmall),
+                              child: Text(months[monthIndex],
+                                  style: theme.textTheme.bodySmall),
                             );
                           }
                           return const Text('');
@@ -88,11 +112,20 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         showTitles: true,
                         reservedSize: 48,
                         getTitlesWidget: (value, meta) {
-                          if (value == meta.max || value == meta.min) return const Text(''); 
+                          if (value == meta.max || value == meta.min) {
+                            return const Text('');
+                          }
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             space: 4.0,
-                            child: Text(currencyFormat.format(value), style: theme.textTheme.bodySmall),
+                            child: Text(
+                                CurrencyFormatter.format(
+                                  value,
+                                  currencyCode: settingsState.currencyCode,
+                                  locale: settingsState.locale,
+                                  decimalDigits: 0,
+                                ),
+                                style: theme.textTheme.bodySmall),
                           );
                         },
                       ),
@@ -102,13 +135,18 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   minX: 1,
                   maxX: 12,
                   minY: 0,
-                  maxY: spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear * 1.1 : 100, 
+                  maxY: spendingTrendData.maxSpendingInYear > 0
+                      ? spendingTrendData.maxSpendingInYear * 1.1
+                      : 100,
                   lineBarsData: [
                     LineChartBarData(
                       spots: spendingTrendData.spots,
                       isCurved: true,
                       gradient: LinearGradient(
-                        colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+                        colors: [
+                          theme.colorScheme.primary,
+                          theme.colorScheme.secondary
+                        ],
                       ),
                       barWidth: 3.5,
                       isStrokeCapRound: true,
@@ -116,18 +154,20 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         show: true,
                         getDotPainter: (spot, percent, barData, index) =>
                             FlDotCirclePainter(
-                                radius: 4,
-                                color: Color.lerp(theme.colorScheme.primary, theme.colorScheme.secondary, percent / 100) ?? theme.colorScheme.primary,
-                                strokeWidth: 1.5,
-                                strokeColor: theme.cardColor, 
+                          radius: 4,
+                          color: Color.lerp(theme.colorScheme.primary,
+                                  theme.colorScheme.secondary, percent / 100) ??
+                              theme.colorScheme.primary,
+                          strokeWidth: 1.5,
+                          strokeColor: theme.cardColor,
                         ),
                       ),
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.2),    // Kept withOpacity
-                            theme.colorScheme.secondary.withOpacity(0.05), // Kept withOpacity
+                            theme.colorScheme.primary.withOpacity(0.2),
+                            theme.colorScheme.secondary.withOpacity(0.05),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -138,14 +178,18 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   lineTouchData: LineTouchData(
                     handleBuiltInTouches: true,
                     touchTooltipData: LineTouchTooltipData(
-                      getTooltipColor: (spot) => theme.colorScheme.surfaceContainerHighest, // Corrected: was tooltipBgColor
+                      getTooltipColor: (spot) =>
+                          theme.colorScheme.surfaceContainerHighest,
                       getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                         return touchedBarSpots.map((barSpot) {
                           final flSpot = barSpot;
                           // TODO: Localize month name and currency
-                          final monthName = DateFormat.MMMM().format(DateTime(spendingTrendData.year, flSpot.x.toInt()));
+                          final monthName = DateFormat.MMMM(
+                                  settingsState.locale.toLanguageTag())
+                              .format(DateTime(
+                                  spendingTrendData.year, flSpot.x.toInt()));
                           return LineTooltipItem(
-                            '$monthName: ${currencyFormat.format(flSpot.y)}\n',
+                            '$monthName: ${CurrencyFormatter.format(flSpot.y, currencyCode: settingsState.currencyCode, locale: settingsState.locale, decimalDigits: 0)}\n',
                             TextStyle(
                               color: theme.colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.bold,

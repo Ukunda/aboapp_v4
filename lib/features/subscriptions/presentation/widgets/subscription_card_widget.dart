@@ -1,8 +1,13 @@
-import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
+// lib/features/subscriptions/presentation/widgets/subscription_card_widget.dart
+
+import 'package:aboapp/core/theme/app_colors.dart';
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/core/utils/date_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SubscriptionCardWidget extends StatelessWidget {
   final SubscriptionEntity subscription;
@@ -19,38 +24,43 @@ class SubscriptionCardWidget extends StatelessWidget {
   String _getBillingCycleShortLabel(BillingCycle cycle) {
     // TODO: Localize
     switch (cycle) {
-      case BillingCycle.weekly: return 'wk';
-      case BillingCycle.monthly: return 'mo';
-      case BillingCycle.quarterly: return 'qtr';
-      case BillingCycle.biAnnual: return '6mo';
-      case BillingCycle.yearly: return 'yr';
-      case BillingCycle.custom: return 'cust';
+      case BillingCycle.weekly:
+        return 'wk';
+      case BillingCycle.monthly:
+        return 'mo';
+      case BillingCycle.quarterly:
+        return 'qtr';
+      case BillingCycle.biAnnual:
+        return '6mo';
+      case BillingCycle.yearly:
+        return 'yr';
+      case BillingCycle.custom:
+        return 'cust';
     }
   }
 
   Color _getDaysUntilBillingColor(BuildContext context, int days) {
     final theme = Theme.of(context);
-    if (days < 0) return theme.colorScheme.error; 
-    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8); // Kept withOpacity
-    if (days <= 7) return AppColors.warning.withOpacity(0.9); // Used AppColors.warning, Kept withOpacity
+    if (days < 0) return theme.colorScheme.error;
+    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8);
+    if (days <= 7) return AppColors.warning.withOpacity(0.9);
     return theme.colorScheme.onSurfaceVariant;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale from SettingsProvider
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
-    final dateFormat = DateFormat('dd MMM, yyyy'); // TODO: Localize
+    final settingsState = context.watch<SettingsCubit>().state;
 
     final daysUntil = subscription.daysUntilBilling;
-    final String daysLabel = daysUntil < 0
-        ? '${daysUntil.abs()} days ago' // TODO: Localize
-        : daysUntil == 0
-            ? 'Today' // TODO: Localize
-            : daysUntil == 1
-                ? 'Tomorrow' // TODO: Localize
-                : '$daysUntil days'; // TODO: Localize
+    final daysLabel = DateFormatter.formatDaysUntil(
+      subscription.nextBillingDate,
+      // TODO: Localize these strings
+      todayText: 'Today',
+      tomorrowText: 'Tomorrow',
+      daysAgoText: '{days} days ago',
+      daysFutureText: 'in {days} days',
+    );
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
@@ -70,7 +80,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                   children: [
                     Text(
                       subscription.name,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -84,7 +95,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                     if (subscription.isInTrial) ...[
                       const SizedBox(height: 4.0),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.tertiaryContainer,
                           borderRadius: BorderRadius.circular(6),
@@ -107,7 +119,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${currencyFormat.format(subscription.price)} / ${_getBillingCycleShortLabel(subscription.billingCycle)}',
+                    '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(subscription.billingCycle)}',
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,
@@ -123,7 +135,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        dateFormat.format(subscription.nextBillingDate),
+                        DateFormatter.formatDate(subscription.nextBillingDate,
+                            locale: settingsState.locale),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: _getDaysUntilBillingColor(context, daysUntil),
                           fontWeight: FontWeight.w500,
@@ -131,13 +144,13 @@ class SubscriptionCardWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                   Text(
-                      daysLabel,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _getDaysUntilBillingColor(context, daysUntil),
-                        fontStyle: FontStyle.italic,
-                      ),
+                  Text(
+                    daysLabel,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _getDaysUntilBillingColor(context, daysUntil),
+                      fontStyle: FontStyle.italic,
                     ),
+                  ),
                 ],
               ),
             ],
@@ -148,10 +161,16 @@ class SubscriptionCardWidget extends StatelessWidget {
   }
 
   Widget _buildLogo(BuildContext context, ThemeData theme) {
-    final hasRemoteLogo = subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
-    final Color bgColor = subscription.color ?? subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1); // Kept withOpacity
-    final Color fgColor = subscription.color != null ? (ThemeData.estimateBrightnessForColor(subscription.color!) == Brightness.dark ? Colors.white : Colors.black) : subscription.category.categoryDisplayIconColor(theme);
-
+    final hasRemoteLogo =
+        subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
+    final Color bgColor = subscription.color ??
+        subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1);
+    final Color fgColor = subscription.color != null
+        ? (ThemeData.estimateBrightnessForColor(subscription.color!) ==
+                Brightness.dark
+            ? Colors.white
+            : Colors.black)
+        : subscription.category.categoryDisplayIconColor(theme);
 
     return Container(
       width: 52,
@@ -160,33 +179,36 @@ class SubscriptionCardWidget extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: ClipRRect( 
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(10.0),
         child: hasRemoteLogo
             ? CachedNetworkImage(
                 imageUrl: subscription.logoUrl!,
                 width: 52,
                 height: 52,
-                fit: BoxFit.contain, 
+                fit: BoxFit.contain,
                 placeholder: (context, url) => Center(
                   child: Icon(
                     subscription.category.displayIcon, // Using extension
-                    color: fgColor.withOpacity(0.5), // Kept withOpacity
+                    color: fgColor.withOpacity(0.5),
                     size: 28,
                   ),
                 ),
                 errorWidget: (context, url, error) => Center(
                   child: Icon(
                     subscription.category.displayIcon, // Using extension
-                    color: fgColor.withOpacity(0.7), // Kept withOpacity
+                    color: fgColor.withOpacity(0.7),
                     size: 28,
                   ),
                 ),
               )
-            : Center( 
+            : Center(
                 child: Text(
-                  subscription.name.isNotEmpty ? subscription.name[0].toUpperCase() : '?',
-                  style: theme.textTheme.titleLarge?.copyWith(color: fgColor, fontWeight: FontWeight.bold),
+                  subscription.name.isNotEmpty
+                      ? subscription.name[0].toUpperCase()
+                      : '?',
+                  style: theme.textTheme.titleLarge
+                      ?.copyWith(color: fgColor, fontWeight: FontWeight.bold),
                 ),
               ),
       ),
@@ -196,50 +218,79 @@ class SubscriptionCardWidget extends StatelessWidget {
 
 // Centralized display helpers for SubscriptionCategory
 extension CategoryDisplayHelpers on SubscriptionCategory {
-   Color categoryDisplayIconColor(ThemeData theme) {
+  Color categoryDisplayIconColor(ThemeData theme) {
     switch (this) {
-      case SubscriptionCategory.streaming: return AppColors.catStreaming;
-      case SubscriptionCategory.software: return AppColors.catSoftware;
-      case SubscriptionCategory.gaming: return AppColors.catGaming;
-      case SubscriptionCategory.fitness: return AppColors.catFitness;
-      case SubscriptionCategory.music: return AppColors.catMusic;
-      case SubscriptionCategory.news: return AppColors.catNews;
-      case SubscriptionCategory.cloud: return AppColors.catCloud;
-      case SubscriptionCategory.utilities: return Colors.teal.shade400; // Example
-      case SubscriptionCategory.education: return Colors.indigo.shade400; // Example
-      case SubscriptionCategory.other: return AppColors.catOther;
-      // No default because all enum values are covered.
+      case SubscriptionCategory.streaming:
+        return AppColors.catStreaming;
+      case SubscriptionCategory.software:
+        return AppColors.catSoftware;
+      case SubscriptionCategory.gaming:
+        return AppColors.catGaming;
+      case SubscriptionCategory.fitness:
+        return AppColors.catFitness;
+      case SubscriptionCategory.music:
+        return AppColors.catMusic;
+      case SubscriptionCategory.news:
+        return AppColors.catNews;
+      case SubscriptionCategory.cloud:
+        return AppColors.catCloud;
+      case SubscriptionCategory.utilities:
+        return Colors.teal.shade400; // Example
+      case SubscriptionCategory.education:
+        return Colors.indigo.shade400; // Example
+      case SubscriptionCategory.other:
+        return AppColors.catOther;
     }
   }
 
   String get displayName {
     // TODO: Localize these
     switch (this) {
-      case SubscriptionCategory.streaming: return 'Streaming';
-      case SubscriptionCategory.software: return 'Software';
-      case SubscriptionCategory.gaming: return 'Gaming';
-      case SubscriptionCategory.fitness: return 'Fitness';
-      case SubscriptionCategory.music: return 'Music';
-      case SubscriptionCategory.news: return 'News & Mags';
-      case SubscriptionCategory.cloud: return 'Cloud Storage';
-      case SubscriptionCategory.utilities: return 'Utilities';
-      case SubscriptionCategory.education: return 'Education';
-      case SubscriptionCategory.other: return 'Other';
+      case SubscriptionCategory.streaming:
+        return 'Streaming';
+      case SubscriptionCategory.software:
+        return 'Software';
+      case SubscriptionCategory.gaming:
+        return 'Gaming';
+      case SubscriptionCategory.fitness:
+        return 'Fitness';
+      case SubscriptionCategory.music:
+        return 'Music';
+      case SubscriptionCategory.news:
+        return 'News & Mags';
+      case SubscriptionCategory.cloud:
+        return 'Cloud Storage';
+      case SubscriptionCategory.utilities:
+        return 'Utilities';
+      case SubscriptionCategory.education:
+        return 'Education';
+      case SubscriptionCategory.other:
+        return 'Other';
     }
   }
 
   IconData get displayIcon {
-     switch (this) {
-      case SubscriptionCategory.streaming: return Icons.live_tv_rounded;
-      case SubscriptionCategory.software: return Icons.widgets_outlined;
-      case SubscriptionCategory.gaming: return Icons.gamepad_outlined;
-      case SubscriptionCategory.fitness: return Icons.fitness_center_rounded;
-      case SubscriptionCategory.music: return Icons.music_note_rounded;
-      case SubscriptionCategory.news: return Icons.article_outlined;
-      case SubscriptionCategory.cloud: return Icons.cloud_outlined;
-      case SubscriptionCategory.utilities: return Icons.lightbulb_outline_rounded;
-      case SubscriptionCategory.education: return Icons.school_outlined;
-      case SubscriptionCategory.other: return Icons.category_rounded;
+    switch (this) {
+      case SubscriptionCategory.streaming:
+        return Icons.live_tv_rounded;
+      case SubscriptionCategory.software:
+        return Icons.widgets_outlined;
+      case SubscriptionCategory.gaming:
+        return Icons.gamepad_outlined;
+      case SubscriptionCategory.fitness:
+        return Icons.fitness_center_rounded;
+      case SubscriptionCategory.music:
+        return Icons.music_note_rounded;
+      case SubscriptionCategory.news:
+        return Icons.article_outlined;
+      case SubscriptionCategory.cloud:
+        return Icons.cloud_outlined;
+      case SubscriptionCategory.utilities:
+        return Icons.lightbulb_outline_rounded;
+      case SubscriptionCategory.education:
+        return Icons.school_outlined;
+      case SubscriptionCategory.other:
+        return Icons.category_rounded;
     }
   }
 }

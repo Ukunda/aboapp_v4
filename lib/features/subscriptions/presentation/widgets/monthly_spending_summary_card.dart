@@ -1,10 +1,11 @@
+// lib/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For number formatting
-
-// Assuming you'll have a shared animated counter widget.
-// If not, this would be a simpler Text widget.
-import 'package:aboapp/widgets/animated_counter_widget.dart'; // We'll create this shared widget next
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/widgets/animated_counter_widget.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;
@@ -17,8 +18,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Replace 'de_DE' and '€' with locale/currency from SettingsCubit/Provider
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     final double totalMonthlySpending = activeSubscriptions.fold(
       0.0,
@@ -60,7 +60,8 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -78,7 +79,11 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
             const SizedBox(height: 8.0),
             AnimatedCounterWidget(
               value: totalMonthlySpending,
-              formatter: (value) => currencyFormat.format(value),
+              formatter: (value) => CurrencyFormatter.format(
+                value,
+                currencyCode: settingsState.currencyCode,
+                locale: settingsState.locale,
+              ),
               style: theme.textTheme.displaySmall!.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
@@ -100,7 +105,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                 _buildStatItem(
                   context,
                   theme,
-                  currencyFormat,
+                  settingsState,
                   label: 'Yearly Total', // TODO: Localize
                   value: yearlySpending,
                   color: theme.colorScheme.onPrimaryContainer,
@@ -108,7 +113,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                 _buildStatItem(
                   context,
                   theme,
-                  currencyFormat,
+                  settingsState,
                   label: 'Daily Average', // TODO: Localize
                   value: dailyAverage,
                   color: theme.colorScheme.onPrimaryContainer,
@@ -124,7 +129,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
   Widget _buildStatItem(
     BuildContext context,
     ThemeData theme,
-    NumberFormat currencyFormat, {
+    SettingsState settingsState, {
     required String label,
     required double value,
     required Color color,
@@ -141,7 +146,11 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
         const SizedBox(height: 2.0),
         AnimatedCounterWidget(
           value: value,
-          formatter: (val) => currencyFormat.format(val),
+          formatter: (val) => CurrencyFormatter.format(
+            val,
+            currencyCode: settingsState.currencyCode,
+            locale: settingsState.locale,
+          ),
           style: theme.textTheme.titleSmall!.copyWith(
             fontWeight: FontWeight.w600,
             color: color,
