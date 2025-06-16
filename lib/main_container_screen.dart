@@ -86,11 +86,12 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
+        physics:
+            const BouncingScrollPhysics(), // Optional: für besseres Scroll-Gefühl
         children: const <Widget>[
           HomeScreen(),
           StatisticsScreen(),
@@ -113,23 +114,13 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             _buildBottomNavItem(
-                context: context,
-                icon: Icons.home_filled,
-                label: 'Home',
-                index: 0),
+                icon: Icons.home_filled, label: 'Home', index: 0),
             _buildBottomNavItem(
-                context: context,
-                icon: Icons.pie_chart_rounded,
-                label: 'Stats',
-                index: 1),
+                icon: Icons.pie_chart_rounded, label: 'Stats', index: 1),
             const SizedBox(width: 48), // The notch space
             _buildBottomNavItem(
-                context: context,
-                icon: Icons.settings_rounded,
-                label: 'Settings',
-                index: 2),
+                icon: Icons.settings_rounded, label: 'Settings', index: 2),
             _buildBottomNavItem(
-                context: context,
                 icon: Icons.person_rounded,
                 label: 'Profile',
                 index: 3), // Example for future use
@@ -140,27 +131,106 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   }
 
   Widget _buildBottomNavItem({
-    required BuildContext context,
     required IconData icon,
     required String label,
     required int index,
   }) {
     final theme = Theme.of(context);
-    // For now, we handle index 3 as a no-op, but it could open a dialog or another page.
     final isSelected = _currentIndex == index;
-    final color = isSelected
-        ? theme.colorScheme
-            .onSurface // In modern theme, selected is just the main color
-        : theme.colorScheme.onSurfaceVariant;
+    // Index 3 (Profile) ist vorerst deaktiviert
+    final bool isDisabled = index > 2;
 
+    final color = isDisabled
+        ? theme.colorScheme.onSurface.withOpacity(0.3)
+        : isSelected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurfaceVariant;
+
+    // GEÄNDERT: TapScaleEffect für visuelles Feedback
     return Expanded(
-      child: InkWell(
-        onTap: index <= 2 ? () => _onBottomNavItemTapped(index) : null,
-        customBorder: const CircleBorder(),
+      child: TapScaleEffect(
+        onTap: isDisabled ? null : () => _onBottomNavItemTapped(index),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Icon(icon, color: color, size: 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, color: color, size: 28),
+              const SizedBox(height: 2),
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                height: 4,
+                width: isSelected ? 24 : 0,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              )
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+// NEU: Wiederverwendbares Widget für den Skalierungseffekt
+class TapScaleEffect extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+
+  const TapScaleEffect({super.key, required this.child, this.onTap});
+
+  @override
+  State<TapScaleEffect> createState() => _TapScaleEffectState();
+}
+
+class _TapScaleEffectState extends State<TapScaleEffect>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 150),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTapDown(TapDownDetails details) {
+    _controller.forward();
+  }
+
+  void _handleTapUp(TapUpDetails details) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (mounted) _controller.reverse();
+    });
+  }
+
+  void _handleTapCancel() {
+    _controller.reverse();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: widget.onTap != null ? _handleTapDown : null,
+      onTapUp: widget.onTap != null ? _handleTapUp : null,
+      onTapCancel: widget.onTap != null ? _handleTapCancel : null,
+      onTap: widget.onTap,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: widget.child,
       ),
     );
   }

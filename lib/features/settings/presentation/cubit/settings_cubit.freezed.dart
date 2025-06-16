@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 /// @nodoc
 mixin _$SettingsState {
-  AppUIStyle get uiStyle => throw _privateConstructorUsedError;
+// ENTFERNT: required AppUIStyle uiStyle,
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   Locale get locale => throw _privateConstructorUsedError;
   String get currencyCode => throw _privateConstructorUsedError;
@@ -37,8 +37,7 @@ abstract class $SettingsStateCopyWith<$Res> {
       _$SettingsStateCopyWithImpl<$Res, SettingsState>;
   @useResult
   $Res call(
-      {AppUIStyle uiStyle,
-      ThemeMode themeMode,
+      {ThemeMode themeMode,
       Locale locale,
       String currencyCode,
       bool isLoading,
@@ -60,7 +59,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uiStyle = null,
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
@@ -68,10 +66,6 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? error = freezed,
   }) {
     return _then(_value.copyWith(
-      uiStyle: null == uiStyle
-          ? _value.uiStyle
-          : uiStyle // ignore: cast_nullable_to_non_nullable
-              as AppUIStyle,
       themeMode: null == themeMode
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
@@ -105,8 +99,7 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {AppUIStyle uiStyle,
-      ThemeMode themeMode,
+      {ThemeMode themeMode,
       Locale locale,
       String currencyCode,
       bool isLoading,
@@ -126,7 +119,6 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uiStyle = null,
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
@@ -134,10 +126,6 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
     Object? error = freezed,
   }) {
     return _then(_$SettingsStateImpl(
-      uiStyle: null == uiStyle
-          ? _value.uiStyle
-          : uiStyle // ignore: cast_nullable_to_non_nullable
-              as AppUIStyle,
       themeMode: null == themeMode
           ? _value.themeMode
           : themeMode // ignore: cast_nullable_to_non_nullable
@@ -166,15 +154,13 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
 
 class _$SettingsStateImpl implements _SettingsState {
   const _$SettingsStateImpl(
-      {required this.uiStyle,
-      required this.themeMode,
+      {required this.themeMode,
       required this.locale,
       required this.currencyCode,
       this.isLoading = false,
       this.error});
 
-  @override
-  final AppUIStyle uiStyle;
+// ENTFERNT: required AppUIStyle uiStyle,
   @override
   final ThemeMode themeMode;
   @override
@@ -189,7 +175,7 @@ class _$SettingsStateImpl implements _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(uiStyle: $uiStyle, themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode, isLoading: $isLoading, error: $error)';
+    return 'SettingsState(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode, isLoading: $isLoading, error: $error)';
   }
 
   @override
@@ -197,7 +183,6 @@ class _$SettingsStateImpl implements _SettingsState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$SettingsStateImpl &&
-            (identical(other.uiStyle, uiStyle) || other.uiStyle == uiStyle) &&
             (identical(other.themeMode, themeMode) ||
                 other.themeMode == themeMode) &&
             (identical(other.locale, locale) || other.locale == locale) &&
@@ -210,7 +195,7 @@ class _$SettingsStateImpl implements _SettingsState {
 
   @override
   int get hashCode => Object.hash(
-      runtimeType, uiStyle, themeMode, locale, currencyCode, isLoading, error);
+      runtimeType, themeMode, locale, currencyCode, isLoading, error);
 
   /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
@@ -223,15 +208,13 @@ class _$SettingsStateImpl implements _SettingsState {
 
 abstract class _SettingsState implements SettingsState {
   const factory _SettingsState(
-      {required final AppUIStyle uiStyle,
-      required final ThemeMode themeMode,
+      {required final ThemeMode themeMode,
       required final Locale locale,
       required final String currencyCode,
       final bool isLoading,
       final String? error}) = _$SettingsStateImpl;
 
-  @override
-  AppUIStyle get uiStyle;
+// ENTFERNT: required AppUIStyle uiStyle,
   @override
   ThemeMode get themeMode;
   @override

@@ -1,5 +1,4 @@
 // lib/features/settings/presentation/cubit/screens/settings_screen.dart
-import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,14 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
-  String _getUIStyleDisplayName(BuildContext context, AppUIStyle style) {
-    switch (style) {
-      case AppUIStyle.classic:
-        return 'Classic';
-      case AppUIStyle.modern:
-        return 'Modern';
-    }
-  }
+  // ENTFERNT: _getUIStyleDisplayName Methode
 
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
     switch (themeMode) {
@@ -64,12 +56,7 @@ class SettingsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             children: <Widget>[
               _buildSectionHeader(context, 'Appearance'),
-              ListTile(
-                leading: const Icon(Icons.palette_outlined),
-                title: const Text('App Design'),
-                subtitle: Text(_getUIStyleDisplayName(context, state.uiStyle)),
-                onTap: () => _showUIStyleDialog(context, state.uiStyle),
-              ),
+              // ENTFERNT: ListTile für "App Design"
               ListTile(
                 leading: const Icon(Icons.brightness_6_rounded),
                 title: const Text('Theme'),
@@ -135,38 +122,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void _showUIStyleDialog(BuildContext context, AppUIStyle currentStyle) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('Select App Design'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: AppUIStyle.values.map((style) {
-              return RadioListTile<AppUIStyle>(
-                title: Text(_getUIStyleDisplayName(context, style)),
-                value: style,
-                groupValue: currentStyle,
-                onChanged: (AppUIStyle? value) {
-                  if (value != null) {
-                    context.read<SettingsCubit>().updateUIStyle(value);
-                    Navigator.of(dialogContext).pop();
-                  }
-                },
-              );
-            }).toList(),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.of(dialogContext).pop(),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // ENTFERNT: _showUIStyleDialog Methode
 
   void _showThemeModeDialog(BuildContext context, ThemeMode currentThemeMode) {
     showDialog(

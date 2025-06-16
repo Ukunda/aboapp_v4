@@ -93,7 +93,6 @@ _i174.GetIt $initGetIt(
         gh<_i150.SaveThemeSettingUseCase>(),
         gh<_i682.SaveLocaleSettingUseCase>(),
         gh<_i851.SaveCurrencySettingUseCase>(),
-        gh<_i421.SaveUIStyleSettingUseCase>(),
       ));
   gh.lazySingleton<_i734.AddSubscriptionUseCase>(
       () => _i734.AddSubscriptionUseCase(gh<_i384.SubscriptionRepository>()));

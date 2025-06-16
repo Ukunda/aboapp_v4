@@ -2,7 +2,8 @@
 
 import 'package:aboapp/core/di/injection.dart';
 import 'package:aboapp/core/routing/app_router.dart';
-import 'package:aboapp/core/theme/modern_theme.dart';
+// VEREINFACHT: Nur noch ein Theme importieren
+import 'package:aboapp/core/theme/app_theme.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
@@ -35,8 +36,9 @@ class AboApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'AboApp V4',
             debugShowCheckedModeBanner: false,
-            theme: ModernTheme.lightTheme,
-            darkTheme: ModernTheme.darkTheme,
+            // VEREINFACHT: Wir verwenden jetzt immer das AppTheme.
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
             themeMode: settingsState.themeMode,
             routerConfig: appRouter.config(),
             locale: settingsState.locale,

@@ -1,10 +1,12 @@
+// lib/features/statistics/presentation/screens/statistics_screen.dart
+
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/billing_type_breakdown_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/overall_spending_summary_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/top_subscriptions_list_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart'; // Removed hide Error
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,16 +24,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    final subscriptionState = context.read<SubscriptionCubit>().state;
-    subscriptionState.whenOrNull(
-      loaded: (allSubs, _, __, ___, ____, _____) {
-        if (mounted) {
-          context
-              .read<StatisticsCubit>()
-              .generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
-        }
-      },
-    );
+    // Use a post-frame callback to ensure the context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final subscriptionState = context.read<SubscriptionCubit>().state;
+      subscriptionState.whenOrNull(
+        loaded: (allSubs, _, __, ___, ____, _____) {
+          if (mounted) {
+            context.read<StatisticsCubit>().generateStatistics(allSubs,
+                yearForTrend: _selectedYearForTrend);
+          }
+        },
+      );
+    });
   }
 
   @override
@@ -96,7 +100,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   onRefresh: () async {
                     final subCubitState =
                         context.read<SubscriptionCubit>().state;
-                    // Removed await from void result
                     subCubitState.maybeWhen(
                       loaded: (allSubs, _, __, ___, ____, _____) {
                         context.read<StatisticsCubit>().generateStatistics(
@@ -121,33 +124,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         padding: const EdgeInsets.all(12.0),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate.fixed([
-                            // Added const
                             OverallSpendingSummaryCard(
                               totalMonthlySpending:
-                                  totalMonthlyEquivalentSpending, // These are already passed
+                                  totalMonthlyEquivalentSpending,
                               totalYearlySpending:
                                   totalYearlyEquivalentSpending,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             CategorySpendingPieChartCard(
-                              categorySpendingData:
-                                  categorySpendingData, // Passed
+                              categorySpendingData: categorySpendingData,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             BillingTypeBreakdownCard(
-                              billingTypeSpendingData:
-                                  billingTypeSpendingData, // Passed
+                              billingTypeSpendingData: billingTypeSpendingData,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             SpendingTrendLineChartCard(
-                              spendingTrendData: spendingTrendData, // Passed
+                              spendingTrendData: spendingTrendData,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             TopSubscriptionsListCard(
-                              topSubscriptions:
-                                  topSpendingSubscriptions, // Passed
+                              topSubscriptions: topSpendingSubscriptions,
                             ),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                           ]),
                         ),
                       ),
@@ -173,8 +172,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               size: 18, color: theme.colorScheme.onSurfaceVariant),
           style: theme.textTheme.bodySmall
               ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          dropdownColor: theme.colorScheme
-              .surfaceContainerHighest, // Corrected deprecated member
+          dropdownColor: theme.colorScheme.surfaceContainerHighest,
           items: List.generate(5, (index) => DateTime.now().year - index)
               .map((year) => DropdownMenuItem<int>(
                     value: year,

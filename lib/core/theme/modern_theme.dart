@@ -1,161 +1,177 @@
-// lib/core/theme/modern_theme.dart
+// lib/main_container_screen.dart
 
+import 'package:aboapp/core/routing/app_router.dart';
+import 'package:aboapp/features/settings/presentation/cubit/screens/settings_screen.dart';
+import 'package:aboapp/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:aboapp/features/subscriptions/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:aboapp/core/theme/app_typography.dart';
+import 'package:go_router/go_router.dart';
+import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 
-abstract class ModernTheme {
-  static const Color _primary = Color(0xFFFFFFFF); // Accent is White/Black
-  static const Color _primaryDark = Color(0xFF000000);
+class MainContainerScreen extends StatefulWidget {
+  final String location;
+  const MainContainerScreen({super.key, required this.location});
 
-  // Light Mode Colors
-  static const Color _backgroundLight = Color(0xFFF7F7F7);
-  static const Color _surfaceLight = Colors.white;
-  static const Color _onSurfaceLight = Color(0xFF121212);
-  static const Color _onSurfaceVariantLight = Color(0xFF6E6E73);
+  @override
+  State<MainContainerScreen> createState() => _MainContainerScreenState();
+}
 
-  // Dark Mode Colors
-  static const Color _backgroundDark = Color(0xFF000000);
-  static const Color _surfaceDark =
-      Color(0xFF1C1C1E); // Slightly lighter than pure black
-  static const Color _onSurfaceDark = Color(0xFFFFFFFF);
-  static const Color _onSurfaceVariantDark = Color(0xFF8A8A8E);
+class _MainContainerScreenState extends State<MainContainerScreen> {
+  late final PageController _pageController;
+  int _currentIndex = 0;
 
-  static const _cardShape = RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(20.0)),
-  );
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = _calculatePageIndex(widget.location);
+    _pageController = PageController(initialPage: _currentIndex);
+  }
 
-  static ThemeData get lightTheme {
-    return _baseTheme(
-      brightness: Brightness.light,
-      backgroundColor: _backgroundLight,
-      scaffoldColor: _backgroundLight,
-      surfaceColor: _surfaceLight,
-      onSurfaceColor: _onSurfaceLight,
-      onSurfaceVariantColor: _onSurfaceVariantLight,
-      primaryColor: _primaryDark, // Black text on light background
-      onPrimaryColor: _surfaceLight, // White text on black components
-      appBarColor: _backgroundLight,
+  @override
+  void didUpdateWidget(covariant MainContainerScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final newIndex = _calculatePageIndex(widget.location);
+    if (newIndex != _currentIndex) {
+      setState(() {
+        _currentIndex = newIndex;
+      });
+      if (_pageController.hasClients &&
+          _pageController.page?.round() != newIndex) {
+        _pageController.jumpToPage(newIndex);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  int _calculatePageIndex(String location) {
+    if (location.startsWith(AppRoutes.statistics)) return 1;
+    if (location.startsWith(AppRoutes.settings)) return 2;
+    return 0;
+  }
+
+  void _onPageChanged(int index) {
+    if (_currentIndex == index) return;
+    _updateRoute(index);
+  }
+
+  void _updateRoute(int index) {
+    setState(() => _currentIndex = index);
+    switch (index) {
+      case 0:
+        context.go(AppRoutes.home);
+        break;
+      case 1:
+        context.go(AppRoutes.statistics);
+        break;
+      case 2:
+        context.go(AppRoutes.settings);
+        break;
+    }
+  }
+
+  void _onBottomNavItemTapped(int index) {
+    if (_currentIndex == index) return;
+    app_haptics.HapticFeedback.selectionClick();
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
     );
   }
 
-  static ThemeData get darkTheme {
-    return _baseTheme(
-      brightness: Brightness.dark,
-      backgroundColor: _backgroundDark,
-      scaffoldColor: _backgroundDark,
-      surfaceColor: _surfaceDark,
-      onSurfaceColor: _onSurfaceDark,
-      onSurfaceVariantColor: _onSurfaceVariantDark,
-      primaryColor: _primary, // White text on dark background
-      onPrimaryColor: _backgroundDark, // Black text on white components
-      appBarColor: _backgroundDark,
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        children: const <Widget>[
+          HomeScreen(),
+          StatisticsScreen(),
+          SettingsScreen(),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          app_haptics.HapticFeedback.lightImpact();
+          context.pushNamed(AppRoutes.addSubscription);
+        },
+        tooltip: 'Add Subscription',
+        child: const Icon(Icons.add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        notchMargin: 8.0,
+        // FIX: Das Row-Widget wird in einen Container mit oberem Rand gewickelt.
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  top: BorderSide(
+                      color: theme.dividerColor.withOpacity(0.5), width: 1.0))),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              _buildBottomNavItem(
+                  context: context,
+                  icon: Icons.home_filled,
+                  label: 'Home',
+                  index: 0),
+              _buildBottomNavItem(
+                  context: context,
+                  icon: Icons.pie_chart_rounded,
+                  label: 'Stats',
+                  index: 1),
+              const SizedBox(width: 48), // The notch space
+              _buildBottomNavItem(
+                  context: context,
+                  icon: Icons.settings_rounded,
+                  label: 'Settings',
+                  index: 2),
+              _buildBottomNavItem(
+                  context: context,
+                  icon: Icons.person_rounded,
+                  label: 'Profile',
+                  index: 3), // Example for future use
+            ],
+          ),
+        ),
+      ),
     );
   }
 
-  static ThemeData _baseTheme({
-    required Brightness brightness,
-    required Color backgroundColor,
-    required Color scaffoldColor,
-    required Color surfaceColor,
-    required Color onSurfaceColor,
-    required Color onSurfaceVariantColor,
-    required Color primaryColor,
-    required Color onPrimaryColor,
-    required Color appBarColor,
+  Widget _buildBottomNavItem({
+    required BuildContext context,
+    required IconData icon,
+    required String label,
+    required int index,
   }) {
-    final textTheme = _buildTextTheme(
-        base: ThemeData(brightness: brightness).textTheme,
-        onSurfaceColor: onSurfaceColor);
+    final theme = Theme.of(context);
+    final isSelected = _currentIndex == index;
+    final bool isDisabled = index > 2; // Profil-Icon ist deaktiviert
 
-    return ThemeData(
-      useMaterial3: true,
-      brightness: brightness,
-      fontFamily: AppTypography.fontFamily,
-      scaffoldBackgroundColor: scaffoldColor,
-      primaryColor: primaryColor,
-      colorScheme: ColorScheme(
-        brightness: brightness,
-        primary: primaryColor,
-        onPrimary: onPrimaryColor,
-        secondary: primaryColor,
-        onSecondary: onPrimaryColor,
-        surface: surfaceColor,
-        onSurface: onSurfaceColor,
-        background: backgroundColor,
-        onBackground: onSurfaceColor,
-        error: Colors.red.shade400,
-        onError: Colors.white,
-      ),
-      appBarTheme: AppBarTheme(
-        elevation: 0,
-        backgroundColor: appBarColor,
-        foregroundColor: onSurfaceColor,
-        systemOverlayStyle: brightness == Brightness.light
-            ? SystemUiOverlayStyle.dark
-            : SystemUiOverlayStyle.light,
-        titleTextStyle: textTheme.headlineSmall,
-        iconTheme: IconThemeData(color: onSurfaceColor),
-      ),
-      cardTheme: CardTheme(
-        elevation: 0,
-        color: surfaceColor,
-        shape: _cardShape,
-        margin: const EdgeInsets.symmetric(vertical: 8),
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: onSurfaceColor,
-        foregroundColor: backgroundColor,
-        elevation: 0,
-        highlightElevation: 0,
-        shape: const CircleBorder(),
-      ),
-      bottomAppBarTheme: BottomAppBarTheme(
-        color: surfaceColor,
-        elevation: 0,
-        shape: const CircularNotchedRectangle(),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: surfaceColor,
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.0),
-          borderSide: BorderSide(color: onSurfaceVariantColor, width: 1),
+    // Die Farben werden jetzt direkt vom überarbeiteten Theme korrekt übernommen.
+    final color = isDisabled
+        ? theme.colorScheme.onSurface.withOpacity(0.3)
+        : isSelected
+            ? theme.colorScheme.primary
+            : theme.colorScheme.onSurfaceVariant;
+
+    return Expanded(
+      child: InkWell(
+        onTap: isDisabled ? null : () => _onBottomNavItemTapped(index),
+        customBorder: const CircleBorder(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Icon(icon, color: color, size: 28),
         ),
       ),
-      textTheme: textTheme,
     );
-  }
-
-  static TextTheme _buildTextTheme(
-      {required TextTheme base, required Color onSurfaceColor}) {
-    return base
-        .copyWith(
-          displayMedium: AppTypography.displayMedium
-              .copyWith(color: onSurfaceColor, fontWeight: FontWeight.bold),
-          headlineSmall: AppTypography.headlineSmall
-              .copyWith(color: onSurfaceColor, fontWeight: FontWeight.w600),
-          titleLarge: AppTypography.titleLarge
-              .copyWith(color: onSurfaceColor, fontWeight: FontWeight.w600),
-          titleMedium: AppTypography.titleMedium
-              .copyWith(color: onSurfaceColor, fontWeight: FontWeight.w600),
-          bodyLarge: AppTypography.bodyLarge.copyWith(color: onSurfaceColor),
-          bodyMedium: AppTypography.bodyMedium
-              .copyWith(color: onSurfaceColor.withOpacity(0.8)),
-        )
-        .apply(
-          bodyColor: onSurfaceColor.withOpacity(0.8),
-          displayColor: onSurfaceColor,
-        );
   }
 }

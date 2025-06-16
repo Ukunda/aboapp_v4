@@ -1,6 +1,6 @@
 ﻿============================================================
   PROJECT SUMMARY - Relevant files for project: D:\Hobbies\Projects\aboappv4\aboapp_v4-main\aboapp_v4
-  Generated: 2025-06-10 19:05:19
+  Generated: 2025-06-16 17:15:40
 ============================================================
 
 ===== FILE: analysis_options.yaml =====
@@ -1448,11 +1448,9 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 import 'package:aboapp/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart';
-import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/main_container_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -1467,13 +1465,14 @@ abstract class AppRoutes {
 
 @singleton
 class AppRouter {
+  final SharedPreferences _sharedPreferences;
+
   AppRouter(this._sharedPreferences);
 
-  final SharedPreferences _sharedPreferences;
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
   GoRouter config() {
-    final onboardingComplete =
+    final bool onboardingComplete =
         _sharedPreferences.getBool('onboarding_complete') ?? false;
 
     return GoRouter(
@@ -1485,99 +1484,54 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.onboarding,
           name: AppRoutes.onboarding,
-          builder: (_, __) => const OnboardingScreen(),
+          builder: (context, state) => const OnboardingScreen(),
         ),
         ShellRoute(
-          builder: (_, state, child) =>
-              MainContainerScreen(location: state.uri.toString()),
+          builder: (context, state, child) {
+            return MainContainerScreen(location: state.uri.toString());
+          },
           routes: [
-            // ---------------- HOME TAB --------------------------------------
             GoRoute(
               path: AppRoutes.home,
               name: AppRoutes.home,
-              builder: (_, __) => const SizedBox.shrink(),
+              builder: (context, state) => const SizedBox.shrink(),
               routes: [
-                // Neues Abo
-                _buildModalSubRoute(
-                  AppRoutes.addSubscription,
-                  (_, __) => const AddEditSubscriptionScreen(),
-                ),
-
-                // Abo bearbeiten
-                _buildModalSubRoute(
-                  AppRoutes.editSubscription,
-                  (context, state) {
-                    // 1) Vorzugsweise komplette Entity via extra
-                    final extraSub = state.extra as SubscriptionEntity?;
-                    final idParam = state.pathParameters['id'];
-
-                    if (extraSub != null) {
-                      return AddEditSubscriptionScreen(
-                        initialSubscription: extraSub,
-                      );
-                    }
-
-                    final cubitState = context.read<SubscriptionCubit>().state;
-
-                    // ---- HIER Propertyname ggf. anpassen! ----
-                    if (cubitState is SubscriptionLoaded) {
-                      final list = cubitState.subscriptions;
-                      try {
-                        final found = list.firstWhere((s) => s.id == idParam);
-                        return AddEditSubscriptionScreen(
-                          initialSubscription: found,
-                        );
-                      } catch (_) {
-                        return const Scaffold(
-                          body: Center(child: Text('Abo nicht gefunden')),
-                        );
-                      }
-                    } else if (cubitState is SubscriptionLoading) {
-                      return const Scaffold(
-                        body: Center(child: CircularProgressIndicator()),
-                      );
-                    } else if (cubitState is SubscriptionError) {
-                      return Scaffold(
-                        body: Center(
-                            child: Text('Fehler: ${cubitState.message}')),
-                      );
-                    } else {
-                      return const Scaffold(
-                        body: Center(child: Text('Unbekannter Status')),
-                      );
-                    }
-                  },
-                ),
+                _buildModalSubRoute(AppRoutes.addSubscription,
+                    (context, state) => const AddEditSubscriptionScreen()),
+                _buildModalSubRoute(AppRoutes.editSubscription,
+                    (context, state) {
+                  final subscription = state.extra as SubscriptionEntity?;
+                  final subscriptionId = state.pathParameters['id'];
+                  // KORRIGIERTER AUFRUF
+                  return AddEditSubscriptionScreen(
+                    subscriptionId: subscriptionId,
+                    subscription: subscription,
+                  );
+                }),
               ],
             ),
-
-            // ---------------- STATISTICS TAB --------------------------------
             GoRoute(
               path: AppRoutes.statistics,
               name: AppRoutes.statistics,
-              builder: (_, __) => const SizedBox.shrink(),
+              builder: (context, state) => const SizedBox.shrink(),
             ),
-
-            // ---------------- SETTINGS TAB ----------------------------------
             GoRoute(
               path: AppRoutes.settings,
               name: AppRoutes.settings,
-              builder: (_, __) => const SizedBox.shrink(),
+              builder: (context, state) => const SizedBox.shrink(),
             ),
           ],
         ),
       ],
-      errorBuilder: (_, state) => Scaffold(
-        appBar: AppBar(title: const Text('Seite nicht gefunden')),
-        body: Center(child: Text('Error:\n${state.error}')),
+      errorBuilder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Page Not Found')),
+        body: Center(child: Text('Error: \n${state.error}')),
       ),
     );
   }
 
   static GoRoute _buildModalSubRoute(
-    String path,
-    Widget Function(BuildContext, GoRouterState) builder,
-  ) {
+      String path, Widget Function(BuildContext, GoRouterState) builder) {
     return GoRoute(
       path: path,
       name: path,
@@ -1650,7 +1604,9 @@ import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_colors.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
 
-abstract class AppTheme {
+// This file now contains both themes, structured in nested classes.
+
+abstract class ClassicTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -1676,14 +1632,14 @@ abstract class AppTheme {
         onError: AppColors.onError,
         errorContainer: Color(0xFFFFDAD6),
         onErrorContainer: Color(0xFF410002),
-        surface: AppColors.backgroundLight, // Was background
-        onSurface: AppColors.onSurfaceLight, // Was onBackground
-        surfaceContainerHighest: AppColors.borderLight, // Was surfaceVariant
+        surface: AppColors.backgroundLight,
+        onSurface: AppColors.onSurfaceLight,
+        surfaceContainerHighest: AppColors.surfaceLight,
         onSurfaceVariant: AppColors.onSurfaceVariantLight,
         outline: AppColors.borderLight,
         outlineVariant: Color(0xFFCAC4D0),
-        shadow: Color(0x1A000000), // Colors.black.withOpacity(0.1)
-        scrim: Color(0x4D000000), // Colors.black.withOpacity(0.3)
+        shadow: Color(0x1A000000),
+        scrim: Color(0x4D000000),
         inverseSurface: AppColors.surfaceDark,
         onInverseSurface: AppColors.onSurfaceDark,
         inversePrimary: AppColors.primaryDark,
@@ -1732,8 +1688,7 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor:
-            const Color(0x80FFFFFF), // AppColors.surfaceLight.withOpacity(0.5)
+        fillColor: AppColors.surfaceLight.withOpacity(0.5),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -1758,9 +1713,8 @@ abstract class AppTheme {
         ),
         labelStyle: AppTypography.bodyMedium
             .copyWith(color: AppColors.onSurfaceVariantLight),
-        hintStyle: AppTypography.bodyMedium.copyWith(
-            color: AppColors.onSurfaceVariantLight
-                .withOpacity(0.7)), // Kept withOpacity as it's not const
+        hintStyle: AppTypography.bodyMedium
+            .copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)),
         floatingLabelStyle:
             AppTypography.bodySmall.copyWith(color: AppColors.primary),
       ),
@@ -1789,6 +1743,7 @@ abstract class AppTheme {
         selectedLabelStyle: AppTypography.labelSmall,
         unselectedLabelStyle: AppTypography.labelSmall,
         elevation: 2.0,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
@@ -1803,7 +1758,7 @@ abstract class AppTheme {
       colorScheme: const ColorScheme(
         brightness: Brightness.dark,
         primary: AppColors.primaryLight,
-        onPrimary: AppColors.onPrimary,
+        onPrimary: AppColors.primaryDark,
         primaryContainer: AppColors.primaryDark,
         onPrimaryContainer: AppColors.primaryLight,
         secondary: AppColors.accent,
@@ -1818,14 +1773,14 @@ abstract class AppTheme {
         onError: AppColors.onError,
         errorContainer: Color(0xFF93000A),
         onErrorContainer: Color(0xFFFFDAD6),
-        surface: AppColors.backgroundDark, // Was background
-        onSurface: AppColors.onSurfaceDark, // Was onBackground
-        surfaceContainerHighest: AppColors.borderDark, // Was surfaceVariant
+        surface: AppColors.backgroundDark,
+        onSurface: AppColors.onSurfaceDark,
+        surfaceContainerHighest: AppColors.surfaceDark,
         onSurfaceVariant: AppColors.onSurfaceVariantDark,
         outline: AppColors.borderDark,
         outlineVariant: Color(0xFF49454F),
-        shadow: Color(0x33000000), // Colors.black.withOpacity(0.2)
-        scrim: Color(0x66000000), // Colors.black.withOpacity(0.4)
+        shadow: Color(0x33000000),
+        scrim: Color(0x66000000),
         inverseSurface: AppColors.surfaceLight,
         onInverseSurface: AppColors.onSurfaceLight,
         inversePrimary: AppColors.primary,
@@ -1874,8 +1829,7 @@ abstract class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor:
-            const Color(0x801F2937), // AppColors.surfaceDark.withOpacity(0.5)
+        fillColor: AppColors.surfaceDark.withOpacity(0.5),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -1901,9 +1855,8 @@ abstract class AppTheme {
         ),
         labelStyle: AppTypography.bodyMedium
             .copyWith(color: AppColors.onSurfaceVariantDark),
-        hintStyle: AppTypography.bodyMedium.copyWith(
-            color: AppColors.onSurfaceVariantDark
-                .withOpacity(0.7)), // Kept withOpacity
+        hintStyle: AppTypography.bodyMedium
+            .copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)),
         floatingLabelStyle:
             AppTypography.bodySmall.copyWith(color: AppColors.primaryLight),
       ),
@@ -1932,6 +1885,7 @@ abstract class AppTheme {
         selectedLabelStyle: AppTypography.labelSmall,
         unselectedLabelStyle: AppTypography.labelSmall,
         elevation: 2.0,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
@@ -1971,21 +1925,207 @@ abstract class AppTheme {
   }
 }
 
-extension SemanticThemeColors on ThemeData {
-  Color get success =>
-      brightness == Brightness.light ? AppColors.success : AppColors.success;
-  Color get onSuccess => brightness == Brightness.light
-      ? AppColors.onSuccess
-      : AppColors.onSuccess;
-  Color get warning =>
-      brightness == Brightness.light ? AppColors.warning : AppColors.warning;
-  Color get onWarning => brightness == Brightness.light
-      ? AppColors.onWarning
-      : AppColors.onWarning;
-  Color get info =>
-      brightness == Brightness.light ? AppColors.info : AppColors.info;
-  Color get onInfo =>
-      brightness == Brightness.light ? AppColors.onInfo : AppColors.onInfo;
+abstract class ModernTheme {
+  static const Color _primary = Color(0xFF4A4AFF); // A vibrant blue as accent
+  static const Color _onPrimary = Colors.white;
+
+  // Light Mode Colors
+  static const Color _backgroundLight = Color(0xFFF7F7F7);
+  static const Color _surfaceLight = Colors.white;
+  static const Color _onSurfaceLight = Color(0xFF121212);
+  static const Color _onSurfaceVariantLight = Color(0xFF6E6E73);
+  static const Color _borderLight = Color(0xFFE5E5E5);
+
+  // Dark Mode Colors
+  static const Color _backgroundDark = Color(0xFF000000);
+  static const Color _surfaceDark = Color(0xFF121212);
+  static const Color _onSurfaceDark = Color(0xFFE5E5EA);
+  static const Color _onSurfaceVariantDark = Color(0xFF8A8A8E);
+  static const Color _borderDark = Color(0xFF2C2C2E);
+
+  static final _lightInputDecorationTheme = InputDecorationTheme(
+    filled: true,
+    fillColor: _surfaceLight,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: const BorderSide(color: _borderLight),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: const BorderSide(color: _borderLight),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: const BorderSide(color: _primary, width: 1.5),
+    ),
+  );
+
+  static final _darkInputDecorationTheme = InputDecorationTheme(
+    filled: true,
+    fillColor: _surfaceDark,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: BorderSide.none,
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: const BorderSide(color: _primary, width: 1.5),
+    ),
+  );
+
+  static ThemeData get lightTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      fontFamily: AppTypography.fontFamily,
+      primaryColor: _primary,
+      scaffoldBackgroundColor: _backgroundLight,
+      colorScheme: const ColorScheme.light(
+        primary: _primary,
+        onPrimary: _onPrimary,
+        primaryContainer: _primary,
+        onPrimaryContainer: _onPrimary,
+        surface: _surfaceLight,
+        onSurface: _onSurfaceLight,
+        surfaceContainerHighest: _backgroundLight,
+        onSurfaceVariant: _onSurfaceVariantLight,
+        background: _backgroundLight,
+        onBackground: _onSurfaceLight,
+        outline: _borderLight,
+        error: Colors.redAccent,
+        onError: Colors.white,
+      ),
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        backgroundColor: _backgroundLight,
+        foregroundColor: _onSurfaceLight,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        titleTextStyle:
+            AppTypography.titleLarge.copyWith(color: _onSurfaceLight),
+        iconTheme: const IconThemeData(color: _onSurfaceLight),
+      ),
+      cardTheme: CardTheme(
+        elevation: 0,
+        color: _surfaceLight,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+      inputDecorationTheme: _lightInputDecorationTheme,
+      dropdownMenuTheme: DropdownMenuThemeData(
+        inputDecorationTheme: _lightInputDecorationTheme,
+      ),
+      chipTheme: ChipThemeData(
+          backgroundColor: _borderLight,
+          selectedColor: _primary,
+          labelStyle:
+              AppTypography.labelLarge.copyWith(color: _onSurfaceVariantLight),
+          secondaryLabelStyle:
+              AppTypography.labelLarge.copyWith(color: _onPrimary),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          side: BorderSide.none,
+          showCheckmark: false,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: _primary,
+        foregroundColor: _onPrimary,
+        elevation: 2.0,
+        shape: CircleBorder(),
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: _surfaceLight,
+        selectedItemColor: _primary,
+        unselectedItemColor: _onSurfaceVariantLight,
+        selectedLabelStyle:
+            TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: TextStyle(fontSize: 10),
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+      ),
+    );
+  }
+
+  static ThemeData get darkTheme {
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.dark,
+      fontFamily: AppTypography.fontFamily,
+      primaryColor: _primary,
+      scaffoldBackgroundColor: _backgroundDark,
+      colorScheme: const ColorScheme.dark(
+        primary: _primary,
+        onPrimary: _onPrimary,
+        primaryContainer: _primary,
+        onPrimaryContainer: _onPrimary,
+        surface: _surfaceDark,
+        onSurface: _onSurfaceDark,
+        surfaceContainerHighest: _surfaceDark,
+        onSurfaceVariant: _onSurfaceVariantDark,
+        background: _backgroundDark,
+        onBackground: _onSurfaceDark,
+        outline: _borderDark,
+        error: Colors.redAccent,
+        onError: Colors.white,
+      ),
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        backgroundColor: _backgroundDark,
+        foregroundColor: _onSurfaceDark,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        titleTextStyle:
+            AppTypography.titleLarge.copyWith(color: _onSurfaceDark),
+        iconTheme: const IconThemeData(color: _onSurfaceDark),
+      ),
+      cardTheme: CardTheme(
+        elevation: 0,
+        color: _surfaceDark,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+      inputDecorationTheme: _darkInputDecorationTheme,
+      dropdownMenuTheme: DropdownMenuThemeData(
+        inputDecorationTheme: _darkInputDecorationTheme,
+      ),
+      chipTheme: ChipThemeData(
+          backgroundColor: _borderDark,
+          selectedColor: _primary,
+          labelStyle:
+              AppTypography.labelLarge.copyWith(color: _onSurfaceVariantDark),
+          secondaryLabelStyle:
+              AppTypography.labelLarge.copyWith(color: _onPrimary),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          side: BorderSide.none,
+          showCheckmark: false,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: _primary,
+        foregroundColor: _onPrimary,
+        elevation: 2.0,
+        shape: CircleBorder(),
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: _surfaceDark,
+        selectedItemColor: _primary,
+        unselectedItemColor: _onSurfaceVariantDark,
+        selectedLabelStyle:
+            TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: TextStyle(fontSize: 10),
+        elevation: 0,
+        type: BottomNavigationBarType.fixed,
+      ),
+    );
+  }
 }
 
 
@@ -5979,13 +6119,15 @@ class StatisticsState with _$StatisticsState {
 ===== FILE: statistics_screen.dart =====
 ===== PATH: lib/features/statistics/presentation/screens/statistics_screen.dart =====
 
+// lib/features/statistics/presentation/screens/statistics_screen.dart
+
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/billing_type_breakdown_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/overall_spending_summary_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart';
 import 'package:aboapp/features/statistics/presentation/widgets/top_subscriptions_list_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart'; // Removed hide Error
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6003,16 +6145,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    final subscriptionState = context.read<SubscriptionCubit>().state;
-    subscriptionState.whenOrNull(
-      loaded: (allSubs, _, __, ___, ____, _____) {
-        if (mounted) {
-          context
-              .read<StatisticsCubit>()
-              .generateStatistics(allSubs, yearForTrend: _selectedYearForTrend);
-        }
-      },
-    );
+    // Use a post-frame callback to ensure the context is ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final subscriptionState = context.read<SubscriptionCubit>().state;
+      subscriptionState.whenOrNull(
+        loaded: (allSubs, _, __, ___, ____, _____) {
+          if (mounted) {
+            context.read<StatisticsCubit>().generateStatistics(allSubs,
+                yearForTrend: _selectedYearForTrend);
+          }
+        },
+      );
+    });
   }
 
   @override
@@ -6077,7 +6221,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   onRefresh: () async {
                     final subCubitState =
                         context.read<SubscriptionCubit>().state;
-                    // Removed await from void result
                     subCubitState.maybeWhen(
                       loaded: (allSubs, _, __, ___, ____, _____) {
                         context.read<StatisticsCubit>().generateStatistics(
@@ -6102,33 +6245,29 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         padding: const EdgeInsets.all(12.0),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate.fixed([
-                            // Added const
                             OverallSpendingSummaryCard(
                               totalMonthlySpending:
-                                  totalMonthlyEquivalentSpending, // These are already passed
+                                  totalMonthlyEquivalentSpending,
                               totalYearlySpending:
                                   totalYearlyEquivalentSpending,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             CategorySpendingPieChartCard(
-                              categorySpendingData:
-                                  categorySpendingData, // Passed
+                              categorySpendingData: categorySpendingData,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             BillingTypeBreakdownCard(
-                              billingTypeSpendingData:
-                                  billingTypeSpendingData, // Passed
+                              billingTypeSpendingData: billingTypeSpendingData,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             SpendingTrendLineChartCard(
-                              spendingTrendData: spendingTrendData, // Passed
+                              spendingTrendData: spendingTrendData,
                             ),
-                            SizedBox(height: 12),
+                            const SizedBox(height: 12),
                             TopSubscriptionsListCard(
-                              topSubscriptions:
-                                  topSpendingSubscriptions, // Passed
+                              topSubscriptions: topSpendingSubscriptions,
                             ),
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                           ]),
                         ),
                       ),
@@ -6154,8 +6293,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               size: 18, color: theme.colorScheme.onSurfaceVariant),
           style: theme.textTheme.bodySmall
               ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          dropdownColor: theme.colorScheme
-              .surfaceContainerHighest, // Corrected deprecated member
+          dropdownColor: theme.colorScheme.surfaceContainerHighest,
           items: List.generate(5, (index) => DateTime.now().year - index)
               .map((year) => DropdownMenuItem<int>(
                     value: year,
@@ -6185,10 +6323,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 ===== FILE: billing_type_breakdown_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/billing_type_breakdown_card.dart =====
 
+// lib/features/statistics/presentation/widgets/billing_type_breakdown_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; // For BillingTypeSpending
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // For BillingCycle
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class BillingTypeBreakdownCard extends StatelessWidget {
   final List<BillingTypeSpending> billingTypeSpendingData;
@@ -6197,34 +6339,42 @@ class BillingTypeBreakdownCard extends StatelessWidget {
     super.key,
     required this.billingTypeSpendingData,
   });
-  
+
   String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
     // TODO: Localize
     switch (cycle) {
-      case BillingCycle.weekly: return 'Weekly';
-      case BillingCycle.monthly: return 'Monthly';
-      case BillingCycle.quarterly: return 'Quarterly';
-      case BillingCycle.biAnnual: return 'Bi-Annual';
-      case BillingCycle.yearly: return 'Yearly';
-      case BillingCycle.custom: return 'Custom';
+      case BillingCycle.weekly:
+        return 'Weekly';
+      case BillingCycle.monthly:
+        return 'Monthly';
+      case BillingCycle.quarterly:
+        return 'Quarterly';
+      case BillingCycle.biAnnual:
+        return 'Bi-Annual';
+      case BillingCycle.yearly:
+        return 'Yearly';
+      case BillingCycle.custom:
+        return 'Custom';
     }
   }
 
   Color _getBillingCycleColor(BuildContext context, BillingCycle cycle) {
     // Use a consistent color mapping, possibly from AppColors or theme extensions
     final colors = [
-      Colors.blue.shade300, Colors.purple.shade300, Colors.teal.shade300,
-      Colors.orange.shade300, Colors.red.shade300, Colors.grey.shade400
+      Colors.blue.shade300,
+      Colors.purple.shade300,
+      Colors.teal.shade300,
+      Colors.orange.shade300,
+      Colors.red.shade300,
+      Colors.grey.shade400
     ];
     return colors[cycle.index % colors.length];
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (billingTypeSpendingData.isEmpty) {
       return Card(
@@ -6240,9 +6390,9 @@ class BillingTypeBreakdownCard extends StatelessWidget {
         ),
       );
     }
-    
-    final totalMonthlyEquivalentSpending = billingTypeSpendingData.fold<double>(0, (sum, item) => sum + item.totalAmount);
 
+    final totalMonthlyEquivalentSpending = billingTypeSpendingData.fold<double>(
+        0, (sum, item) => sum + item.totalAmount);
 
     return Card(
       elevation: 1.0,
@@ -6253,34 +6403,35 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           children: [
             Text(
               'Breakdown by Billing Cycle', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-             Text(
+            Text(
               '(Based on Monthly Equivalent Cost)', // TODO: Localize
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
             if (totalMonthlyEquivalentSpending > 0)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Row(
-                      children: billingTypeSpendingData.map((item) {
-                        final percentage = item.percentageOfTotal;
-                        return Expanded(
-                          flex: (percentage * 100).toInt().clamp(1, 100),
-                          child: Container(
-                            height: 24,
-                            color: _getBillingCycleColor(context, item.billingCycle),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                }
-              ),
+              LayoutBuilder(builder: (context, constraints) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Row(
+                    children: billingTypeSpendingData.map((item) {
+                      final percentage = item.percentageOfTotal;
+                      return Expanded(
+                        flex: (percentage * 100).toInt().clamp(1, 100),
+                        child: Container(
+                          height: 24,
+                          color:
+                              _getBillingCycleColor(context, item.billingCycle),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }),
             const SizedBox(height: 16),
             ...billingTypeSpendingData.map((item) {
               return Padding(
@@ -6291,7 +6442,8 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                       width: 12,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: _getBillingCycleColor(context, item.billingCycle),
+                        color:
+                            _getBillingCycleColor(context, item.billingCycle),
                         borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
@@ -6308,7 +6460,8 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                       flex: 2,
                       child: Text(
                         '${item.subscriptionCount} sub${item.subscriptionCount == 1 ? "" : "s"}', // TODO: Localize
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,
                       ),
                     ),
@@ -6316,20 +6469,27 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        currencyFormat.format(item.totalAmount),
-                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                        CurrencyFormatter.format(
+                          item.totalAmount,
+                          currencyCode: settingsState.currencyCode,
+                          locale: settingsState.locale,
+                          decimalDigits: 0,
+                        ),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                         textAlign: TextAlign.end,
                       ),
                     ),
-                     const SizedBox(width: 8.0),
-                     Expanded(
-                       flex: 2,
-                       child: Text(
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
                         '(${(item.percentageOfTotal * 100).toStringAsFixed(0)}%)',
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,
-                                         ),
-                     ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -6341,15 +6501,19 @@ class BillingTypeBreakdownCard extends StatelessWidget {
   }
 }
 
+
 ===== FILE: category_spending_pie_chart_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart =====
 
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
+// lib/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // Import for CategoryDisplayHelpers
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-// import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // Unused import
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -6360,17 +6524,18 @@ class CategorySpendingPieChartCard extends StatefulWidget {
   });
 
   @override
-  State<CategorySpendingPieChartCard> createState() => _CategorySpendingPieChartCardState();
+  State<CategorySpendingPieChartCard> createState() =>
+      _CategorySpendingPieChartCardState();
 }
 
-class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartCard> {
+class _CategorySpendingPieChartCardState
+    extends State<CategorySpendingPieChartCard> {
   int? _touchedIndex;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0); 
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (widget.categorySpendingData.isEmpty) {
       return Card(
@@ -6386,10 +6551,11 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
         ),
       );
     }
-    
-    final relevantData = widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
+
+    final relevantData =
+        widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
     if (relevantData.isEmpty) {
-       return Card(
+      return Card(
         elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -6403,7 +6569,6 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       );
     }
 
-
     return Card(
       elevation: 1.0,
       child: Padding(
@@ -6413,11 +6578,12 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
           children: [
             Text(
               'Spending by Category', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             SizedBox(
-              height: 180, 
+              height: 180,
               child: PieChart(
                 PieChartData(
                   pieTouchData: PieTouchData(
@@ -6429,26 +6595,28 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
                           _touchedIndex = -1;
                           return;
                         }
-                        _touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                        _touchedIndex = pieTouchResponse
+                            .touchedSection!.touchedSectionIndex;
                       });
                     },
                   ),
                   borderData: FlBorderData(show: false),
                   sectionsSpace: 2,
-                  centerSpaceRadius: 45, 
+                  centerSpaceRadius: 45,
                   sections: _generatePieChartSections(theme, relevantData),
                 ),
               ),
             ),
             const SizedBox(height: 24),
-            _buildLegend(theme, currencyFormat, relevantData),
+            _buildLegend(theme, settingsState, relevantData),
           ],
         ),
       ),
     );
   }
 
-  List<PieChartSectionData> _generatePieChartSections(ThemeData theme, List<CategorySpending> data) {
+  List<PieChartSectionData> _generatePieChartSections(
+      ThemeData theme, List<CategorySpending> data) {
     return List.generate(data.length, (i) {
       final isTouched = i == _touchedIndex;
       final fontSize = isTouched ? 14.0 : 10.0;
@@ -6456,22 +6624,26 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
       final categoryData = data[i];
 
       return PieChartSectionData(
-        color: categoryData.category.categoryDisplayIconColor(theme), 
+        color: categoryData.category.categoryDisplayIconColor(theme),
         value: categoryData.totalAmount,
         title: '${(categoryData.percentage * 100).toStringAsFixed(0)}%',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: ThemeData.estimateBrightnessForColor(categoryData.category.categoryDisplayIconColor(theme)) == Brightness.dark
-                 ? Colors.white : Colors.black,
+          color: ThemeData.estimateBrightnessForColor(
+                      categoryData.category.categoryDisplayIconColor(theme)) ==
+                  Brightness.dark
+              ? Colors.white
+              : Colors.black,
           shadows: const [Shadow(color: Colors.black26, blurRadius: 1)],
         ),
       );
     });
   }
 
-  Widget _buildLegend(ThemeData theme, NumberFormat currencyFormat, List<CategorySpending> data) {
+  Widget _buildLegend(ThemeData theme, SettingsState settingsState,
+      List<CategorySpending> data) {
     return Wrap(
       spacing: 16.0,
       runSpacing: 8.0,
@@ -6482,7 +6654,11 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
-            color: isTouched ? categoryData.category.categoryDisplayIconColor(theme).withOpacity(0.2) : Colors.transparent,
+            color: isTouched
+                ? categoryData.category
+                    .categoryDisplayIconColor(theme)
+                    .withOpacity(0.2)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
@@ -6505,8 +6681,8 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
               ),
               const SizedBox(width: 4),
               Text(
-                '(${currencyFormat.format(categoryData.totalAmount)})',
-                 style: theme.textTheme.labelSmall?.copyWith(
+                '(${CurrencyFormatter.format(categoryData.totalAmount, currencyCode: settingsState.currencyCode, locale: settingsState.locale, decimalDigits: 0)})',
+                style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),
@@ -6523,9 +6699,13 @@ class _CategorySpendingPieChartCardState extends State<CategorySpendingPieChartC
 ===== FILE: overall_spending_summary_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/overall_spending_summary_card.dart =====
 
+// lib/features/statistics/presentation/widgets/overall_spending_summary_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class OverallSpendingSummaryCard extends StatelessWidget {
   final double totalMonthlySpending;
@@ -6540,8 +6720,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     return Card(
       elevation: 1.0,
@@ -6552,7 +6731,8 @@ class OverallSpendingSummaryCard extends StatelessWidget {
           children: [
             Text(
               'Spending Overview', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -6560,9 +6740,9 @@ class OverallSpendingSummaryCard extends StatelessWidget {
               children: [
                 _buildMetric(
                   context,
+                  settingsState: settingsState,
                   label: 'Monthly Total', // TODO: Localize
                   value: totalMonthlySpending,
-                  currencyFormat: currencyFormat,
                   style: theme.textTheme.headlineSmall!.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
@@ -6571,14 +6751,14 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                 ),
                 _buildMetric(
                   context,
+                  settingsState: settingsState,
                   label: 'Yearly Total', // TODO: Localize
                   value: totalYearlySpending,
-                  currencyFormat: currencyFormat,
                   style: theme.textTheme.titleLarge!.copyWith(
                     color: theme.colorScheme.secondary,
-                     fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w600,
                   ),
-                   labelStyle: theme.textTheme.bodySmall!,
+                  labelStyle: theme.textTheme.bodySmall!,
                 ),
               ],
             ),
@@ -6590,9 +6770,9 @@ class OverallSpendingSummaryCard extends StatelessWidget {
 
   Widget _buildMetric(
     BuildContext context, {
+    required SettingsState settingsState,
     required String label,
     required double value,
-    required NumberFormat currencyFormat,
     required TextStyle style,
     required TextStyle labelStyle,
   }) {
@@ -6602,25 +6782,34 @@ class OverallSpendingSummaryCard extends StatelessWidget {
       children: [
         AnimatedCounterWidget(
           value: value,
-          formatter: (val) => currencyFormat.format(val),
+          formatter: (val) => CurrencyFormatter.format(val,
+              currencyCode: settingsState.currencyCode,
+              locale: settingsState.locale),
           style: style,
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: labelStyle.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          style: labelStyle.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
   }
 }
 
+
 ===== FILE: spending_trend_line_chart_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart =====
 
-import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; 
+// lib/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class SpendingTrendLineChartCard extends StatelessWidget {
@@ -6634,11 +6823,10 @@ class SpendingTrendLineChartCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (spendingTrendData.spots.isEmpty) {
-       return Card(
+      return Card(
         elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -6655,13 +6843,14 @@ class SpendingTrendLineChartCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20), 
+        padding: const EdgeInsets.fromLTRB(16, 16, 20, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Spending Trend - ${spendingTrendData.year}', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -6671,32 +6860,51 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   gridData: FlGridData(
                     show: true,
                     drawVerticalLine: false,
-                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear / 4 : 50.0).clamp(10.0, double.infinity), // Ensure double
+                    horizontalInterval: (spendingTrendData.maxSpendingInYear > 0
+                            ? spendingTrendData.maxSpendingInYear / 4
+                            : 50.0)
+                        .clamp(10.0, double.infinity),
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.dividerColor.withOpacity(0.5), // Kept withOpacity for dynamic non-const color
+                        color: theme.dividerColor.withOpacity(0.5),
                         strokeWidth: 0.5,
                       );
                     },
                   ),
                   titlesData: FlTitlesData(
                     show: true,
-                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                    rightTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
+                    topTitles: const AxisTitles(
+                        sideTitles: SideTitles(showTitles: false)),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: 2, 
+                        interval: 2,
                         getTitlesWidget: (value, meta) {
                           // TODO: Localize month abbreviations
-                          const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                          const months = [
+                            'Jan',
+                            'Feb',
+                            'Mar',
+                            'Apr',
+                            'May',
+                            'Jun',
+                            'Jul',
+                            'Aug',
+                            'Sep',
+                            'Oct',
+                            'Nov',
+                            'Dec'
+                          ];
                           final int monthIndex = value.toInt() - 1;
                           if (monthIndex >= 0 && monthIndex < months.length) {
                             return SideTitleWidget(
                               axisSide: meta.axisSide,
                               space: 8.0,
-                              child: Text(months[monthIndex], style: theme.textTheme.bodySmall),
+                              child: Text(months[monthIndex],
+                                  style: theme.textTheme.bodySmall),
                             );
                           }
                           return const Text('');
@@ -6708,11 +6916,20 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         showTitles: true,
                         reservedSize: 48,
                         getTitlesWidget: (value, meta) {
-                          if (value == meta.max || value == meta.min) return const Text(''); 
+                          if (value == meta.max || value == meta.min) {
+                            return const Text('');
+                          }
                           return SideTitleWidget(
                             axisSide: meta.axisSide,
                             space: 4.0,
-                            child: Text(currencyFormat.format(value), style: theme.textTheme.bodySmall),
+                            child: Text(
+                                CurrencyFormatter.format(
+                                  value,
+                                  currencyCode: settingsState.currencyCode,
+                                  locale: settingsState.locale,
+                                  decimalDigits: 0,
+                                ),
+                                style: theme.textTheme.bodySmall),
                           );
                         },
                       ),
@@ -6722,13 +6939,18 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   minX: 1,
                   maxX: 12,
                   minY: 0,
-                  maxY: spendingTrendData.maxSpendingInYear > 0 ? spendingTrendData.maxSpendingInYear * 1.1 : 100, 
+                  maxY: spendingTrendData.maxSpendingInYear > 0
+                      ? spendingTrendData.maxSpendingInYear * 1.1
+                      : 100,
                   lineBarsData: [
                     LineChartBarData(
                       spots: spendingTrendData.spots,
                       isCurved: true,
                       gradient: LinearGradient(
-                        colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+                        colors: [
+                          theme.colorScheme.primary,
+                          theme.colorScheme.secondary
+                        ],
                       ),
                       barWidth: 3.5,
                       isStrokeCapRound: true,
@@ -6736,18 +6958,20 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         show: true,
                         getDotPainter: (spot, percent, barData, index) =>
                             FlDotCirclePainter(
-                                radius: 4,
-                                color: Color.lerp(theme.colorScheme.primary, theme.colorScheme.secondary, percent / 100) ?? theme.colorScheme.primary,
-                                strokeWidth: 1.5,
-                                strokeColor: theme.cardColor, 
+                          radius: 4,
+                          color: Color.lerp(theme.colorScheme.primary,
+                                  theme.colorScheme.secondary, percent / 100) ??
+                              theme.colorScheme.primary,
+                          strokeWidth: 1.5,
+                          strokeColor: theme.cardColor,
                         ),
                       ),
                       belowBarData: BarAreaData(
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.2),    // Kept withOpacity
-                            theme.colorScheme.secondary.withOpacity(0.05), // Kept withOpacity
+                            theme.colorScheme.primary.withOpacity(0.2),
+                            theme.colorScheme.secondary.withOpacity(0.05),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -6758,14 +6982,18 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                   lineTouchData: LineTouchData(
                     handleBuiltInTouches: true,
                     touchTooltipData: LineTouchTooltipData(
-                      getTooltipColor: (spot) => theme.colorScheme.surfaceContainerHighest, // Corrected: was tooltipBgColor
+                      getTooltipColor: (spot) =>
+                          theme.colorScheme.surfaceContainerHighest,
                       getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                         return touchedBarSpots.map((barSpot) {
                           final flSpot = barSpot;
                           // TODO: Localize month name and currency
-                          final monthName = DateFormat.MMMM().format(DateTime(spendingTrendData.year, flSpot.x.toInt()));
+                          final monthName = DateFormat.MMMM(
+                                  settingsState.locale.toLanguageTag())
+                              .format(DateTime(
+                                  spendingTrendData.year, flSpot.x.toInt()));
                           return LineTooltipItem(
-                            '$monthName: ${currencyFormat.format(flSpot.y)}\n',
+                            '$monthName: ${CurrencyFormatter.format(flSpot.y, currencyCode: settingsState.currencyCode, locale: settingsState.locale, decimalDigits: 0)}\n',
                             TextStyle(
                               color: theme.colorScheme.onSurfaceVariant,
                               fontWeight: FontWeight.bold,
@@ -6785,13 +7013,18 @@ class SpendingTrendLineChartCard extends StatelessWidget {
   }
 }
 
+
 ===== FILE: top_subscriptions_list_card.dart =====
 ===== PATH: lib/features/statistics/presentation/widgets/top_subscriptions_list_card.dart =====
 
+// lib/features/statistics/presentation/widgets/top_subscriptions_list_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class TopSubscriptionsListCard extends StatelessWidget {
   final List<SubscriptionEntity> topSubscriptions;
@@ -6800,14 +7033,11 @@ class TopSubscriptionsListCard extends StatelessWidget {
     super.key,
     required this.topSubscriptions,
   });
-  
-  // _getBillingCycleShortLabel removed as it was unused in this file
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (topSubscriptions.isEmpty) {
       return Card(
@@ -6827,71 +7057,83 @@ class TopSubscriptionsListCard extends StatelessWidget {
     return Card(
       elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0), 
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 16.0, top: 8.0, right: 16.0, bottom: 4.0),
+              padding: const EdgeInsets.only(
+                  left: 16.0, top: 8.0, right: 16.0, bottom: 4.0),
               child: Text(
                 'Top Spending Subscriptions', // TODO: Localize
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-             Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
+            Padding(
+              padding:
+                  const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
               child: Text(
                 '(Based on Monthly Equivalent Cost)', // TODO: Localize
-                 style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
             ),
             ListView.separated(
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(), 
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: topSubscriptions.length,
               itemBuilder: (context, index) {
                 final sub = topSubscriptions[index];
                 final rank = index + 1;
                 return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 4.0),
                   leading: CircleAvatar(
                     radius: 16,
                     backgroundColor: theme.colorScheme.primaryContainer,
                     child: Text(
                       '$rank',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold
-                      ),
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                   title: Text(
                     sub.name,
-                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                    style: theme.textTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w500),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    sub.category.displayName, // Use extension from subscription_card_widget
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    sub.category
+                        .displayName, // Use extension from subscription_card_widget
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   trailing: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        currencyFormat.format(sub.monthlyEquivalentPrice),
-                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+                        CurrencyFormatter.format(sub.monthlyEquivalentPrice,
+                            currencyCode: settingsState.currencyCode,
+                            locale: settingsState.locale),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
                         'per month', // TODO: Localize (as it's monthly equivalent)
-                         style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                       )
                     ],
                   ),
                 );
               },
-              separatorBuilder: (context, index) => const Divider(height: 1, indent: 16, endIndent: 16),
+              separatorBuilder: (context, index) =>
+                  const Divider(height: 1, indent: 16, endIndent: 16),
             ),
           ],
         ),
@@ -6899,6 +7141,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
     );
   }
 }
+
 
 ===== FILE: subscription_local_datasource.dart =====
 ===== PATH: lib/features/subscriptions/data/datasources/subscription_local_datasource.dart =====
@@ -8432,6 +8675,7 @@ class UpdateSubscriptionUseCase {
 ===== FILE: subscription_cubit.dart =====
 ===== PATH: lib/features/subscriptions/presentation/cubit/subscription_cubit.dart =====
 
+// lib/features/subscriptions/presentation/cubit/subscription_cubit.dart
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/domain/usecases/add_subscription_usecase.dart';
 import 'package:aboapp/features/subscriptions/domain/usecases/delete_subscription_usecase.dart';
@@ -8443,17 +8687,16 @@ import 'package:injectable/injectable.dart';
 import 'package:uuid/uuid.dart';
 
 part 'subscription_state.dart';
-part 'subscription_cubit.freezed.dart'; // Generated by Freezed
+part 'subscription_cubit.freezed.dart';
 
-@injectable // Register with GetIt
+@injectable
 class SubscriptionCubit extends Cubit<SubscriptionState> {
   final GetAllSubscriptionsUseCase _getAllSubscriptions;
   final AddSubscriptionUseCase _addSubscription;
   final UpdateSubscriptionUseCase _updateSubscription;
   final DeleteSubscriptionUseCase _deleteSubscription;
-  final Uuid _uuid; // For generating IDs if needed for new entities
+  final Uuid _uuid;
 
-  // Store all fetched subscriptions internally to apply filters/sorting without re-fetching
   List<SubscriptionEntity> _masterSubscriptionList = [];
 
   SubscriptionCubit(
@@ -8461,14 +8704,13 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     this._addSubscription,
     this._updateSubscription,
     this._deleteSubscription,
-    this._uuid, // Injected if Uuid is registered as a dependency, or instantiate here
+    this._uuid,
   ) : super(const SubscriptionState.initial());
 
   Future<void> loadSubscriptions() async {
     emit(const SubscriptionState.loading());
     try {
       _masterSubscriptionList = await _getAllSubscriptions();
-      // Apply default filters/sort before emitting loaded state
       _applyFiltersAndSort();
     } catch (e) {
       emit(SubscriptionState.error(message: e.toString()));
@@ -8476,138 +8718,144 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   }
 
   Future<void> addSubscription(SubscriptionEntity subscription) async {
-    // Ensure new subscriptions have a unique ID
-    final subToAdd = subscription.id.isEmpty 
-        ? subscription.copyWith(id: _uuid.v4()) 
+    final subToAdd = subscription.id.isEmpty
+        ? subscription.copyWith(id: _uuid.v4())
         : subscription;
-    
-    emit(const SubscriptionState.loading()); // Optional: show loading during add
+    emit(const SubscriptionState.loading());
     try {
       await _addSubscription(subToAdd);
-      _masterSubscriptionList.add(subToAdd); // Update master list
+      _masterSubscriptionList.add(subToAdd);
       _applyFiltersAndSort();
     } catch (e) {
-      emit(SubscriptionState.error(message: "Failed to add subscription: ${e.toString()}"));
-      // Optionally reload or revert to previous loaded state
-      _applyFiltersAndSort(); // Re-emit previous loaded state or specific error state
+      emit(SubscriptionState.error(
+          message: "Failed to add subscription: ${e.toString()}"));
+      _applyFiltersAndSort();
     }
   }
 
   Future<void> updateSubscription(SubscriptionEntity subscription) async {
-    emit(const SubscriptionState.loading()); // Optional
+    emit(const SubscriptionState.loading());
     try {
       await _updateSubscription(subscription);
-      final index = _masterSubscriptionList.indexWhere((s) => s.id == subscription.id);
+      final index =
+          _masterSubscriptionList.indexWhere((s) => s.id == subscription.id);
       if (index != -1) {
         _masterSubscriptionList[index] = subscription;
       } else {
-        _masterSubscriptionList.add(subscription); // Or handle as error if update target not found
+        _masterSubscriptionList.add(subscription);
       }
       _applyFiltersAndSort();
     } catch (e) {
-      emit(SubscriptionState.error(message: "Failed to update subscription: ${e.toString()}"));
+      emit(SubscriptionState.error(
+          message: "Failed to update subscription: ${e.toString()}"));
       _applyFiltersAndSort();
     }
   }
 
   Future<void> deleteSubscription(String id) async {
-    emit(const SubscriptionState.loading()); // Optional
+    emit(const SubscriptionState.loading());
     try {
       await _deleteSubscription(id);
       _masterSubscriptionList.removeWhere((s) => s.id == id);
       _applyFiltersAndSort();
     } catch (e) {
-      emit(SubscriptionState.error(message: "Failed to delete subscription: ${e.toString()}"));
+      emit(SubscriptionState.error(
+          message: "Failed to delete subscription: ${e.toString()}"));
       _applyFiltersAndSort();
     }
   }
-  
+
   Future<void> toggleSubscriptionActiveStatus(String id) async {
     final index = _masterSubscriptionList.indexWhere((s) => s.id == id);
     if (index != -1) {
       final sub = _masterSubscriptionList[index];
       final updatedSub = sub.copyWith(isActive: !sub.isActive);
-      await updateSubscription(updatedSub); // This will handle loading state and re-filtering
-    }
-  }
-
-  Future<void> toggleSubscriptionNotification(String id) async {
-     final index = _masterSubscriptionList.indexWhere((s) => s.id == id);
-    if (index != -1) {
-      final sub = _masterSubscriptionList[index];
-      final updatedSub = sub.copyWith(notificationsEnabled: !sub.notificationsEnabled);
       await updateSubscription(updatedSub);
     }
   }
 
-  // Method to apply filters and sorting, then emit _Loaded state
+  Future<void> toggleSubscriptionNotification(String id) async {
+    final index = _masterSubscriptionList.indexWhere((s) => s.id == id);
+    if (index != -1) {
+      final sub = _masterSubscriptionList[index];
+      final updatedSub =
+          sub.copyWith(notificationsEnabled: !sub.notificationsEnabled);
+      await updateSubscription(updatedSub);
+    }
+  }
+
   void _applyFiltersAndSort({
-      SortOption? newSortOption,
-      SubscriptionCategory? newFilterCategory,
-      BillingCycle? newFilterBillingCycle,
-      String? newSearchTerm,
-      bool clearSearch = false,
+    SortOption? newSortOption,
+    List<SubscriptionCategory>? newFilterCategories,
+    List<BillingCycle>? newFilterBillingCycles,
+    String? newSearchTerm,
+    bool clearSearch = false,
+    bool clearCategories = false,
+    bool clearBillingCycles = false,
   }) {
-    // Get current state or defaults
-    SortOption currentSortOption = state.maybeWhen(
-        loaded: (alls, filters, sort, cat, bill, search) => sort ?? SortOption.nextBillingDateAsc,
-        orElse: () => SortOption.nextBillingDateAsc);
-    SubscriptionCategory? currentFilterCategory = state.maybeWhen(
-        loaded: (alls, filters, sort, cat, bill, search) => cat, orElse: () => null);
-    BillingCycle? currentFilterBillingCycle = state.maybeWhen(
-        loaded: (alls, filters, sort, cat, bill, search) => bill, orElse: () => null);
-    String? currentSearchTerm = state.maybeWhen(
-        loaded: (alls, filters, sort, cat, bill, search) => search, orElse: () => null);
+    final currentState = state.maybeWhen(
+      loaded: (alls, filters, sort, cats, bills, search) => state as _Loaded,
+      orElse: () => null,
+    );
 
-    // Update with new values if provided
-    if (newSortOption != null) currentSortOption = newSortOption;
-    if (newFilterCategory != null) currentFilterCategory = newFilterCategory;
-    if (newFilterBillingCycle != null) currentFilterBillingCycle = newFilterBillingCycle;
-    if (newSearchTerm != null) currentSearchTerm = newSearchTerm;
+    SortOption currentSortOption = newSortOption ??
+        currentState?.currentSortOption ??
+        SortOption.nextBillingDateAsc;
+    List<SubscriptionCategory> currentFilterCategories =
+        newFilterCategories ?? currentState?.filterCategories ?? [];
+    List<BillingCycle> currentFilterBillingCycles =
+        newFilterBillingCycles ?? currentState?.filterBillingCycles ?? [];
+    String? currentSearchTerm = newSearchTerm ?? currentState?.searchTerm;
+
     if (clearSearch) currentSearchTerm = null;
-
+    if (clearCategories) currentFilterCategories = [];
+    if (clearBillingCycles) currentFilterBillingCycles = [];
 
     List<SubscriptionEntity> filtered = List.from(_masterSubscriptionList);
 
-    // Apply search term
     if (currentSearchTerm != null && currentSearchTerm.isNotEmpty) {
       final query = currentSearchTerm.toLowerCase();
-      filtered = filtered.where((sub) => 
-        sub.name.toLowerCase().contains(query) || 
-        (sub.description?.toLowerCase().contains(query) ?? false)
-      ).toList();
+      filtered = filtered
+          .where((sub) =>
+              sub.name.toLowerCase().contains(query) ||
+              (sub.description?.toLowerCase().contains(query) ?? false))
+          .toList();
     }
 
-    // Apply category filter
-    if (currentFilterCategory != null) {
-      filtered = filtered.where((sub) => sub.category == currentFilterCategory).toList();
+    if (currentFilterCategories.isNotEmpty) {
+      filtered = filtered
+          .where((sub) => currentFilterCategories.contains(sub.category))
+          .toList();
     }
 
-    // Apply billing cycle filter
-    if (currentFilterBillingCycle != null) {
-      filtered = filtered.where((sub) => sub.billingCycle == currentFilterBillingCycle).toList();
+    if (currentFilterBillingCycles.isNotEmpty) {
+      filtered = filtered
+          .where((sub) => currentFilterBillingCycles.contains(sub.billingCycle))
+          .toList();
     }
-    
-    // Apply sorting
-    // Add all sorting options as per your SortOption enum
+
     switch (currentSortOption) {
       case SortOption.nameAsc:
-        filtered.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        filtered.sort(
+            (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case SortOption.nameDesc:
-        filtered.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+        filtered.sort(
+            (a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
         break;
       case SortOption.priceAsc:
-        filtered.sort((a, b) => a.monthlyEquivalentPrice.compareTo(b.monthlyEquivalentPrice));
+        filtered.sort((a, b) =>
+            a.monthlyEquivalentPrice.compareTo(b.monthlyEquivalentPrice));
         break;
       case SortOption.priceDesc:
-        filtered.sort((a, b) => b.monthlyEquivalentPrice.compareTo(a.monthlyEquivalentPrice));
+        filtered.sort((a, b) =>
+            b.monthlyEquivalentPrice.compareTo(a.monthlyEquivalentPrice));
         break;
       case SortOption.nextBillingDateAsc:
         filtered.sort((a, b) => a.nextBillingDate.compareTo(b.nextBillingDate));
         break;
       case SortOption.nextBillingDateDesc:
-         filtered.sort((a, b) => b.nextBillingDate.compareTo(a.nextBillingDate));
+        filtered.sort((a, b) => b.nextBillingDate.compareTo(a.nextBillingDate));
         break;
       case SortOption.category:
         filtered.sort((a, b) => a.category.index.compareTo(b.category.index));
@@ -8618,49 +8866,86 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       allSubscriptions: _masterSubscriptionList,
       filteredSubscriptions: filtered,
       currentSortOption: currentSortOption,
-      filterCategory: currentFilterCategory,
-      filterBillingCycle: currentFilterBillingCycle,
+      filterCategories: currentFilterCategories,
+      filterBillingCycles: currentFilterBillingCycles,
       searchTerm: currentSearchTerm,
     ));
   }
 
-  // Public methods to trigger filter/sort changes
   void changeSortOption(SortOption option) {
     _applyFiltersAndSort(newSortOption: option);
   }
 
-  void filterByCategory(SubscriptionCategory? category) {
-    _applyFiltersAndSort(newFilterCategory: category);
+  void toggleCategoryFilter(SubscriptionCategory category) {
+    final currentState = state.maybeWhen(
+      loaded: (alls, filters, sort, cats, bills, search) => state as _Loaded,
+      orElse: () => null,
+    );
+    if (currentState == null) return;
+
+    List<SubscriptionCategory> currentCats =
+        List.from(currentState.filterCategories ?? []);
+
+    if (currentCats.contains(category)) {
+      currentCats.remove(category);
+    } else {
+      currentCats.add(category);
+    }
+    _applyFiltersAndSort(newFilterCategories: currentCats);
   }
 
-  void filterByBillingCycle(BillingCycle? cycle) {
-    _applyFiltersAndSort(newFilterBillingCycle: cycle);
+  void toggleBillingCycleFilter(BillingCycle cycle) {
+    final currentState = state.maybeWhen(
+      loaded: (alls, filters, sort, cats, bills, search) => state as _Loaded,
+      orElse: () => null,
+    );
+    if (currentState == null) return;
+
+    List<BillingCycle> currentCycles =
+        List.from(currentState.filterBillingCycles ?? []);
+
+    if (currentCycles.contains(cycle)) {
+      currentCycles.remove(cycle);
+    } else {
+      currentCycles.add(cycle);
+    }
+    _applyFiltersAndSort(newFilterBillingCycles: currentCycles);
   }
 
   void searchSubscriptions(String searchTerm) {
     _applyFiltersAndSort(newSearchTerm: searchTerm);
   }
-   void clearSearch() {
+
+  void clearSearch() {
     _applyFiltersAndSort(clearSearch: true, newSearchTerm: '');
   }
 
-  void clearCategoryFilter() {
-    _applyFiltersAndSort(newFilterCategory: null); // Pass null to effectively clear
+  void clearCategoryFilters() {
+    _applyFiltersAndSort(clearCategories: true);
   }
 
-  void clearBillingCycleFilter() {
-    _applyFiltersAndSort(newFilterBillingCycle: null); // Pass null to clear
+  void clearBillingCycleFilters() {
+    _applyFiltersAndSort(clearBillingCycles: true);
   }
 
   void clearAllFilters() {
     _applyFiltersAndSort(
-      newFilterCategory: null,
-      newFilterBillingCycle: null,
-      newSearchTerm: '', // Also clear search
+      clearCategories: true,
+      clearBillingCycles: true,
+      newSearchTerm: '',
       clearSearch: true,
     );
   }
+
+  void setCategoryFilters(List<SubscriptionCategory> categories) {
+    _applyFiltersAndSort(newFilterCategories: categories);
+  }
+
+  void setBillingCycleFilters(List<BillingCycle> cycles) {
+    _applyFiltersAndSort(newFilterBillingCycles: cycles);
+  }
 }
+
 
 ===== FILE: subscription_cubit.freezed.dart =====
 ===== PATH: lib/features/subscriptions/presentation/cubit/subscription_cubit.freezed.dart =====
@@ -8691,8 +8976,8 @@ mixin _$SubscriptionState {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -8706,8 +8991,8 @@ mixin _$SubscriptionState {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -8721,8 +9006,8 @@ mixin _$SubscriptionState {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -8824,8 +9109,8 @@ class _$InitialImpl implements _Initial {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -8842,8 +9127,8 @@ class _$InitialImpl implements _Initial {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -8860,8 +9145,8 @@ class _$InitialImpl implements _Initial {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -8962,8 +9247,8 @@ class _$LoadingImpl implements _Loading {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -8980,8 +9265,8 @@ class _$LoadingImpl implements _Loading {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -8998,8 +9283,8 @@ class _$LoadingImpl implements _Loading {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -9063,8 +9348,8 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       {List<SubscriptionEntity> allSubscriptions,
       List<SubscriptionEntity> filteredSubscriptions,
       SortOption? currentSortOption,
-      SubscriptionCategory? filterCategory,
-      BillingCycle? filterBillingCycle,
+      List<SubscriptionCategory>? filterCategories,
+      List<BillingCycle>? filterBillingCycles,
       String? searchTerm});
 }
 
@@ -9084,8 +9369,8 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? allSubscriptions = null,
     Object? filteredSubscriptions = null,
     Object? currentSortOption = freezed,
-    Object? filterCategory = freezed,
-    Object? filterBillingCycle = freezed,
+    Object? filterCategories = freezed,
+    Object? filterBillingCycles = freezed,
     Object? searchTerm = freezed,
   }) {
     return _then(_$LoadedImpl(
@@ -9101,14 +9386,14 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.currentSortOption
           : currentSortOption // ignore: cast_nullable_to_non_nullable
               as SortOption?,
-      filterCategory: freezed == filterCategory
-          ? _value.filterCategory
-          : filterCategory // ignore: cast_nullable_to_non_nullable
-              as SubscriptionCategory?,
-      filterBillingCycle: freezed == filterBillingCycle
-          ? _value.filterBillingCycle
-          : filterBillingCycle // ignore: cast_nullable_to_non_nullable
-              as BillingCycle?,
+      filterCategories: freezed == filterCategories
+          ? _value._filterCategories
+          : filterCategories // ignore: cast_nullable_to_non_nullable
+              as List<SubscriptionCategory>?,
+      filterBillingCycles: freezed == filterBillingCycles
+          ? _value._filterBillingCycles
+          : filterBillingCycles // ignore: cast_nullable_to_non_nullable
+              as List<BillingCycle>?,
       searchTerm: freezed == searchTerm
           ? _value.searchTerm
           : searchTerm // ignore: cast_nullable_to_non_nullable
@@ -9124,11 +9409,13 @@ class _$LoadedImpl implements _Loaded {
       {required final List<SubscriptionEntity> allSubscriptions,
       required final List<SubscriptionEntity> filteredSubscriptions,
       this.currentSortOption,
-      this.filterCategory,
-      this.filterBillingCycle,
+      final List<SubscriptionCategory>? filterCategories,
+      final List<BillingCycle>? filterBillingCycles,
       this.searchTerm})
       : _allSubscriptions = allSubscriptions,
-        _filteredSubscriptions = filteredSubscriptions;
+        _filteredSubscriptions = filteredSubscriptions,
+        _filterCategories = filterCategories,
+        _filterBillingCycles = filterBillingCycles;
 
   final List<SubscriptionEntity> _allSubscriptions;
   @override
@@ -9148,20 +9435,37 @@ class _$LoadedImpl implements _Loaded {
     return EqualUnmodifiableListView(_filteredSubscriptions);
   }
 
-// For UI display after filtering/sorting
-// Add other relevant data for the UI, e.g., sorting options, filter values
   @override
   final SortOption? currentSortOption;
+  final List<SubscriptionCategory>? _filterCategories;
   @override
-  final SubscriptionCategory? filterCategory;
+  List<SubscriptionCategory>? get filterCategories {
+    final value = _filterCategories;
+    if (value == null) return null;
+    if (_filterCategories is EqualUnmodifiableListView)
+      return _filterCategories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<BillingCycle>? _filterBillingCycles;
   @override
-  final BillingCycle? filterBillingCycle;
+  List<BillingCycle>? get filterBillingCycles {
+    final value = _filterBillingCycles;
+    if (value == null) return null;
+    if (_filterBillingCycles is EqualUnmodifiableListView)
+      return _filterBillingCycles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+// NEU: Liste für Zyklen
   @override
   final String? searchTerm;
 
   @override
   String toString() {
-    return 'SubscriptionState.loaded(allSubscriptions: $allSubscriptions, filteredSubscriptions: $filteredSubscriptions, currentSortOption: $currentSortOption, filterCategory: $filterCategory, filterBillingCycle: $filterBillingCycle, searchTerm: $searchTerm)';
+    return 'SubscriptionState.loaded(allSubscriptions: $allSubscriptions, filteredSubscriptions: $filteredSubscriptions, currentSortOption: $currentSortOption, filterCategories: $filterCategories, filterBillingCycles: $filterBillingCycles, searchTerm: $searchTerm)';
   }
 
   @override
@@ -9175,10 +9479,10 @@ class _$LoadedImpl implements _Loaded {
                 .equals(other._filteredSubscriptions, _filteredSubscriptions) &&
             (identical(other.currentSortOption, currentSortOption) ||
                 other.currentSortOption == currentSortOption) &&
-            (identical(other.filterCategory, filterCategory) ||
-                other.filterCategory == filterCategory) &&
-            (identical(other.filterBillingCycle, filterBillingCycle) ||
-                other.filterBillingCycle == filterBillingCycle) &&
+            const DeepCollectionEquality()
+                .equals(other._filterCategories, _filterCategories) &&
+            const DeepCollectionEquality()
+                .equals(other._filterBillingCycles, _filterBillingCycles) &&
             (identical(other.searchTerm, searchTerm) ||
                 other.searchTerm == searchTerm));
   }
@@ -9189,8 +9493,8 @@ class _$LoadedImpl implements _Loaded {
       const DeepCollectionEquality().hash(_allSubscriptions),
       const DeepCollectionEquality().hash(_filteredSubscriptions),
       currentSortOption,
-      filterCategory,
-      filterBillingCycle,
+      const DeepCollectionEquality().hash(_filterCategories),
+      const DeepCollectionEquality().hash(_filterBillingCycles),
       searchTerm);
 
   /// Create a copy of SubscriptionState
@@ -9210,14 +9514,14 @@ class _$LoadedImpl implements _Loaded {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
   }) {
     return loaded(allSubscriptions, filteredSubscriptions, currentSortOption,
-        filterCategory, filterBillingCycle, searchTerm);
+        filterCategories, filterBillingCycles, searchTerm);
   }
 
   @override
@@ -9229,14 +9533,14 @@ class _$LoadedImpl implements _Loaded {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
   }) {
     return loaded?.call(allSubscriptions, filteredSubscriptions,
-        currentSortOption, filterCategory, filterBillingCycle, searchTerm);
+        currentSortOption, filterCategories, filterBillingCycles, searchTerm);
   }
 
   @override
@@ -9248,8 +9552,8 @@ class _$LoadedImpl implements _Loaded {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -9257,7 +9561,7 @@ class _$LoadedImpl implements _Loaded {
   }) {
     if (loaded != null) {
       return loaded(allSubscriptions, filteredSubscriptions, currentSortOption,
-          filterCategory, filterBillingCycle, searchTerm);
+          filterCategories, filterBillingCycles, searchTerm);
     }
     return orElse();
   }
@@ -9305,17 +9609,15 @@ abstract class _Loaded implements SubscriptionState {
       {required final List<SubscriptionEntity> allSubscriptions,
       required final List<SubscriptionEntity> filteredSubscriptions,
       final SortOption? currentSortOption,
-      final SubscriptionCategory? filterCategory,
-      final BillingCycle? filterBillingCycle,
+      final List<SubscriptionCategory>? filterCategories,
+      final List<BillingCycle>? filterBillingCycles,
       final String? searchTerm}) = _$LoadedImpl;
 
   List<SubscriptionEntity> get allSubscriptions;
-  List<SubscriptionEntity>
-      get filteredSubscriptions; // For UI display after filtering/sorting
-// Add other relevant data for the UI, e.g., sorting options, filter values
+  List<SubscriptionEntity> get filteredSubscriptions;
   SortOption? get currentSortOption;
-  SubscriptionCategory? get filterCategory;
-  BillingCycle? get filterBillingCycle;
+  List<SubscriptionCategory>? get filterCategories;
+  List<BillingCycle>? get filterBillingCycles; // NEU: Liste für Zyklen
   String? get searchTerm;
 
   /// Create a copy of SubscriptionState
@@ -9399,8 +9701,8 @@ class _$ErrorImpl implements _Error {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -9417,8 +9719,8 @@ class _$ErrorImpl implements _Error {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -9435,8 +9737,8 @@ class _$ErrorImpl implements _Error {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -9502,7 +9804,8 @@ abstract class _Error implements SubscriptionState {
 ===== FILE: subscription_state.dart =====
 ===== PATH: lib/features/subscriptions/presentation/cubit/subscription_state.dart =====
 
-part of 'subscription_cubit.dart'; // Generated by Cubit
+// lib/features/subscriptions/presentation/cubit/subscription_state.dart
+part of 'subscription_cubit.dart';
 
 @freezed
 class SubscriptionState with _$SubscriptionState {
@@ -9510,18 +9813,15 @@ class SubscriptionState with _$SubscriptionState {
   const factory SubscriptionState.loading() = _Loading;
   const factory SubscriptionState.loaded({
     required List<SubscriptionEntity> allSubscriptions,
-    required List<SubscriptionEntity>
-        filteredSubscriptions, // For UI display after filtering/sorting
-    // Add other relevant data for the UI, e.g., sorting options, filter values
+    required List<SubscriptionEntity> filteredSubscriptions,
     SortOption? currentSortOption,
-    SubscriptionCategory? filterCategory,
-    BillingCycle? filterBillingCycle,
+    List<SubscriptionCategory>? filterCategories,
+    List<BillingCycle>? filterBillingCycles, // NEU: Liste für Zyklen
     String? searchTerm,
   }) = _Loaded;
   const factory SubscriptionState.error({required String message}) = _Error;
 }
 
-// Enums for sorting and potentially filtering (can be moved to domain if they represent business logic)
 enum SortOption {
   nameAsc,
   nameDesc,
@@ -9531,7 +9831,6 @@ enum SortOption {
   nextBillingDateDesc,
   category
 }
-// Filter enums (BillingCycle, SubscriptionCategory) are already defined in subscription_entity.dart
 
 extension SortOptionDisplay on SortOption {
   String get displayName {
@@ -9558,77 +9857,50 @@ extension SortOptionDisplay on SortOption {
 ===== FILE: add_edit_subscription_screen.dart =====
 ===== PATH: lib/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart =====
 
-// lib/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart
-
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
+import 'package:aboapp/widgets/animated_gradient_chip.dart';
+import 'package:aboapp/widgets/animated_gradient_input_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 
 class AddEditSubscriptionScreen extends StatefulWidget {
-  /// Ist `initialSubscription` null, wird ein neues Abo angelegt.
-  const AddEditSubscriptionScreen({
-    Key? key,
-    this.initialSubscription,
-  }) : super(key: key);
-
   final SubscriptionEntity? initialSubscription;
+  const AddEditSubscriptionScreen({super.key, this.initialSubscription});
 
   @override
   State<AddEditSubscriptionScreen> createState() =>
       _AddEditSubscriptionScreenState();
 }
 
-class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
+    with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   final _notesController = TextEditingController();
-
+  late final AnimationController _animationController;
   late SubscriptionCategory _selectedCategory;
   late BillingCycle _selectedCycle;
   late DateTime _nextBillingDate;
-
-  // Kategorie-Metadaten (Icon + Label)
-  final Map<SubscriptionCategory, ({IconData icon, String label})>
-      _categoryMeta = const {
-    SubscriptionCategory.streaming: (icon: Icons.tv, label: 'Streaming'),
-    SubscriptionCategory.software: (icon: Icons.apps, label: 'Software'),
-    SubscriptionCategory.gaming: (icon: Icons.videogame_asset, label: 'Gaming'),
-    SubscriptionCategory.fitness: (
-      icon: Icons.fitness_center,
-      label: 'Fitness'
-    ),
-    SubscriptionCategory.music: (icon: Icons.music_note, label: 'Music'),
-    SubscriptionCategory.news: (icon: Icons.article, label: 'News'),
-    SubscriptionCategory.cloud: (icon: Icons.cloud, label: 'Cloud'),
-    SubscriptionCategory.utilities: (
-      icon: Icons.lightbulb_outline,
-      label: 'Utilities'
-    ),
-    SubscriptionCategory.education: (icon: Icons.school, label: 'Education'),
-    SubscriptionCategory.other: (icon: Icons.more_horiz, label: 'Other'),
-  };
-
-  // Labels für Billing-Cycle-Enum
-  final Map<BillingCycle, String> _cycleLabels = const {
-    BillingCycle.weekly: 'Wöchentlich',
-    BillingCycle.monthly: 'Monatlich',
-    BillingCycle.quarterly: 'Quartal',
-    BillingCycle.biAnnual: 'Halbjahr',
-    BillingCycle.yearly: 'Jährlich',
-    BillingCycle.custom: 'Benutzerdefiniert',
-  };
+  bool get _isEditing => widget.initialSubscription != null;
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialSubscription != null) {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+
+    if (_isEditing) {
       final s = widget.initialSubscription!;
       _nameController.text = s.name;
-      _priceController.text = s.price.toString();
+      _priceController.text = s.price.toString().replaceAll('.', ',');
       _notesController.text = s.notes ?? '';
       _selectedCategory = s.category;
       _selectedCycle = s.billingCycle;
@@ -9645,25 +9917,27 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
     _nameController.dispose();
     _priceController.dispose();
     _notesController.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickNextBillingDate() async {
+  Future<void> _pickNextBillingDate(Locale locale) async {
     final picked = await showDatePicker(
       context: context,
-      locale: const Locale('de', 'CH'),
+      locale: locale,
       initialDate: _nextBillingDate,
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+      firstDate: DateTime.now().subtract(const Duration(days: 365 * 5)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 10)),
     );
     if (picked != null) setState(() => _nextBillingDate = picked);
   }
 
   void _save() {
-    if (!_formKey.currentState!.validate()) return;
-
-    final price = double.parse(_priceController.text.replaceAll(',', '.'));
-
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    final price =
+        double.parse(_priceController.text.trim().replaceAll(',', '.'));
     final sub = SubscriptionEntity(
       id: widget.initialSubscription?.id ?? '',
       name: _nameController.text.trim(),
@@ -9675,24 +9949,47 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
           ? null
           : _notesController.text.trim(),
     );
-
     final cubit = context.read<SubscriptionCubit>();
-    widget.initialSubscription == null
-        ? cubit.addSubscription(sub)
-        : cubit.updateSubscription(sub);
-
+    _isEditing ? cubit.updateSubscription(sub) : cubit.addSubscription(sub);
     Navigator.of(context).pop();
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final settingsState = context.watch<SettingsCubit>().state;
+    final currencySymbol =
+        CurrencyFormatter.getCurrencySymbol(settingsState.currencyCode);
+
+    final defaultBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12.0),
+      borderSide: BorderSide.none,
+    );
+
+    // KORREKTUR: Farbverlauf für weichere Übergänge angepasst
+    final focusedBorder = AnimatedGradientInputBorder(
+      animation: _animationController,
+      gradientColors: [
+        Colors.pink.shade200,
+        Colors.purple.shade200,
+        Colors.blue.shade200,
+        Colors.purple.shade200,
+        Colors.pink.shade200,
+      ],
+    );
+    final errorBorder = AnimatedGradientInputBorder(
+      animation: _animationController,
+      gradientColors: [
+        theme.colorScheme.error.withAlpha(180),
+        Colors.orange.shade400.withAlpha(180),
+      ],
+    );
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.initialSubscription == null
-            ? 'Abo hinzufügen'
-            : 'Abo bearbeiten'),
+        title: Text(_isEditing ? 'Abo bearbeiten' : 'Abo hinzufügen'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -9700,138 +9997,144 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
           key: _formKey,
           child: ListView(
             children: [
-              // Kategorie-Auswahl
-              Text('Kategorie', style: theme.textTheme.labelLarge),
-              const SizedBox(height: 8),
-              SizedBox(
-                height: 56,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _categoryMeta.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 8),
-                  itemBuilder: (_, i) {
-                    final cat = _categoryMeta.keys.elementAt(i);
-                    final meta = _categoryMeta[cat]!;
-                    return ChoiceChip(
-                      label: Text(meta.label),
-                      avatar: Icon(meta.icon,
-                          size: 20,
-                          color: cat == _selectedCategory
-                              ? theme.colorScheme.onPrimary
-                              : null),
-                      selected: cat == _selectedCategory,
-                      selectedColor: theme.colorScheme.primary,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategory = cat),
-                    );
+              _buildSectionTitle(theme, 'Kategorie'),
+              _buildCategorySelector(theme),
+              const SizedBox(height: 24),
+              _buildSectionTitle(theme, 'Abo-Name'),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) => TextFormField(
+                  controller: _nameController,
+                  decoration: _inputDecoration(
+                    theme: theme,
+                    icon: Icons.subscriptions_outlined,
+                    hintText: 'z.B. Netflix, Spotify...',
+                    defaultBorder: defaultBorder,
+                    focusedBorder: focusedBorder,
+                    errorBorder: errorBorder,
+                  ),
+                  validator: (v) =>
+                      v == null || v.trim().isEmpty ? 'Pflichtfeld' : null,
+                ),
+              ),
+              const SizedBox(height: 16),
+              _buildSectionTitle(theme, 'Preis ($currencySymbol)'),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) => TextFormField(
+                  controller: _priceController,
+                  decoration: _inputDecoration(
+                    theme: theme,
+                    icon: Icons.price_change_outlined,
+                    hintText: '0,00',
+                    defaultBorder: defaultBorder,
+                    focusedBorder: focusedBorder,
+                    errorBorder: errorBorder,
+                  ),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+                  ],
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Pflichtfeld';
+                    if (double.tryParse(v.trim().replaceAll(',', '.')) == null)
+                      return 'Ungültiger Betrag';
+                    return null;
                   },
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Name
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Abo-Name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.subscriptions),
-                ),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Pflichtfeld' : null,
-                textInputAction: TextInputAction.next,
-              ),
-              const SizedBox(height: 16),
-
-              // Preis
-              TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(
-                  labelText: 'Preis',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.attach_money),
-                ),
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Pflichtfeld';
-                  final val = double.tryParse(v.replaceAll(',', '.'));
-                  if (val == null || val < 0) return 'Ungültiger Betrag';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Intervall + nächster Termin
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
-                    child: DropdownButtonFormField<BillingCycle>(
-                      value: _selectedCycle,
-                      decoration: const InputDecoration(
-                        labelText: 'Intervall',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.calendar_view_month),
-                      ),
-                      items: BillingCycle.values
-                          .where((c) => c != BillingCycle.custom)
-                          .map((c) => DropdownMenuItem(
-                                value: c,
-                                child: Text(_cycleLabels[c]!),
-                              ))
-                          .toList(),
-                      onChanged: (v) =>
-                          setState(() => _selectedCycle = v ?? _selectedCycle),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(theme, 'Intervall'),
+                        AnimatedBuilder(
+                          animation: _animationController,
+                          builder: (context, child) =>
+                              DropdownButtonFormField<BillingCycle>(
+                            value: _selectedCycle,
+                            decoration: _inputDecoration(
+                              theme: theme,
+                              icon: Icons.calendar_view_month,
+                              defaultBorder: defaultBorder,
+                              focusedBorder: focusedBorder,
+                            ),
+                            items: BillingCycle.values
+                                .where((c) => c != BillingCycle.custom)
+                                .map((c) => DropdownMenuItem(
+                                    value: c, child: Text(c.displayName)))
+                                .toList(),
+                            onChanged: (v) => setState(
+                                () => _selectedCycle = v ?? _selectedCycle),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
-                      onTap: _pickNextBillingDate,
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Nächste Zahlung',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.event),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle(theme, 'Nächste Zahlung'),
+                        InkWell(
+                          onTap: () =>
+                              _pickNextBillingDate(settingsState.locale),
+                          child: InputDecorator(
+                            decoration: _inputDecoration(
+                              theme: theme,
+                              icon: Icons.event,
+                              defaultBorder: defaultBorder,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top:
+                                      1.0), // Kleine Anpassung für vertikale Zentrierung
+                              child: Text(
+                                DateFormat.yMd(
+                                        settingsState.locale.toLanguageTag())
+                                    .format(_nextBillingDate),
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          DateFormat('dd.MM.yyyy', 'de_CH')
-                              .format(_nextBillingDate),
-                        ),
-                      ),
+                      ],
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Notizen
-              TextFormField(
-                controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Notizen (optional)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.note),
+              _buildSectionTitle(theme, 'Notizen (optional)'),
+              AnimatedBuilder(
+                animation: _animationController,
+                builder: (context, child) => TextFormField(
+                  controller: _notesController,
+                  decoration: _inputDecoration(
+                    theme: theme,
+                    icon: Icons.note_alt_outlined,
+                    hintText: 'Zusätzliche Infos...',
+                    defaultBorder: defaultBorder,
+                    focusedBorder: focusedBorder,
+                  ),
+                  maxLines: 3,
                 ),
-                minLines: 1,
-                maxLines: 3,
               ),
               const SizedBox(height: 24),
-
-              // Speichern-Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   icon: const Icon(Icons.save),
-                  label: Text(widget.initialSubscription == null
-                      ? 'Speichern'
-                      : 'Aktualisieren'),
+                  label: Text(_isEditing ? 'Aktualisieren' : 'Speichern'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 18),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                        borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: _save,
                 ),
@@ -9842,24 +10145,96 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen> {
       ),
     );
   }
+
+  // KORREKTUR: Hilfsmethode für das getrennte Label
+  Widget _buildSectionTitle(ThemeData theme, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
+      child: Text(
+        title,
+        style:
+            theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  // KORREKTUR: InputDecoration verwendet jetzt 'hintText' statt 'labelText'
+  InputDecoration _inputDecoration({
+    required ThemeData theme,
+    required IconData icon,
+    String? hintText,
+    required InputBorder defaultBorder,
+    InputBorder? focusedBorder,
+    InputBorder? errorBorder,
+  }) {
+    return InputDecoration(
+      hintText: hintText,
+      prefixIcon: Icon(icon, color: theme.colorScheme.onSurfaceVariant),
+      filled: true,
+      fillColor: theme.colorScheme.surface,
+      border: defaultBorder,
+      enabledBorder: defaultBorder,
+      focusedBorder: focusedBorder,
+      errorBorder: errorBorder,
+      focusedErrorBorder: errorBorder,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+    );
+  }
+
+  Widget _buildCategorySelector(ThemeData theme) {
+    return Wrap(
+      spacing: 10.0,
+      runSpacing: 10.0,
+      children: SubscriptionCategory.values.map((cat) {
+        return AnimatedGradientChip(
+          label: cat.displayName,
+          icon: cat.displayIcon,
+          isSelected: _selectedCategory == cat,
+          selectedColor: cat.categoryDisplayIconColor(theme),
+          onSelected: (_) => setState(() => _selectedCategory = cat),
+        );
+      }).toList(),
+    );
+  }
+}
+
+extension on BillingCycle {
+  String get displayName {
+    switch (this) {
+      case BillingCycle.weekly:
+        return 'Wöchentlich';
+      case BillingCycle.monthly:
+        return 'Monatlich';
+      case BillingCycle.quarterly:
+        return 'Quartalsweise';
+      case BillingCycle.biAnnual:
+        return 'Halbjährlich';
+      case BillingCycle.yearly:
+        return 'Jährlich';
+      case BillingCycle.custom:
+        return 'Benutzerdef.';
+    }
+  }
 }
 
 
 ===== FILE: home_screen.dart =====
 ===== PATH: lib/features/subscriptions/presentation/screens/home_screen.dart =====
 
+// lib/features/subscriptions/presentation/screens/home_screen.dart
+
 import 'package:aboapp/core/routing/app_router.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/widgets/filter_bottom_sheet.dart';
 import 'package:aboapp/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart';
-import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
-import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9868,31 +10243,15 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
   final _searchFocusNode = FocusNode();
   bool _isSearching = false;
-  late AnimationController _fabAnimationController;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SubscriptionCubit>().loadSubscriptions();
-    });
-    _fabAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _fabAnimationController.forward();
-  }
 
   @override
   void dispose() {
     _searchController.dispose();
     _searchFocusNode.dispose();
-    _fabAnimationController.dispose();
     super.dispose();
   }
 
@@ -9909,91 +10268,106 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
-    // TODO: Localize
-    switch (cycle) {
-      case BillingCycle.weekly:
-        return 'Weekly';
-      case BillingCycle.monthly:
-        return 'Monthly';
-      case BillingCycle.quarterly:
-        return 'Quarterly';
-      case BillingCycle.biAnnual:
-        return 'Bi-Annual';
-      case BillingCycle.yearly:
-        return 'Yearly';
-      case BillingCycle.custom:
-        return 'Custom';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: _isSearching
-              ? TextField(
-                  controller: _searchController,
-                  focusNode: _searchFocusNode,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                      hintText: 'Search subscriptions...',
-                      border: InputBorder.none,
-                      isDense: true,
-                      hintStyle: theme.appBarTheme.titleTextStyle?.copyWith(
-                          fontWeight: FontWeight.normal,
-                          color: theme.colorScheme.onSurface
-                              .withOpacity(0.6) // Kept withOpacity
-                          )),
-                  style: theme.appBarTheme.titleTextStyle,
-                  onChanged: (query) => context
-                      .read<SubscriptionCubit>()
-                      .searchSubscriptions(query),
-                )
-              : const Text('My Subscriptions'),
-        ),
-        actions: [
-          IconButton(
-            icon:
-                Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
-            onPressed: () => _toggleSearch(context),
-            tooltip: _isSearching ? 'Close Search' : 'Search',
-          ),
-        ],
-      ),
       body: BlocBuilder<SubscriptionCubit, SubscriptionState>(
         builder: (context, state) {
           return state.when(
             initial: () =>
                 const Center(child: CircularProgressIndicator.adaptive()),
             loading: () => _buildLoadingShimmer(theme),
-            loaded: (allSubs, filteredSubs, sortOption, filterCat, filterBill,
+            loaded: (allSubs, filteredSubs, sortOption, filterCats, filterBills,
                 searchTerm) {
               final activeSubscriptions =
                   allSubs.where((s) => s.isActive).toList();
+              final bool filtersAreActive = (filterCats?.isNotEmpty ?? false) ||
+                  (filterBills?.isNotEmpty ?? false);
+
               return RefreshIndicator(
                 onRefresh: () async {
                   app_haptics.HapticFeedback.mediumImpact();
                   await context.read<SubscriptionCubit>().loadSubscriptions();
                 },
                 child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
                   slivers: [
+                    SliverAppBar(
+                      title: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 200),
+                        child: _isSearching
+                            ? TextField(
+                                controller: _searchController,
+                                focusNode: _searchFocusNode,
+                                autofocus: true,
+                                decoration: InputDecoration(
+                                    hintText: 'Search subscriptions...',
+                                    border: InputBorder.none,
+                                    isDense: true,
+                                    hintStyle: theme.appBarTheme.titleTextStyle
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.normal,
+                                            color: theme.colorScheme.onSurface
+                                                .withAlpha(150))),
+                                style: theme.appBarTheme.titleTextStyle,
+                                onChanged: (query) => context
+                                    .read<SubscriptionCubit>()
+                                    .searchSubscriptions(query),
+                              )
+                            : const Text('My Subscriptions'),
+                      ),
+                      actions: [
+                        if (!_isSearching)
+                          IconButton(
+                            icon: const Icon(Icons.filter_list_rounded),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.transparent,
+                                builder: (_) {
+                                  return BlocProvider.value(
+                                    value: BlocProvider.of<SubscriptionCubit>(
+                                        context),
+                                    child: FilterBottomSheet(
+                                      currentSortOption: sortOption ??
+                                          SortOption.nextBillingDateAsc,
+                                      currentCategories: filterCats ?? [],
+                                      currentBillingCycles: filterBills ?? [],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            tooltip: 'Filter & Sort',
+                          ),
+                        IconButton(
+                          icon: Icon(_isSearching
+                              ? Icons.close_rounded
+                              : Icons.search_rounded),
+                          onPressed: () => _toggleSearch(context),
+                          tooltip: _isSearching ? 'Close Search' : 'Search',
+                        ),
+                      ],
+                      floating: true,
+                      snap: true,
+                      backgroundColor: theme.scaffoldBackgroundColor,
+                      elevation: 0,
+                    ),
                     if (!_isSearching)
                       SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                          child: MonthlySpendingSummaryCard(
-                            activeSubscriptions: activeSubscriptions,
-                          ),
+                        child: MonthlySpendingSummaryCard(
+                          activeSubscriptions: activeSubscriptions,
                         ),
                       ),
-                    _buildFilterAndSortControls(
-                        context, theme, sortOption, filterCat, filterBill),
+                    if (filtersAreActive)
+                      SliverToBoxAdapter(
+                        child: _buildActiveFiltersBar(context, theme,
+                            filterCats ?? [], filterBills ?? []),
+                      ),
                     if (filteredSubs.isEmpty)
                       SliverFillRemaining(
                         hasScrollBody: false,
@@ -10010,27 +10384,26 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       )
                     else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final subscription = filteredSubs[index];
-                            return SubscriptionCardWidget(
-                              subscription: subscription,
-                              onTap: () {
-                                context.pushNamed(
-                                  AppRoutes.editSubscription,
-                                  pathParameters: {'id': subscription.id},
-                                  extra: subscription,
-                                );
-                              },
-                              onLongPress: () => _showSubscriptionActions(
-                                  context, theme, subscription),
-                            );
-                          },
-                          childCount: filteredSubs.length,
+                      SliverPadding(
+                        padding: const EdgeInsets.only(bottom: 80.0),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final subscription = filteredSubs[index];
+                              return SubscriptionCardWidget(
+                                subscription: subscription,
+                                onTap: () => context.pushNamed(
+                                    AppRoutes.editSubscription,
+                                    pathParameters: {'id': subscription.id},
+                                    extra: subscription),
+                                onLongPress: () => _showSubscriptionActions(
+                                    context, theme, subscription),
+                              );
+                            },
+                            childCount: filteredSubs.length,
+                          ),
                         ),
                       ),
-                    const SliverPadding(padding: EdgeInsets.only(bottom: 80)),
                   ],
                 ),
               );
@@ -10051,148 +10424,59 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildFilterAndSortControls(
-    BuildContext context,
-    ThemeData theme,
-    SortOption? currentSort,
-    SubscriptionCategory? currentCat,
-    BillingCycle? currentBill,
-  ) {
-    return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<SortOption>(
-                    value: currentSort ?? SortOption.nextBillingDateAsc,
-                    icon: const Icon(Icons.sort_rounded, size: 20),
-                    style: theme.textTheme.bodySmall,
-                    items: SortOption.values.map((option) {
-                      return DropdownMenuItem<SortOption>(
-                        value: option,
-                        child: Text(option.displayName),
-                      );
-                    }).toList(),
-                    onChanged: (option) {
-                      if (option != null) {
-                        context
-                            .read<SubscriptionCubit>()
-                            .changeSortOption(option);
-                      }
-                    },
-                  ),
-                ),
-                if (currentCat != null ||
-                    currentBill != null ||
-                    (_searchController.text.isNotEmpty && _isSearching))
-                  TextButton.icon(
-                    icon: const Icon(Icons.clear_all_rounded, size: 18),
-                    label: const Text('Clear Filters'),
-                    onPressed: () =>
-                        context.read<SubscriptionCubit>().clearAllFilters(),
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  FilterChip(
-                    label: const Text('All Cats'),
-                    selected: currentCat == null,
-                    onSelected: (_) =>
-                        context.read<SubscriptionCubit>().clearCategoryFilter(),
-                  ),
-                  ...SubscriptionCategory.values.map((category) => Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: FilterChip(
-                          avatar: Icon(category.displayIcon,
-                              size: 16,
-                              color: category == currentCat
-                                  ? theme.colorScheme.onPrimary
-                                  : category.categoryDisplayIconColor(theme)),
-                          label: Text(category.displayName),
-                          selected: currentCat == category,
-                          onSelected: (selected) {
-                            context
-                                .read<SubscriptionCubit>()
-                                .filterByCategory(selected ? category : null);
-                          },
-                          selectedColor:
-                              category.categoryDisplayIconColor(theme),
-                          checkmarkColor: theme.colorScheme.onPrimary,
-                        ),
-                      )),
-                ],
-              ),
-            ),
-            const SizedBox(height: 4),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  FilterChip(
-                    label: const Text('All Cycles'),
-                    selected: currentBill == null,
-                    onSelected: (_) => context
-                        .read<SubscriptionCubit>()
-                        .clearBillingCycleFilter(),
-                  ),
-                  ...BillingCycle.values
-                      .where((c) => c != BillingCycle.custom)
-                      .map((cycle) => Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: FilterChip(
-                              label:
-                                  Text(_getBillingCycleLabel(context, cycle)),
-                              selected: currentBill == cycle,
-                              onSelected: (selected) {
-                                context
-                                    .read<SubscriptionCubit>()
-                                    .filterByBillingCycle(
-                                        selected ? cycle : null);
-                              },
-                            ),
-                          )),
-                ],
-              ),
-            ),
-          ],
-        ),
+  Widget _buildActiveFiltersBar(BuildContext context, ThemeData theme,
+      List<SubscriptionCategory> cats, List<BillingCycle> bills) {
+    List<Widget> chips = [];
+
+    for (var cat in cats) {
+      chips.add(Chip(
+        label: Text(cat.displayName),
+        onDeleted: () {
+          context.read<SubscriptionCubit>().toggleCategoryFilter(cat);
+        },
+        deleteIconColor: theme.colorScheme.onSecondaryContainer,
+        backgroundColor: theme.colorScheme.secondaryContainer,
+        labelStyle: TextStyle(color: theme.colorScheme.onSecondaryContainer),
+      ));
+    }
+
+    for (var bill in bills) {
+      chips.add(Chip(
+        label: Text(bill.name[0].toUpperCase() + bill.name.substring(1)),
+        onDeleted: () {
+          context.read<SubscriptionCubit>().toggleBillingCycleFilter(bill);
+        },
+        deleteIconColor: theme.colorScheme.onSecondaryContainer,
+        backgroundColor: theme.colorScheme.secondaryContainer,
+        labelStyle: TextStyle(color: theme.colorScheme.onSecondaryContainer),
+      ));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 0),
+      child: Wrap(
+        spacing: 8.0,
+        runSpacing: 8.0,
+        children: chips,
       ),
     );
   }
 
   Widget _buildLoadingShimmer(ThemeData theme) {
     return Shimmer.fromColors(
-      baseColor: theme.colorScheme.surfaceContainerHighest
-          .withOpacity(0.3), // Corrected deprecated
-      highlightColor: theme.colorScheme.surfaceContainerHighest
-          .withOpacity(0.1), // Corrected deprecated
+      baseColor: theme.colorScheme.surfaceContainerHighest.withAlpha(100),
+      highlightColor: theme.colorScheme.surfaceContainerHighest.withAlpha(50),
       child: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Container(
-            height: 130.0,
+            height: 150.0,
             decoration: BoxDecoration(
               color: theme.cardColor,
-              borderRadius: BorderRadius.circular(12.0),
+              borderRadius: BorderRadius.circular(20.0),
             ),
             margin: const EdgeInsets.only(bottom: 16),
           ),
-          Container(
-              height: 40,
-              color: theme.cardColor,
-              margin: const EdgeInsets.only(bottom: 8)),
           Container(
               height: 40,
               color: theme.cardColor,
@@ -10289,8 +10573,7 @@ class _HomeScreenState extends State<HomeScreen>
                     ],
                   ),
                 );
-                if (confirmDelete == true) {
-                  if (!mounted) return; // Guard context use
+                if (confirmDelete == true && mounted) {
                   context
                       .read<SubscriptionCubit>()
                       .deleteSubscription(subscription.id);
@@ -10305,16 +10588,213 @@ class _HomeScreenState extends State<HomeScreen>
 }
 
 
+===== FILE: filter_bottom_sheet.dart =====
+===== PATH: lib/features/subscriptions/presentation/widgets/filter_bottom_sheet.dart =====
+
+// lib/features/subscriptions/presentation/widgets/filter_bottom_sheet.dart
+import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+// NEUER IMPORT, um auf .displayName zugreifen zu können
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+class FilterBottomSheet extends StatefulWidget {
+  final SortOption currentSortOption;
+  final List<SubscriptionCategory> currentCategories;
+  final List<BillingCycle> currentBillingCycles;
+
+  const FilterBottomSheet({
+    super.key,
+    required this.currentSortOption,
+    required this.currentCategories,
+    required this.currentBillingCycles,
+  });
+
+  @override
+  State<FilterBottomSheet> createState() => _FilterBottomSheetState();
+}
+
+class _FilterBottomSheetState extends State<FilterBottomSheet> {
+  late SortOption _selectedSortOption;
+  late List<SubscriptionCategory> _selectedCategories;
+  late List<BillingCycle> _selectedBillingCycles;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedSortOption = widget.currentSortOption;
+    _selectedCategories = List.from(widget.currentCategories);
+    _selectedBillingCycles = List.from(widget.currentBillingCycles);
+  }
+
+  void _applyFiltersAndClose() {
+    final cubit = context.read<SubscriptionCubit>();
+    cubit.changeSortOption(_selectedSortOption);
+    cubit.setCategoryFilters(_selectedCategories);
+    cubit.setBillingCycleFilters(_selectedBillingCycles);
+    Navigator.pop(context);
+  }
+
+  void _resetFilters() {
+    setState(() {
+      _selectedSortOption = SortOption.nextBillingDateAsc;
+      _selectedCategories.clear();
+      _selectedBillingCycles.clear();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(24.0),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Sort & Filter", style: theme.textTheme.headlineSmall),
+                TextButton(
+                  onPressed: _resetFilters,
+                  child: const Text("Reset"),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Text("SORT BY",
+                style: theme.textTheme.labelMedium
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            _buildSortDropdown(theme),
+            const SizedBox(height: 24),
+            Text("CATEGORIES",
+                style: theme.textTheme.labelMedium
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            _buildMultiSelectChipGroup<SubscriptionCategory>(
+              allItems: SubscriptionCategory.values,
+              selectedItems: _selectedCategories,
+              onTap: (item) {
+                setState(() {
+                  if (_selectedCategories.contains(item)) {
+                    _selectedCategories.remove(item);
+                  } else {
+                    _selectedCategories.add(item);
+                  }
+                });
+              },
+              getLabel: (item) => item.displayName,
+            ),
+            const SizedBox(height: 24),
+            Text("BILLING CYCLES",
+                style: theme.textTheme.labelMedium
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            const SizedBox(height: 8),
+            _buildMultiSelectChipGroup<BillingCycle>(
+              allItems: BillingCycle.values
+                  .where((c) => c != BillingCycle.custom)
+                  .toList(),
+              selectedItems: _selectedBillingCycles,
+              onTap: (item) {
+                setState(() {
+                  if (_selectedBillingCycles.contains(item)) {
+                    _selectedBillingCycles.remove(item);
+                  } else {
+                    _selectedBillingCycles.add(item);
+                  }
+                });
+              },
+              getLabel: (item) =>
+                  item.name[0].toUpperCase() + item.name.substring(1),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: _applyFiltersAndClose,
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+              ),
+              child: const Text("Apply Filters"),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSortDropdown(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+      decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(12.0),
+          border: Border.all(color: theme.colorScheme.outline)),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<SortOption>(
+          value: _selectedSortOption,
+          isExpanded: true,
+          icon: const Icon(Icons.unfold_more_rounded),
+          onChanged: (newValue) {
+            if (newValue != null) {
+              setState(() {
+                _selectedSortOption = newValue;
+              });
+            }
+          },
+          items: SortOption.values.map((option) {
+            return DropdownMenuItem<SortOption>(
+              value: option,
+              child: Text(option.displayName),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMultiSelectChipGroup<T>({
+    required List<T> allItems,
+    required List<T> selectedItems,
+    required Function(T) onTap,
+    required String Function(T) getLabel,
+  }) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 8.0,
+      children: allItems.map((item) {
+        final isSelected = selectedItems.contains(item);
+        return FilterChip(
+          label: Text(getLabel(item)),
+          selected: isSelected,
+          onSelected: (_) => onTap(item),
+        );
+      }).toList(),
+    );
+  }
+}
+
+
 ===== FILE: monthly_spending_summary_card.dart =====
 ===== PATH: lib/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart =====
 
-import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For number formatting
+// lib/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart
 
-// Assuming you'll have a shared animated counter widget.
-// If not, this would be a simpler Text widget.
-import 'package:aboapp/widgets/animated_counter_widget.dart'; // We'll create this shared widget next
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/widgets/animated_counter_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;
@@ -10327,8 +10807,16 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Replace 'de_DE' and '€' with locale/currency from SettingsCubit/Provider
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
+
+    // Dynamically format currency based on user settings
+    final currencyFormat = NumberFormat.currency(
+      locale: settingsState.locale.toLanguageTag(),
+      symbol: NumberFormat.simpleCurrency(
+              locale: settingsState.locale.toLanguageTag())
+          .currencySymbol,
+      decimalDigits: 2,
+    );
 
     final double totalMonthlySpending = activeSubscriptions.fold(
       0.0,
@@ -10336,92 +10824,85 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
     );
 
     final double yearlySpending = totalMonthlySpending * 12;
-    final double dailyAverage = activeSubscriptions.isNotEmpty
-        ? totalMonthlySpending / 30.4375 // Average days in a month
-        : 0.0;
 
     return Card(
-      elevation: 2.0, // Subtle elevation
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          gradient: LinearGradient(
-            colors: [
-              theme.colorScheme.primaryContainer.withOpacity(0.6),
-              theme.colorScheme.primaryContainer.withOpacity(0.9),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+      // The card's appearance is now mainly controlled by the global ModernTheme/ClassicTheme
+      // This makes it consistent across the app.
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: theme.cardTheme.elevation,
+      shape: theme.cardTheme.shape,
+      color: theme.cardTheme.color,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Row for Title and Active Count
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   'Monthly Spending', // TODO: Localize
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${activeSubscriptions.length} Active', // TODO: Localize
-                    style: theme.textTheme.labelSmall?.copyWith(
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8.0),
+
+            // Main spending amount (the "Hero" element)
             AnimatedCounterWidget(
               value: totalMonthlySpending,
               formatter: (value) => currencyFormat.format(value),
-              style: theme.textTheme.displaySmall!.copyWith(
-                color: theme.colorScheme.primary,
+              style: theme.textTheme.displayMedium!.copyWith(
+                color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
               duration: const Duration(milliseconds: 700),
             ),
-            Text(
-              'per month', // TODO: Localize
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
-              ),
+            const SizedBox(height: 16.0),
+
+            // Divider
+            Divider(
+              color: theme.dividerColor.withOpacity(0.5),
+              height: 1,
             ),
             const SizedBox(height: 16.0),
-            const Divider(),
-            const SizedBox(height: 8.0),
+
+            // Secondary info (Yearly Total)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildStatItem(
-                  context,
-                  theme,
-                  currencyFormat,
-                  label: 'Yearly Total', // TODO: Localize
-                  value: yearlySpending,
-                  color: theme.colorScheme.onPrimaryContainer,
+                Text(
+                  'Yearly Total', // TODO: Localize
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                _buildStatItem(
-                  context,
-                  theme,
-                  currencyFormat,
-                  label: 'Daily Average', // TODO: Localize
-                  value: dailyAverage,
-                  color: theme.colorScheme.onPrimaryContainer,
+                AnimatedCounterWidget(
+                  value: yearlySpending,
+                  formatter: (val) => currencyFormat.format(val),
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  duration: const Duration(milliseconds: 600),
                 ),
               ],
             ),
@@ -10430,47 +10911,22 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildStatItem(
-    BuildContext context,
-    ThemeData theme,
-    NumberFormat currencyFormat, {
-    required String label,
-    required double value,
-    required Color color,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: color.withOpacity(0.8),
-          ),
-        ),
-        const SizedBox(height: 2.0),
-        AnimatedCounterWidget(
-          value: value,
-          formatter: (val) => currencyFormat.format(val),
-          style: theme.textTheme.titleSmall!.copyWith(
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
-          duration: const Duration(milliseconds: 600),
-        ),
-      ],
-    );
-  }
 }
+
 
 ===== FILE: subscription_card_widget.dart =====
 ===== PATH: lib/features/subscriptions/presentation/widgets/subscription_card_widget.dart =====
 
-import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
+// lib/features/subscriptions/presentation/widgets/subscription_card_widget.dart
+
+import 'package:aboapp/core/theme/app_colors.dart';
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/core/utils/date_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SubscriptionCardWidget extends StatelessWidget {
   final SubscriptionEntity subscription;
@@ -10487,38 +10943,43 @@ class SubscriptionCardWidget extends StatelessWidget {
   String _getBillingCycleShortLabel(BillingCycle cycle) {
     // TODO: Localize
     switch (cycle) {
-      case BillingCycle.weekly: return 'wk';
-      case BillingCycle.monthly: return 'mo';
-      case BillingCycle.quarterly: return 'qtr';
-      case BillingCycle.biAnnual: return '6mo';
-      case BillingCycle.yearly: return 'yr';
-      case BillingCycle.custom: return 'cust';
+      case BillingCycle.weekly:
+        return 'wk';
+      case BillingCycle.monthly:
+        return 'mo';
+      case BillingCycle.quarterly:
+        return 'qtr';
+      case BillingCycle.biAnnual:
+        return '6mo';
+      case BillingCycle.yearly:
+        return 'yr';
+      case BillingCycle.custom:
+        return 'cust';
     }
   }
 
   Color _getDaysUntilBillingColor(BuildContext context, int days) {
     final theme = Theme.of(context);
-    if (days < 0) return theme.colorScheme.error; 
-    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8); // Kept withOpacity
-    if (days <= 7) return AppColors.warning.withOpacity(0.9); // Used AppColors.warning, Kept withOpacity
+    if (days < 0) return theme.colorScheme.error;
+    if (days <= 3) return theme.colorScheme.error.withOpacity(0.8);
+    if (days <= 7) return AppColors.warning.withOpacity(0.9);
     return theme.colorScheme.onSurfaceVariant;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale from SettingsProvider
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
-    final dateFormat = DateFormat('dd MMM, yyyy'); // TODO: Localize
+    final settingsState = context.watch<SettingsCubit>().state;
 
     final daysUntil = subscription.daysUntilBilling;
-    final String daysLabel = daysUntil < 0
-        ? '${daysUntil.abs()} days ago' // TODO: Localize
-        : daysUntil == 0
-            ? 'Today' // TODO: Localize
-            : daysUntil == 1
-                ? 'Tomorrow' // TODO: Localize
-                : '$daysUntil days'; // TODO: Localize
+    final daysLabel = DateFormatter.formatDaysUntil(
+      subscription.nextBillingDate,
+      // TODO: Localize these strings
+      todayText: 'Today',
+      tomorrowText: 'Tomorrow',
+      daysAgoText: '{days} days ago',
+      daysFutureText: 'in {days} days',
+    );
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
@@ -10538,7 +10999,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                   children: [
                     Text(
                       subscription.name,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -10552,7 +11014,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                     if (subscription.isInTrial) ...[
                       const SizedBox(height: 4.0),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: theme.colorScheme.tertiaryContainer,
                           borderRadius: BorderRadius.circular(6),
@@ -10575,7 +11038,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${currencyFormat.format(subscription.price)} / ${_getBillingCycleShortLabel(subscription.billingCycle)}',
+                    '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(subscription.billingCycle)}',
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,
@@ -10591,7 +11054,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        dateFormat.format(subscription.nextBillingDate),
+                        DateFormatter.formatDate(subscription.nextBillingDate,
+                            locale: settingsState.locale),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: _getDaysUntilBillingColor(context, daysUntil),
                           fontWeight: FontWeight.w500,
@@ -10599,13 +11063,13 @@ class SubscriptionCardWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                   Text(
-                      daysLabel,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: _getDaysUntilBillingColor(context, daysUntil),
-                        fontStyle: FontStyle.italic,
-                      ),
+                  Text(
+                    daysLabel,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _getDaysUntilBillingColor(context, daysUntil),
+                      fontStyle: FontStyle.italic,
                     ),
+                  ),
                 ],
               ),
             ],
@@ -10616,10 +11080,16 @@ class SubscriptionCardWidget extends StatelessWidget {
   }
 
   Widget _buildLogo(BuildContext context, ThemeData theme) {
-    final hasRemoteLogo = subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
-    final Color bgColor = subscription.color ?? subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1); // Kept withOpacity
-    final Color fgColor = subscription.color != null ? (ThemeData.estimateBrightnessForColor(subscription.color!) == Brightness.dark ? Colors.white : Colors.black) : subscription.category.categoryDisplayIconColor(theme);
-
+    final hasRemoteLogo =
+        subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
+    final Color bgColor = subscription.color ??
+        subscription.category.categoryDisplayIconColor(theme).withOpacity(0.1);
+    final Color fgColor = subscription.color != null
+        ? (ThemeData.estimateBrightnessForColor(subscription.color!) ==
+                Brightness.dark
+            ? Colors.white
+            : Colors.black)
+        : subscription.category.categoryDisplayIconColor(theme);
 
     return Container(
       width: 52,
@@ -10628,33 +11098,36 @@ class SubscriptionCardWidget extends StatelessWidget {
         color: bgColor,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: ClipRRect( 
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(10.0),
         child: hasRemoteLogo
             ? CachedNetworkImage(
                 imageUrl: subscription.logoUrl!,
                 width: 52,
                 height: 52,
-                fit: BoxFit.contain, 
+                fit: BoxFit.contain,
                 placeholder: (context, url) => Center(
                   child: Icon(
                     subscription.category.displayIcon, // Using extension
-                    color: fgColor.withOpacity(0.5), // Kept withOpacity
+                    color: fgColor.withOpacity(0.5),
                     size: 28,
                   ),
                 ),
                 errorWidget: (context, url, error) => Center(
                   child: Icon(
                     subscription.category.displayIcon, // Using extension
-                    color: fgColor.withOpacity(0.7), // Kept withOpacity
+                    color: fgColor.withOpacity(0.7),
                     size: 28,
                   ),
                 ),
               )
-            : Center( 
+            : Center(
                 child: Text(
-                  subscription.name.isNotEmpty ? subscription.name[0].toUpperCase() : '?',
-                  style: theme.textTheme.titleLarge?.copyWith(color: fgColor, fontWeight: FontWeight.bold),
+                  subscription.name.isNotEmpty
+                      ? subscription.name[0].toUpperCase()
+                      : '?',
+                  style: theme.textTheme.titleLarge
+                      ?.copyWith(color: fgColor, fontWeight: FontWeight.bold),
                 ),
               ),
       ),
@@ -10664,53 +11137,83 @@ class SubscriptionCardWidget extends StatelessWidget {
 
 // Centralized display helpers for SubscriptionCategory
 extension CategoryDisplayHelpers on SubscriptionCategory {
-   Color categoryDisplayIconColor(ThemeData theme) {
+  Color categoryDisplayIconColor(ThemeData theme) {
     switch (this) {
-      case SubscriptionCategory.streaming: return AppColors.catStreaming;
-      case SubscriptionCategory.software: return AppColors.catSoftware;
-      case SubscriptionCategory.gaming: return AppColors.catGaming;
-      case SubscriptionCategory.fitness: return AppColors.catFitness;
-      case SubscriptionCategory.music: return AppColors.catMusic;
-      case SubscriptionCategory.news: return AppColors.catNews;
-      case SubscriptionCategory.cloud: return AppColors.catCloud;
-      case SubscriptionCategory.utilities: return Colors.teal.shade400; // Example
-      case SubscriptionCategory.education: return Colors.indigo.shade400; // Example
-      case SubscriptionCategory.other: return AppColors.catOther;
-      // No default because all enum values are covered.
+      case SubscriptionCategory.streaming:
+        return AppColors.catStreaming;
+      case SubscriptionCategory.software:
+        return AppColors.catSoftware;
+      case SubscriptionCategory.gaming:
+        return AppColors.catGaming;
+      case SubscriptionCategory.fitness:
+        return AppColors.catFitness;
+      case SubscriptionCategory.music:
+        return AppColors.catMusic;
+      case SubscriptionCategory.news:
+        return AppColors.catNews;
+      case SubscriptionCategory.cloud:
+        return AppColors.catCloud;
+      case SubscriptionCategory.utilities:
+        return Colors.teal.shade400; // Example
+      case SubscriptionCategory.education:
+        return Colors.indigo.shade400; // Example
+      case SubscriptionCategory.other:
+        return AppColors.catOther;
     }
   }
 
   String get displayName {
     // TODO: Localize these
     switch (this) {
-      case SubscriptionCategory.streaming: return 'Streaming';
-      case SubscriptionCategory.software: return 'Software';
-      case SubscriptionCategory.gaming: return 'Gaming';
-      case SubscriptionCategory.fitness: return 'Fitness';
-      case SubscriptionCategory.music: return 'Music';
-      case SubscriptionCategory.news: return 'News & Mags';
-      case SubscriptionCategory.cloud: return 'Cloud Storage';
-      case SubscriptionCategory.utilities: return 'Utilities';
-      case SubscriptionCategory.education: return 'Education';
-      case SubscriptionCategory.other: return 'Other';
+      case SubscriptionCategory.streaming:
+        return 'Streaming';
+      case SubscriptionCategory.software:
+        return 'Software';
+      case SubscriptionCategory.gaming:
+        return 'Gaming';
+      case SubscriptionCategory.fitness:
+        return 'Fitness';
+      case SubscriptionCategory.music:
+        return 'Music';
+      case SubscriptionCategory.news:
+        return 'News & Mags';
+      case SubscriptionCategory.cloud:
+        return 'Cloud Storage';
+      case SubscriptionCategory.utilities:
+        return 'Utilities';
+      case SubscriptionCategory.education:
+        return 'Education';
+      case SubscriptionCategory.other:
+        return 'Other';
     }
   }
 
   IconData get displayIcon {
-     switch (this) {
-      case SubscriptionCategory.streaming: return Icons.live_tv_rounded;
-      case SubscriptionCategory.software: return Icons.widgets_outlined;
-      case SubscriptionCategory.gaming: return Icons.gamepad_outlined;
-      case SubscriptionCategory.fitness: return Icons.fitness_center_rounded;
-      case SubscriptionCategory.music: return Icons.music_note_rounded;
-      case SubscriptionCategory.news: return Icons.article_outlined;
-      case SubscriptionCategory.cloud: return Icons.cloud_outlined;
-      case SubscriptionCategory.utilities: return Icons.lightbulb_outline_rounded;
-      case SubscriptionCategory.education: return Icons.school_outlined;
-      case SubscriptionCategory.other: return Icons.category_rounded;
+    switch (this) {
+      case SubscriptionCategory.streaming:
+        return Icons.live_tv_rounded;
+      case SubscriptionCategory.software:
+        return Icons.widgets_outlined;
+      case SubscriptionCategory.gaming:
+        return Icons.gamepad_outlined;
+      case SubscriptionCategory.fitness:
+        return Icons.fitness_center_rounded;
+      case SubscriptionCategory.music:
+        return Icons.music_note_rounded;
+      case SubscriptionCategory.news:
+        return Icons.article_outlined;
+      case SubscriptionCategory.cloud:
+        return Icons.cloud_outlined;
+      case SubscriptionCategory.utilities:
+        return Icons.lightbulb_outline_rounded;
+      case SubscriptionCategory.education:
+        return Icons.school_outlined;
+      case SubscriptionCategory.other:
+        return Icons.category_rounded;
     }
   }
 }
+
 
 ===== FILE: main.dart =====
 ===== PATH: lib/main.dart =====
@@ -10966,6 +11469,444 @@ class AnimatedCounterWidget extends StatelessWidget {
     return 0.0; 
   }
 }
+
+===== FILE: animated_gradient_chip.dart =====
+===== PATH: lib/widgets/animated_gradient_chip.dart =====
+
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+class AnimatedGradientChip extends StatefulWidget {
+  final String label;
+  final IconData icon;
+  final bool isSelected;
+  final ValueChanged<bool> onSelected;
+  final List<Color>? gradientColors;
+  final Color? selectedColor;
+
+  const AnimatedGradientChip({
+    super.key,
+    required this.label,
+    required this.icon,
+    required this.isSelected,
+    required this.onSelected,
+    this.gradientColors,
+    this.selectedColor,
+  });
+
+  @override
+  State<AnimatedGradientChip> createState() => _AnimatedGradientChipState();
+}
+
+class _AnimatedGradientChipState extends State<AnimatedGradientChip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final defaultGradient = [
+      Colors.pink.shade200,
+      Colors.purple.shade200,
+      Colors.blue.shade200,
+      Colors.pink.shade200,
+    ];
+    final gradient = widget.gradientColors ?? defaultGradient;
+    final Color contentColor = widget.isSelected
+        ? (ThemeData.estimateBrightnessForColor(
+                    widget.selectedColor ?? theme.colorScheme.primary) ==
+                Brightness.dark
+            ? Colors.white
+            : Colors.black)
+        : theme.colorScheme.onSurfaceVariant;
+    final Color backgroundColor = widget.isSelected
+        ? (widget.selectedColor ?? theme.colorScheme.primary)
+        : theme.colorScheme.surface;
+
+    return CustomPaint(
+      foregroundPainter: widget.isSelected
+          ? GradientOutlinePainter(
+              animation: _animationController,
+              strokeWidth: 2.0,
+              radius: 50.0,
+              gradientColors: gradient,
+            )
+          : null,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => widget.onSelected(!widget.isSelected),
+          borderRadius: BorderRadius.circular(50.0),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(50.0),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(widget.icon, size: 18, color: contentColor),
+                const SizedBox(width: 8.0),
+                Text(
+                  widget.label,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: contentColor,
+                    fontWeight: widget.isSelected ? FontWeight.bold : null,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GradientOutlinePainter extends CustomPainter {
+  final Animation<double> animation;
+  final double strokeWidth;
+  final double radius;
+  final List<Color> gradientColors;
+
+  GradientOutlinePainter({
+    required this.animation,
+    required this.strokeWidth,
+    required this.radius,
+    required this.gradientColors,
+  }) : super(repaint: animation);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Rect rect = Offset.zero & size;
+    final RRect rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius))
+        .deflate(strokeWidth / 2);
+
+    final paint = Paint()
+      ..shader = SweepGradient(
+        colors: gradientColors,
+        startAngle: 0.0,
+        endAngle: pi * 2,
+        transform: GradientRotation(animation.value * 2 * pi),
+      ).createShader(rect)
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawRRect(rrect, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+
+===== FILE: animated_gradient_input_border.dart =====
+===== PATH: lib/widgets/animated_gradient_input_border.dart =====
+
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+class AnimatedGradientInputBorder extends OutlineInputBorder {
+  final Animation<double> animation;
+  final List<Color> gradientColors;
+
+  const AnimatedGradientInputBorder({
+    required this.animation,
+    required this.gradientColors,
+    super.borderSide = const BorderSide(width: 2.0),
+    super.borderRadius = const BorderRadius.all(Radius.circular(12.0)),
+    super.gapPadding = 4.0,
+  });
+
+  @override
+  void paint(
+    Canvas canvas,
+    Rect rect, {
+    double? gapStart,
+    double gapExtent = 0.0,
+    double gapPercentage = 0.0,
+    TextDirection? textDirection,
+  }) {
+    final Paint paint = borderSide.toPaint();
+
+    paint.shader = SweepGradient(
+      colors: gradientColors,
+      startAngle: 0.0,
+      endAngle: pi * 2,
+      transform: GradientRotation(animation.value * 2 * pi),
+    ).createShader(rect);
+
+    final Path path = getOuterPath(rect, textDirection: textDirection);
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  AnimatedGradientInputBorder scale(double t) {
+    return AnimatedGradientInputBorder(
+      animation: animation,
+      gradientColors: gradientColors,
+      borderSide: borderSide.scale(t),
+      borderRadius: borderRadius * t,
+      gapPadding: gapPadding * t,
+    );
+  }
+}
+
+
+===== FILE: animated_gradient_outline.dart =====
+===== PATH: lib/widgets/animated_gradient_outline.dart =====
+
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+class AnimatedGradientOutline extends StatefulWidget {
+  final Widget child;
+  final TextEditingController? controller;
+  final String? labelText;
+  final String? errorText;
+  final double strokeWidth;
+  final double radius;
+  final List<Color>? gradientColors;
+  final double? height; // Hinzugefügt: Optionale feste Höhe
+
+  const AnimatedGradientOutline({
+    super.key,
+    required this.child,
+    this.controller,
+    this.labelText,
+    this.errorText,
+    this.strokeWidth = 2.0,
+    this.radius = 12.0,
+    this.gradientColors,
+    this.height,
+  });
+
+  @override
+  State<AnimatedGradientOutline> createState() =>
+      _AnimatedGradientOutlineState();
+}
+
+class _AnimatedGradientOutlineState extends State<AnimatedGradientOutline>
+    with SingleTickerProviderStateMixin {
+  final FocusNode _focusNode = FocusNode();
+  late final AnimationController _animationController;
+
+  bool get _isFloating =>
+      _focusNode.hasFocus || (widget.controller?.text.isNotEmpty ?? false);
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+    _focusNode.addListener(() => setState(() {}));
+    widget.controller?.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _focusNode.dispose();
+    widget.controller?.removeListener(() {});
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final bool hasError = widget.errorText != null;
+    final bool isFocused = _focusNode.hasFocus;
+
+    final defaultGradient = [
+      Colors.pink.shade200,
+      Colors.purple.shade200,
+      Colors.blue.shade200,
+      Colors.pink.shade200,
+    ];
+
+    // KORREKTUR: Veraltete 'withOpacity' entfernt
+    final errorGradient = [
+      theme.colorScheme.error.withAlpha(180),
+      Colors.orange.shade400.withAlpha(180),
+      theme.colorScheme.error.withAlpha(180),
+    ];
+
+    double labelWidth = 0;
+    if ((isFocused || hasError) && widget.labelText != null) {
+      final textStyle =
+          theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.primary);
+      final textPainter = TextPainter(
+        text: TextSpan(text: widget.labelText!, style: textStyle),
+        maxLines: 1,
+        textDirection: TextDirection.ltr,
+      )..layout();
+      labelWidth = textPainter.width;
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Stack(
+          children: [
+            SizedBox(
+              height:
+                  widget.height ?? 60.0, // KORREKTUR: Feste Höhe oder Standard
+              child: CustomPaint(
+                painter: GradientOutlinePainter(
+                  isFocused: isFocused || hasError,
+                  labelWidth: labelWidth,
+                  animation: _animationController,
+                  strokeWidth: widget.strokeWidth,
+                  radius: widget.radius,
+                  gradientColors: hasError
+                      ? errorGradient
+                      : (widget.gradientColors ?? defaultGradient),
+                  backgroundColor: theme.colorScheme.surface,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Focus(
+                focusNode: _focusNode,
+                child: widget.child,
+              ),
+            ),
+            if (widget.labelText != null)
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeOut,
+                top: _isFloating ? 6.0 : 18.0,
+                left: 16.0,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: _isFloating
+                      ? theme.textTheme.bodySmall!.copyWith(
+                          color: hasError
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.primary)
+                      : theme.textTheme.bodyLarge!
+                          .copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  child: Text(widget.labelText!),
+                ),
+              ),
+          ],
+        ),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: SizeTransition(
+                  sizeFactor: animation, axis: Axis.vertical, child: child),
+            );
+          },
+          child: hasError
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 12.0, top: 6.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber_rounded,
+                          color: theme.colorScheme.error, size: 16),
+                      const SizedBox(width: 8.0),
+                      Text(
+                        widget.errorText!,
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: theme.colorScheme.error),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox(height: 12.0),
+        ),
+      ],
+    );
+  }
+}
+
+class GradientOutlinePainter extends CustomPainter {
+  final bool isFocused;
+  final double labelWidth;
+  final Animation<double> animation;
+  final double strokeWidth;
+  final double radius;
+  final List<Color> gradientColors;
+  final Color backgroundColor;
+
+  GradientOutlinePainter({
+    required this.isFocused,
+    this.labelWidth = 0.0,
+    required this.animation,
+    required this.strokeWidth,
+    required this.radius,
+    required this.gradientColors,
+    required this.backgroundColor,
+  }) : super(repaint: animation);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Rect rect = Offset.zero & size;
+    final RRect rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
+
+    final backgroundPaint = Paint()..color = backgroundColor;
+    canvas.drawRRect(rrect, backgroundPaint);
+
+    if (isFocused) {
+      final borderPaint = Paint()
+        ..shader = SweepGradient(
+          colors: gradientColors,
+          startAngle: 0.0,
+          endAngle: pi * 2,
+          transform: GradientRotation(animation.value * 2 * pi),
+        ).createShader(rect)
+        ..strokeWidth = strokeWidth
+        ..style = PaintingStyle.stroke;
+
+      final Path path = Path()..addRRect(rrect);
+
+      if (labelWidth > 0) {
+        const double gapPadding = 4.0;
+        final double gapStart = 12.0;
+        final double gapExtent = labelWidth + gapPadding * 2;
+        final Path gapPath = Path();
+        gapPath.addRect(
+            Rect.fromLTWH(gapStart - gapPadding, 0, gapExtent, strokeWidth));
+        canvas.clipPath(Path.combine(PathOperation.difference, path, gapPath));
+      }
+
+      canvas.drawPath(path, borderPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant GradientOutlinePainter oldDelegate) {
+    return oldDelegate.isFocused != isFocused ||
+        oldDelegate.labelWidth != labelWidth ||
+        oldDelegate.animation.value != animation.value;
+  }
+}
+
 
 ===== FILE: empty_state_widget.dart =====
 ===== PATH: lib/widgets/empty_state_widget.dart =====

@@ -5,7 +5,7 @@ import 'package:aboapp/features/settings/domain/usecases/get_settings_usecase.da
 import 'package:aboapp/features/settings/domain/usecases/save_currency_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_locale_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_theme_setting_usecase.dart';
-import 'package:aboapp/features/settings/domain/usecases/save_ui_style_setting_usecase.dart';
+// ENTFERNT: usecase für ui style
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -20,14 +20,14 @@ class SettingsCubit extends Cubit<SettingsState> {
   final SaveThemeSettingUseCase _saveThemeSetting;
   final SaveLocaleSettingUseCase _saveLocaleSetting;
   final SaveCurrencySettingUseCase _saveCurrencySetting;
-  final SaveUIStyleSettingUseCase _saveUIStyleSetting;
+  // ENTFERNT: _saveUIStyleSetting
 
   SettingsCubit(
     this._getSettings,
     this._saveThemeSetting,
     this._saveLocaleSetting,
     this._saveCurrencySetting,
-    this._saveUIStyleSetting,
+    // ENTFERNT: _saveUIStyleSetting aus dem Konstruktor
   ) : super(SettingsState.initial());
 
   Future<void> loadSettings() async {
@@ -35,7 +35,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     try {
       final settingsEntity = await _getSettings();
       emit(state.copyWith(
-        uiStyle: settingsEntity.uiStyle,
+        // ENTFERNT: uiStyle Zuweisung
         themeMode: settingsEntity.themeMode,
         locale: settingsEntity.locale,
         currencyCode: settingsEntity.currencyCode,
@@ -76,13 +76,5 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
-  Future<void> updateUIStyle(AppUIStyle newUIStyle) async {
-    emit(state.copyWith(isLoading: true, error: null));
-    try {
-      await _saveUIStyleSetting(newUIStyle);
-      emit(state.copyWith(uiStyle: newUIStyle, isLoading: false));
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, error: e.toString()));
-    }
-  }
+  // ENTFERNT: updateUIStyle Methode
 }
