@@ -36,8 +36,10 @@ dependencies:
   flutter_native_splash: ^2.4.0 
   cupertino_icons: ^1.0.8 
   animations: ^2.0.11
-  collection: ^1.18.0 # Added collection package
+  collection: ^1.18.0
   percent_indicator: ^4.2.3
+  flutter_staggered_grid_view: ^0.7.0 # NEU
+  flutter_staggered_animations: ^1.1.1 # NEU
 
   # Local Storage
   shared_preferences: ^2.2.3
@@ -59,11 +61,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    # Ensure these directories exist in your project's `assets` folder
-    # - assets/images/ # For general images, app logo, onboarding illustrations
-    # - assets/icons/  # For custom SVG or PNG icons if any
-    - assets/l10n/ # For localization files
-
+    - assets/l10n/
 
 flutter_native_splash:
   color: "#121212" 

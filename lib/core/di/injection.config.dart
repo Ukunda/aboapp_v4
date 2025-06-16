@@ -32,8 +32,6 @@ import '../../features/settings/domain/usecases/save_theme_setting_usecase.dart'
     as _i150;
 import '../../features/settings/presentation/cubit/settings_cubit.dart'
     as _i792;
-import '../../features/statistics/presentation/cubit/statistics_cubit.dart'
-    as _i1049;
 import '../../features/subscriptions/data/datasources/subscription_local_datasource.dart'
     as _i327;
 import '../../features/subscriptions/data/repositories/subscription_repository_impl.dart'
@@ -65,7 +63,6 @@ Future<_i174.GetIt> $initGetIt(
     environmentFilter,
   );
   final registerExternalDependencies = _$RegisterExternalDependencies();
-  gh.factory<_i1049.StatisticsCubit>(() => _i1049.StatisticsCubit());
   await gh.singletonAsync<_i460.SharedPreferences>(
     () => registerExternalDependencies.sharedPreferences,
     preResolve: true,

@@ -1,9 +1,7 @@
-// lib/features/statistics/presentation/widgets/category_spending_pie_chart_card.dart
-
 import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
-import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // Import for CategoryDisplayHelpers
+import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,12 +30,11 @@ class _CategorySpendingPieChartCardState
 
     if (widget.categorySpendingData.isEmpty) {
       return Card(
-        elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No category spending data available.', // TODO: Localize
+              'No category spending data available.',
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -49,12 +46,11 @@ class _CategorySpendingPieChartCardState
         widget.categorySpendingData.where((d) => d.totalAmount > 0.01).toList();
     if (relevantData.isEmpty) {
       return Card(
-        elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No significant category spending.', // TODO: Localize
+              'No significant category spending.',
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -63,14 +59,13 @@ class _CategorySpendingPieChartCardState
     }
 
     return Card(
-      elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Spending by Category', // TODO: Localize
+              'Spending by Category',
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -167,7 +162,7 @@ class _CategorySpendingPieChartCardState
               ),
               const SizedBox(width: 6),
               Text(
-                categoryData.category.displayName, // Using extension getter
+                categoryData.category.displayName,
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),

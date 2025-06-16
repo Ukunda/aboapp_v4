@@ -2,9 +2,13 @@
 
 import 'package:aboapp/core/routing/app_router.dart';
 import 'package:aboapp/features/settings/presentation/cubit/screens/settings_screen.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/screens/statistics_screen.dart';
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 
@@ -90,12 +94,17 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
       body: PageView(
         controller: _pageController,
         onPageChanged: _onPageChanged,
-        physics:
-            const BouncingScrollPhysics(), // Optional: für besseres Scroll-Gefühl
-        children: const <Widget>[
-          HomeScreen(),
-          StatisticsScreen(),
-          SettingsScreen(),
+        physics: const BouncingScrollPhysics(),
+        children: <Widget>[
+          const HomeScreen(),
+          BlocProvider(
+            create: (context) => StatisticsCubit(
+              subscriptionCubit: context.read<SubscriptionCubit>(),
+              settingsCubit: context.read<SettingsCubit>(),
+            ),
+            child: const StatisticsScreen(),
+          ),
+          const SettingsScreen(),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -146,7 +155,6 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             ? theme.colorScheme.primary
             : theme.colorScheme.onSurfaceVariant;
 
-    // GEÄNDERT: TapScaleEffect für visuelles Feedback
     return Expanded(
       child: TapScaleEffect(
         onTap: isDisabled ? null : () => _onBottomNavItemTapped(index),
@@ -174,7 +182,6 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   }
 }
 
-// NEU: Wiederverwendbares Widget für den Skalierungseffekt
 class TapScaleEffect extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;

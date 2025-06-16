@@ -1,5 +1,3 @@
-// lib/features/statistics/presentation/widgets/spending_trend_line_chart_card.dart
-
 import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
@@ -23,12 +21,11 @@ class SpendingTrendLineChartCard extends StatelessWidget {
 
     if (spendingTrendData.spots.isEmpty) {
       return Card(
-        elevation: 1.0,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No spending trend data available for ${spendingTrendData.year}.', // TODO: Localize
+              'No spending trend data available for ${spendingTrendData.year}.',
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -37,14 +34,13 @@ class SpendingTrendLineChartCard extends StatelessWidget {
     }
 
     return Card(
-      elevation: 1.0,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 20, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Spending Trend - ${spendingTrendData.year}', // TODO: Localize
+              'Spending Trend - ${spendingTrendData.year}',
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -79,7 +75,6 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         reservedSize: 30,
                         interval: 2,
                         getTitlesWidget: (value, meta) {
-                          // TODO: Localize month abbreviations
                           const months = [
                             'Jan',
                             'Feb',
@@ -183,7 +178,6 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                       getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                         return touchedBarSpots.map((barSpot) {
                           final flSpot = barSpot;
-                          // TODO: Localize month name and currency
                           final monthName = DateFormat.MMMM(
                                   settingsState.locale.toLanguageTag())
                               .format(DateTime(

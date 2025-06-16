@@ -1,25 +1,75 @@
-// lib/features/statistics/presentation/cubit/statistics_cubit.dart
+import 'dart:async';
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:injectable/injectable.dart';
 import 'package:collection/collection.dart';
 
 part 'statistics_state.dart';
 part 'statistics_cubit.freezed.dart';
 
-@injectable
 class StatisticsCubit extends Cubit<StatisticsState> {
-  StatisticsCubit() : super(const StatisticsState.initial());
+  final SubscriptionCubit _subscriptionCubit;
+  final SettingsCubit _settingsCubit;
+  late final StreamSubscription _subscriptionSubscription;
+  late final StreamSubscription _settingsSubscription;
 
-  void generateStatistics(
-    List<SubscriptionEntity> allSubscriptions,
-    SettingsEntity settings, {
-    int? yearForTrend,
-  }) {
+  List<SubscriptionEntity> _latestSubscriptions = [];
+  late SettingsEntity _latestSettings;
+
+  StatisticsCubit({
+    required SubscriptionCubit subscriptionCubit,
+    required SettingsCubit settingsCubit,
+  })  : _subscriptionCubit = subscriptionCubit,
+        _settingsCubit = settingsCubit,
+        super(const StatisticsState.initial()) {
+    _updateLatestStates();
+
+    _subscriptionSubscription = _subscriptionCubit.stream.listen((_) {
+      _updateLatestStatesAndRecalculate();
+    });
+    _settingsSubscription = _settingsCubit.stream.listen((_) {
+      _updateLatestStatesAndRecalculate();
+    });
+  }
+
+  void _updateLatestStates() {
+    _subscriptionCubit.state.whenOrNull(
+      loaded: (all, _, __, ___, ____, _____) {
+        _latestSubscriptions = all;
+      },
+    );
+    final settingsState = _settingsCubit.state;
+    _latestSettings = SettingsEntity(
+      themeMode: settingsState.themeMode,
+      locale: settingsState.locale,
+      currencyCode: settingsState.currencyCode,
+      salary: settingsState.salary,
+      salaryCycle: settingsState.salaryCycle,
+      hasThirteenthSalary: settingsState.hasThirteenthSalary,
+    );
+  }
+
+  void _updateLatestStatesAndRecalculate() {
+    _updateLatestStates();
+    generateStatistics();
+  }
+
+  @override
+  Future<void> close() {
+    _subscriptionSubscription.cancel();
+    _settingsSubscription.cancel();
+    return super.close();
+  }
+
+  void generateStatistics({int? yearForTrend}) {
     emit(const StatisticsState.loading());
+
+    final allSubscriptions = _latestSubscriptions;
+    final settings = _latestSettings;
 
     final activeSubscriptions =
         allSubscriptions.where((s) => s.isActive).toList();
@@ -83,7 +133,23 @@ class StatisticsCubit extends Cubit<StatisticsState> {
                 b.monthlyEquivalentPrice.compareTo(a.monthlyEquivalentPrice));
       final topN = topSpendingSubscriptions.take(5).toList();
 
-      final int trendYear = yearForTrend ?? DateTime.now().year;
+      final int trendYear = yearForTrend ??
+          state.maybeWhen(
+              loaded: (
+                _,
+                __,
+                ___,
+                ____,
+                _____,
+                ______,
+                _______,
+                trendYear,
+                ________,
+                _________,
+              ) =>
+                  trendYear,
+              orElse: () => DateTime.now().year);
+
       final List<FlSpot> spots = [];
       double maxSpendingInYear = 0.0;
       for (int month = 1; month <= 12; month++) {
@@ -139,9 +205,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     }
   }
 
-  void changeTrendYear(List<SubscriptionEntity> allSubscriptions,
-      SettingsEntity settings, int newYear) {
-    generateStatistics(allSubscriptions, settings, yearForTrend: newYear);
+  void changeTrendYear(int newYear) {
+    generateStatistics(yearForTrend: newYear);
   }
 }
 
