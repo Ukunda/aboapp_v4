@@ -8,14 +8,14 @@ part 'settings_model.freezed.dart';
 part 'settings_model.g.dart';
 
 // --- Custom converters ---
-class AppUIStyleConverter implements JsonConverter<AppUIStyle, String> {
-  const AppUIStyleConverter();
+class SalaryCycleConverter implements JsonConverter<SalaryCycle, String> {
+  const SalaryCycleConverter();
   @override
-  AppUIStyle fromJson(String json) =>
-      AppUIStyle.values.firstWhere((e) => e.toString() == json,
-          orElse: () => AppUIStyle.classic);
+  SalaryCycle fromJson(String json) =>
+      SalaryCycle.values.firstWhere((e) => e.toString() == json,
+          orElse: () => SalaryCycle.monthly);
   @override
-  String toJson(AppUIStyle object) => object.toString();
+  String toJson(SalaryCycle object) => object.toString();
 }
 
 class ThemeModeConverter implements JsonConverter<ThemeMode, String> {
@@ -45,10 +45,15 @@ class SettingsModel with _$SettingsModel {
   const SettingsModel._();
 
   const factory SettingsModel({
-    @AppUIStyleConverter() required AppUIStyle uiStyle,
     @ThemeModeConverter() required ThemeMode themeMode,
     @LocaleConverter() required Locale locale,
     required String currencyCode,
+    // --- NEUE FELDER ---
+    double? salary,
+    @SalaryCycleConverter()
+    @Default(SalaryCycle.monthly)
+    SalaryCycle salaryCycle,
+    @Default(false) bool hasThirteenthSalary,
   }) = _SettingsModel;
 
   factory SettingsModel.fromJson(Map<String, dynamic> json) =>
@@ -56,19 +61,23 @@ class SettingsModel with _$SettingsModel {
 
   factory SettingsModel.fromEntity(SettingsEntity entity) {
     return SettingsModel(
-      uiStyle: entity.uiStyle,
       themeMode: entity.themeMode,
       locale: entity.locale,
       currencyCode: entity.currencyCode,
+      salary: entity.salary,
+      salaryCycle: entity.salaryCycle,
+      hasThirteenthSalary: entity.hasThirteenthSalary,
     );
   }
 
   SettingsEntity toEntity() {
     return SettingsEntity(
-      uiStyle: uiStyle,
       themeMode: themeMode,
       locale: locale,
       currencyCode: currencyCode,
+      salary: salary,
+      salaryCycle: salaryCycle,
+      hasThirteenthSalary: hasThirteenthSalary,
     );
   }
 }

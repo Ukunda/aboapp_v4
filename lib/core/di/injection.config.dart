@@ -26,10 +26,10 @@ import '../../features/settings/domain/usecases/save_currency_setting_usecase.da
     as _i851;
 import '../../features/settings/domain/usecases/save_locale_setting_usecase.dart'
     as _i682;
+import '../../features/settings/domain/usecases/save_salary_settings_usecase.dart'
+    as _i969;
 import '../../features/settings/domain/usecases/save_theme_setting_usecase.dart'
     as _i150;
-import '../../features/settings/domain/usecases/save_ui_style_setting_usecase.dart'
-    as _i421;
 import '../../features/settings/presentation/cubit/settings_cubit.dart'
     as _i792;
 import '../../features/statistics/presentation/cubit/statistics_cubit.dart'
@@ -54,11 +54,11 @@ import '../routing/app_router.dart' as _i282;
 import 'injection.dart' as _i464;
 
 // initializes the registration of main-scope dependencies inside of GetIt
-_i174.GetIt $initGetIt(
+Future<_i174.GetIt> $initGetIt(
   _i174.GetIt getIt, {
   String? environment,
   _i526.EnvironmentFilter? environmentFilter,
-}) {
+}) async {
   final gh = _i526.GetItHelper(
     getIt,
     environment,
@@ -66,6 +66,10 @@ _i174.GetIt $initGetIt(
   );
   final registerExternalDependencies = _$RegisterExternalDependencies();
   gh.factory<_i1049.StatisticsCubit>(() => _i1049.StatisticsCubit());
+  await gh.singletonAsync<_i460.SharedPreferences>(
+    () => registerExternalDependencies.sharedPreferences,
+    preResolve: true,
+  );
   gh.lazySingleton<_i706.Uuid>(() => registerExternalDependencies.uuid);
   gh.singleton<_i282.AppRouter>(
       () => _i282.AppRouter(gh<_i460.SharedPreferences>()));
@@ -84,15 +88,16 @@ _i174.GetIt $initGetIt(
       () => _i851.SaveCurrencySettingUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i682.SaveLocaleSettingUseCase>(
       () => _i682.SaveLocaleSettingUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i969.SaveSalarySettingsUseCase>(
+      () => _i969.SaveSalarySettingsUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i150.SaveThemeSettingUseCase>(
       () => _i150.SaveThemeSettingUseCase(gh<_i674.SettingsRepository>()));
-  gh.lazySingleton<_i421.SaveUIStyleSettingUseCase>(
-      () => _i421.SaveUIStyleSettingUseCase(gh<_i674.SettingsRepository>()));
   gh.factory<_i792.SettingsCubit>(() => _i792.SettingsCubit(
         gh<_i1029.GetSettingsUseCase>(),
         gh<_i150.SaveThemeSettingUseCase>(),
         gh<_i682.SaveLocaleSettingUseCase>(),
         gh<_i851.SaveCurrencySettingUseCase>(),
+        gh<_i969.SaveSalarySettingsUseCase>(),
       ));
   gh.lazySingleton<_i734.AddSubscriptionUseCase>(
       () => _i734.AddSubscriptionUseCase(gh<_i384.SubscriptionRepository>()));

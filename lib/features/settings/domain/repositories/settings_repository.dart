@@ -8,5 +8,10 @@ abstract class SettingsRepository {
   Future<void> saveThemeMode(ThemeMode themeMode);
   Future<void> saveLocale(Locale locale);
   Future<void> saveCurrencyCode(String currencyCode);
-  Future<void> saveUIStyle(AppUIStyle uiStyle);
+  // NEU
+  Future<void> saveSalarySettings({
+    required double? salary,
+    required SalaryCycle salaryCycle,
+    required bool hasThirteenthSalary,
+  });
 }

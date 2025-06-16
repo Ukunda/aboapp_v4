@@ -12,7 +12,12 @@ abstract class SettingsLocalDataSource {
   Future<void> saveThemeMode(ThemeMode themeMode);
   Future<void> saveLocale(Locale locale);
   Future<void> saveCurrencyCode(String currencyCode);
-  Future<void> saveUIStyle(AppUIStyle uiStyle);
+  // NEU
+  Future<void> saveSalarySettings({
+    required double? salary,
+    required SalaryCycle salaryCycle,
+    required bool hasThirteenthSalary,
+  });
 }
 
 const String settingsKey = 'APP_SETTINGS';
@@ -63,9 +68,17 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
         currentSettings.copyWith(currencyCode: currencyCode));
   }
 
+  // NEU
   @override
-  Future<void> saveUIStyle(AppUIStyle uiStyle) async {
+  Future<void> saveSalarySettings(
+      {required double? salary,
+      required SalaryCycle salaryCycle,
+      required bool hasThirteenthSalary}) async {
     final currentSettings = await getSettings();
-    await _saveSettingsModel(currentSettings.copyWith(uiStyle: uiStyle));
+    await _saveSettingsModel(currentSettings.copyWith(
+      salary: salary,
+      salaryCycle: salaryCycle,
+      hasThirteenthSalary: hasThirteenthSalary,
+    ));
   }
 }

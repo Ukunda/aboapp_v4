@@ -37,8 +37,16 @@ class SettingsRepositoryImpl implements SettingsRepository {
     await localDataSource.saveCurrencyCode(currencyCode);
   }
 
+  // NEU
   @override
-  Future<void> saveUIStyle(AppUIStyle uiStyle) async {
-    await localDataSource.saveUIStyle(uiStyle);
+  Future<void> saveSalarySettings(
+      {required double? salary,
+      required SalaryCycle salaryCycle,
+      required bool hasThirteenthSalary}) async {
+    await localDataSource.saveSalarySettings(
+      salary: salary,
+      salaryCycle: salaryCycle,
+      hasThirteenthSalary: hasThirteenthSalary,
+    );
   }
 }

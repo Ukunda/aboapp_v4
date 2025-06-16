@@ -1,10 +1,10 @@
 // lib/features/statistics/presentation/widgets/overall_spending_summary_card.dart
 
-import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class OverallSpendingSummaryCard extends StatelessWidget {
   final double totalMonthlySpending;
@@ -22,25 +22,23 @@ class OverallSpendingSummaryCard extends StatelessWidget {
     final settingsState = context.watch<SettingsCubit>().state;
 
     return Card(
-      elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Spending Overview', // TODO: Localize
+              'Spending Overview',
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildMetric(
-                  context,
+                  context: context,
                   settingsState: settingsState,
-                  label: 'Monthly Total', // TODO: Localize
+                  label: 'Monthly Total',
                   value: totalMonthlySpending,
                   style: theme.textTheme.headlineSmall!.copyWith(
                     color: theme.colorScheme.primary,
@@ -48,13 +46,14 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                   ),
                   labelStyle: theme.textTheme.bodySmall!,
                 ),
+                const SizedBox(width: 24),
                 _buildMetric(
-                  context,
+                  context: context,
                   settingsState: settingsState,
-                  label: 'Yearly Total', // TODO: Localize
+                  label: 'Yearly Total',
                   value: totalYearlySpending,
-                  style: theme.textTheme.titleLarge!.copyWith(
-                    color: theme.colorScheme.secondary,
+                  style: theme.textTheme.headlineSmall!.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.w600,
                   ),
                   labelStyle: theme.textTheme.bodySmall!,
@@ -67,32 +66,38 @@ class OverallSpendingSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(
-    BuildContext context, {
+  Widget _buildMetric({
+    required BuildContext context,
     required SettingsState settingsState,
     required String label,
     required double value,
     required TextStyle style,
     required TextStyle labelStyle,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        AnimatedCounterWidget(
-          value: value,
-          formatter: (val) => CurrencyFormatter.format(val,
-              currencyCode: settingsState.currencyCode,
-              locale: settingsState.locale),
-          style: style,
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: labelStyle.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-      ],
+    final currencyFormat = NumberFormat.currency(
+      locale: settingsState.locale.toLanguageTag(),
+      symbol: NumberFormat.simpleCurrency(
+              locale: settingsState.locale.toLanguageTag())
+          .currencySymbol,
+    );
+
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AnimatedCounterWidget(
+            value: value,
+            formatter: (val) => currencyFormat.format(val),
+            style: style,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: labelStyle.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
     );
   }
 }
