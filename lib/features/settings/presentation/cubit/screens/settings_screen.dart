@@ -1,9 +1,15 @@
+// lib/features/settings/presentation/cubit/screens/settings_screen.dart
+
+import 'package:aboapp/core/di/injection.dart';
+import 'package:aboapp/core/routing/app_router.dart';
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,6 +33,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _updateLocalState(SettingsState state) {
     if (state.salary != null) {
       _salaryController.text = state.salary.toString();
+    } else {
+      _salaryController.clear();
     }
     _salaryCycle = state.salaryCycle;
     _hasThirteenthSalary = state.hasThirteenthSalary;
@@ -46,6 +54,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
           hasThirteenthSalary: _hasThirteenthSalary,
         );
     FocusScope.of(context).unfocus(); // Close keyboard
+  }
+
+  void _showRerunOnboardingDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rerun Welcome Screen?'),
+        content: const Text(
+            'This will show the welcome screen the next time you open the app. Your existing subscriptions and settings will not be deleted.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+          ),
+          TextButton(
+            child: Text('Confirm',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            onPressed: () async {
+              Navigator.of(dialogContext).pop(); // Close the dialog first
+              final prefs = getIt<SharedPreferences>();
+              await prefs.setBool('onboarding_complete', false);
+              if (mounted) {
+                // Navigate to the onboarding route, clearing the navigation stack
+                context.go(AppRoutes.onboarding);
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
@@ -77,8 +115,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return BlocListener<SettingsCubit, SettingsState>(
       listener: (context, state) {
-        // Update local form state if cubit state changes from another source
-        _updateLocalState(state);
+        if (mounted) {
+          _updateLocalState(state);
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -86,7 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         body: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
-            if (state.isLoading) {
+            if (state.isLoading && _salaryController.text.isEmpty) { // Show loader only on initial load
               return const Center(child: CircularProgressIndicator.adaptive());
             }
             if (state.error != null) {
@@ -105,6 +144,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 32),
                 _buildSectionHeader(context, 'Salary Insights'),
                 _buildSalarySection(context, state),
+                const Divider(height: 32),
+                _buildSectionHeader(context, 'Advanced'),
+                _buildAdvancedSection(context),
                 const Divider(height: 32),
                 _buildSectionHeader(context, 'About'),
                 _buildAboutSection(context),
@@ -137,6 +179,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: Text(_getLocaleDisplayName(context, state.locale)),
             onTap: () => _showLocaleDialog(context, state.locale),
           ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.attach_money_rounded),
             title: const Text('Currency'),
@@ -212,20 +255,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+  
+  Widget _buildAdvancedSection(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      // CORRECTION: Replaced deprecated `withOpacity` with `withAlpha`.
+      color: theme.colorScheme.errorContainer.withAlpha(77), // ~30% opacity
+      child: ListTile(
+        leading: Icon(Icons.replay_circle_filled_rounded,
+            color: theme.colorScheme.error),
+        title: Text('Rerun Welcome Screen',
+            style: TextStyle(color: theme.colorScheme.onErrorContainer)),
+        subtitle: Text('Shows the initial setup screens again',
+            style: TextStyle(
+                // CORRECTION: Replaced deprecated `withOpacity` with `withAlpha`.
+                color:
+                    theme.colorScheme.onErrorContainer.withAlpha(204))), // ~80% opacity
+        onTap: _showRerunOnboardingDialog,
+      ),
+    );
+  }
 
   Widget _buildAboutSection(BuildContext context) {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.info_outline_rounded),
         title: const Text('About AboApp'),
-        subtitle: const Text('Version 3.0.0 - Refactored'),
+        subtitle: const Text('Version 4.0.0'),
         onTap: () {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
               title: const Text('About AboApp'),
               content: const Text(
-                  'Subscription management made easy.\nVersion 3.0.0'),
+                  'Subscription management made easy.\nVersion 4.0.0'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -244,10 +307,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding:
           const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
       child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.8
             ),
       ),
     );
@@ -320,6 +384,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 groupValue: currentCurrencyCode,
                 onChanged: (value) {
                   if (value != null) {
+                    // CORRECTION: Typo `SettingsCTubit` fixed to `SettingsCubit`
                     context.read<SettingsCubit>().updateCurrencyCode(value);
                     Navigator.of(ctx).pop();
                   }

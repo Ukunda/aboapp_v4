@@ -109,7 +109,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
       borderSide: BorderSide.none,
     );
 
-    // KORREKTUR: Farbverlauf für weichere Übergänge angepasst
     final focusedBorder = AnimatedGradientInputBorder(
       animation: _animationController,
       gradientColors: [
@@ -194,25 +193,30 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildSectionTitle(theme, 'Intervall'),
-                        AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (context, child) =>
-                              DropdownButtonFormField<BillingCycle>(
-                            value: _selectedCycle,
-                            decoration: _inputDecoration(
-                              theme: theme,
-                              icon: Icons.calendar_view_month,
-                              defaultBorder: defaultBorder,
-                              focusedBorder: focusedBorder,
-                            ),
-                            items: BillingCycle.values
-                                .where((c) => c != BillingCycle.custom)
-                                .map((c) => DropdownMenuItem(
-                                    value: c, child: Text(c.displayName)))
-                                .toList(),
-                            onChanged: (v) => setState(
-                                () => _selectedCycle = v ?? _selectedCycle),
+                        DropdownButtonFormField<BillingCycle>(
+                          value: _selectedCycle,
+                          // FIX: isExpanded tells the dropdown to fill the available space
+                          // and manage its content's overflow, preventing it from
+                          // pushing the parent Row beyond its limits.
+                          isExpanded: true,
+                          decoration: _inputDecoration(
+                            theme: theme,
+                            icon: Icons.calendar_view_month,
+                            defaultBorder: defaultBorder,
+                            focusedBorder: focusedBorder,
                           ),
+                          items: BillingCycle.values
+                              .where((c) => c != BillingCycle.custom)
+                              .map((c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(
+                                    c.displayName,
+                                    // FIX: Ensure long text gets an ellipsis
+                                    overflow: TextOverflow.ellipsis,
+                                  )))
+                              .toList(),
+                          onChanged: (v) => setState(
+                              () => _selectedCycle = v ?? _selectedCycle),
                         ),
                       ],
                     ),
@@ -233,14 +237,15 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
                               defaultBorder: defaultBorder,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top:
-                                      1.0), // Kleine Anpassung für vertikale Zentrierung
+                              padding: const EdgeInsets.only(top: 1.0),
                               child: Text(
                                 DateFormat.yMd(
                                         settingsState.locale.toLanguageTag())
                                     .format(_nextBillingDate),
                                 style: theme.textTheme.bodyLarge,
+                                // FIX: Handle potential overflow for very long date formats.
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
                               ),
                             ),
                           ),
@@ -287,7 +292,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
     );
   }
 
-  // KORREKTUR: Hilfsmethode für das getrennte Label
   Widget _buildSectionTitle(ThemeData theme, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
@@ -299,7 +303,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
     );
   }
 
-  // KORREKTUR: InputDecoration verwendet jetzt 'hintText' statt 'labelText'
   InputDecoration _inputDecoration({
     required ThemeData theme,
     required IconData icon,

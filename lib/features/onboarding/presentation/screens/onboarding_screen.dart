@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aboapp/core/di/injection.dart';
+import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -79,11 +80,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    _salaryPageKey.currentState?.saveSettings();
+    app_haptics.HapticFeedback.lightImpact();
+    final salaryPageState = _salaryPageKey.currentState;
+    if (salaryPageState != null) {
+      await salaryPageState.saveSettings();
+    }
     final prefs = getIt<SharedPreferences>();
     await prefs.setBool('onboarding_complete', true);
     if (mounted) {
-      context.goNamed(AppRoutes.home);
+      context.go(AppRoutes.home);
     }
   }
 
@@ -93,6 +98,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final isLastPage = _currentPageIndex == _onboardingPages.length - 1;
 
     return Scaffold(
+      // FIX: Setting resizeToAvoidBottomInset to false prevents the UI from
+      // squashing. The scroll views inside the pages will handle the keyboard.
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -102,8 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.only(top: 8.0, right: 16.0),
                 child: TextButton(
                   onPressed: _completeOnboarding,
-                  child: Text(isLastPage ? 'Done' : 'Skip',
-                      style: TextStyle(color: theme.colorScheme.primary)),
+                  child: Text(isLastPage ? 'Done' : 'Skip'),
                 ),
               ),
             ),
@@ -112,20 +119,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _pageController,
                 itemCount: _onboardingPages.length,
                 onPageChanged: (index) {
+                  app_haptics.HapticFeedback.selectionClick();
                   setState(() {
                     _currentPageIndex = index;
                   });
                 },
                 itemBuilder: (context, index) {
                   final pageData = _onboardingPages[index];
+                  // The SalaryOnboardingPage now has its own scroll view.
+                  // Wrap other pages too for consistency and to prevent overflow.
                   if (pageData.customContent != null) {
                     return pageData.customContent!;
                   }
-                  return OnboardingPageContentWidget(
-                    title: pageData.titleKey,
-                    description: pageData.descriptionKey,
-                    iconData: pageData.iconData,
-                    iconColor: pageData.iconColor,
+                  return SingleChildScrollView(
+                    child: OnboardingPageContentWidget(
+                      title: pageData.titleKey,
+                      description: pageData.descriptionKey,
+                      iconData: pageData.iconData,
+                      iconColor: pageData.iconColor,
+                    ),
                   );
                 },
               ),
@@ -136,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 currentPageIndex: _currentPageIndex,
                 pageCount: _onboardingPages.length,
                 activeColor: theme.colorScheme.primary,
-                inactiveColor: theme.colorScheme.onSurface.withOpacity(0.2),
+                inactiveColor: theme.colorScheme.onSurface.withAlpha(51), // 20%
               ),
             ),
             Padding(
@@ -145,13 +157,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  // FIX: Explicitly set background and foreground colors for contrast.
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
                   onPressed: () {
+                    app_haptics.HapticFeedback.lightImpact();
                     if (!isLastPage) {
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 400),
@@ -163,8 +179,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     isLastPage ? 'Get Started' : 'Next',
-                    style: theme.textTheme.labelLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
