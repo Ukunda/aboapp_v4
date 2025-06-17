@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -209,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (var cat in cats) {
       chips.add(Chip(
-        label: Text(cat.displayName),
+        label: Text(cat.displayName(context)),
         onDeleted: () {
           context.read<SubscriptionCubit>().toggleCategoryFilter(cat);
         },

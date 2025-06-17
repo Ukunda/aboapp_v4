@@ -27,22 +27,22 @@ enum SortOption {
 }
 
 extension SortOptionDisplay on SortOption {
-  String get displayName {
+  String displayName(BuildContext context) {
     switch (this) {
       case SortOption.nameAsc:
-        return 'Name (A-Z)';
+        return context.l10n.translate('sort_option_nameAsc');
       case SortOption.nameDesc:
-        return 'Name (Z-A)';
+        return context.l10n.translate('sort_option_nameDesc');
       case SortOption.priceAsc:
-        return 'Price (Low-High)';
+        return context.l10n.translate('sort_option_priceAsc');
       case SortOption.priceDesc:
-        return 'Price (High-Low)';
+        return context.l10n.translate('sort_option_priceDesc');
       case SortOption.nextBillingDateAsc:
-        return 'Next Billing Date';
+        return context.l10n.translate('sort_option_nextBillingDateAsc');
       case SortOption.nextBillingDateDesc:
-        return 'Next Billing Date (Desc)';
+        return context.l10n.translate('sort_option_nextBillingDateDesc');
       case SortOption.category:
-        return 'Category';
+        return context.l10n.translate('sort_option_category');
     }
   }
 }

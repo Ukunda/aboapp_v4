@@ -27,6 +27,14 @@
   "home_sort_by_label": "Sortieren nach:",
   "home_filter_all_categories": "Alle Kategorien",
   "home_filter_all_cycles": "Alle Zyklen",
+  "home_monthly_spending_title": "Monatliche Ausgaben",
+  "home_active_count": "{count} Aktiv",
+  "filter_sheet_title": "Sortieren & Filtern",
+  "filter_sheet_reset": "Zurücksetzen",
+  "filter_sheet_sort_by": "Sortieren nach",
+  "filter_sheet_categories": "Kategorien",
+  "filter_sheet_billing_cycles": "Zahlungszyklen",
+  "filter_sheet_apply": "Filter anwenden",
 
   "sort_option_nameAsc": "Name (A-Z)",
   "sort_option_nameDesc": "Name (Z-A)",
@@ -147,5 +155,8 @@
   "stats_spending_trend_empty_message": "Keine Ausgabentrend-Daten für {year} verfügbar.",
   "stats_top_subscriptions_title": "Top Ausgaben Abos",
   "stats_top_subscriptions_subtitle": "(Basierend auf monatlichen Äquivalentkosten)",
-  "stats_top_subscriptions_empty_message": "Keine Abos in der Top-Liste anzuzeigen."
+  "stats_top_subscriptions_empty_message": "Keine Abos in der Top-Liste anzuzeigen.",
+  "stats_per_month_label": "pro Monat",
+  "stats_subscription_abbrev_single": "Abo",
+  "stats_subscription_abbrev_multiple": "Abos"
 }
