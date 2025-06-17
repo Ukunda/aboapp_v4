@@ -7,7 +7,7 @@ import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart'; // For NumberFormat
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class SettingsLocalDataSource {
   Future<SettingsModel> getSettings();
@@ -27,20 +27,20 @@ const Set<String> _supportedCurrencies = {'USD', 'EUR', 'GBP', 'JPY', 'CHF'};
 
 @LazySingleton(as: SettingsLocalDataSource)
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
-  final SharedPreferences sharedPreferences;
+  final FlutterSecureStorage secureStorage;
 
-  SettingsLocalDataSourceImpl(this.sharedPreferences);
+  SettingsLocalDataSourceImpl(this.secureStorage);
 
   @override
   Future<SettingsModel> getSettings() async {
-    final jsonString = sharedPreferences.getString(settingsKey);
+    final jsonString = await secureStorage.read(key: settingsKey);
     if (jsonString != null) {
       try {
         return SettingsModel.fromJson(
             jsonDecode(jsonString) as Map<String, dynamic>);
       } catch (e) {
         // Data is corrupted, remove it and create fresh defaults
-        await sharedPreferences.remove(settingsKey);
+        await secureStorage.delete(key: settingsKey);
         return await _createDefaultSettingsWithAutoDetect();
       }
     } else {
@@ -90,8 +90,10 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
   }
 
   Future<void> _saveSettingsModel(SettingsModel settings) async {
-    await sharedPreferences.setString(
-        settingsKey, jsonEncode(settings.toJson()));
+    await secureStorage.write(
+      key: settingsKey,
+      value: jsonEncode(settings.toJson()),
+    );
   }
 
   @override
