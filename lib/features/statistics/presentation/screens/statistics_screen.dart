@@ -8,6 +8,7 @@ import 'package:aboapp/features/statistics/presentation/widgets/top_subscription
 import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -61,57 +62,71 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               yearlySalary,
               percentageOfSalary,
             ) {
+              final List<Widget> statWidgets = [
+                if (yearlySalary != null && percentageOfSalary != null)
+                  SalaryInsightCard(
+                    percentageOfSalary: percentageOfSalary,
+                    yearlySalary: yearlySalary,
+                  ),
+                OverallSpendingSummaryCard(
+                  totalMonthlySpending: totalMonthlyEquivalentSpending,
+                  totalYearlySpending: totalYearlyEquivalentSpending,
+                ),
+                CategorySpendingPieChartCard(
+                  categorySpendingData: categorySpendingData,
+                ),
+                SpendingTrendLineChartCard(
+                  spendingTrendData: spendingTrendData,
+                ),
+                BillingTypeBreakdownCard(
+                  billingTypeSpendingData: billingTypeSpendingData,
+                ),
+                TopSubscriptionsListCard(
+                  topSubscriptions: topSpendingSubscriptions,
+                ),
+              ];
+
               return RefreshIndicator(
                 onRefresh: () async =>
                     context.read<StatisticsCubit>().generateStatistics(),
-                child: CustomScrollView(
-                  slivers: <Widget>[
-                    SliverAppBar(
-                      title: const Text('Statistics'),
-                      floating: true,
-                      snap: true,
-                      actions: [
-                        _buildYearSelector(
-                            context, theme, selectedYearForTrend),
-                      ],
-                    ),
-                    SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-                      sliver: SliverList(
-                        delegate: SliverChildListDelegate.fixed([
-                          if (yearlySalary != null &&
-                              percentageOfSalary != null) ...[
-                            SalaryInsightCard(
-                              percentageOfSalary: percentageOfSalary,
-                              yearlySalary: yearlySalary,
-                            ),
-                            const SizedBox(height: 16),
-                          ],
-                          OverallSpendingSummaryCard(
-                            totalMonthlySpending:
-                                totalMonthlyEquivalentSpending,
-                            totalYearlySpending: totalYearlyEquivalentSpending,
-                          ),
-                          const SizedBox(height: 16),
-                          CategorySpendingPieChartCard(
-                            categorySpendingData: categorySpendingData,
-                          ),
-                          const SizedBox(height: 16),
-                          SpendingTrendLineChartCard(
-                            spendingTrendData: spendingTrendData,
-                          ),
-                          const SizedBox(height: 16),
-                          BillingTypeBreakdownCard(
-                            billingTypeSpendingData: billingTypeSpendingData,
-                          ),
-                          const SizedBox(height: 16),
-                          TopSubscriptionsListCard(
-                            topSubscriptions: topSpendingSubscriptions,
-                          ),
-                        ]),
+                child: AnimationLimiter(
+                  child: CustomScrollView(
+                    slivers: <Widget>[
+                      SliverAppBar(
+                        title: const Text('Statistics'),
+                        floating: true,
+                        snap: true,
+                        actions: [
+                          _buildYearSelector(
+                              context, theme, selectedYearForTrend),
+                        ],
                       ),
-                    ),
-                  ],
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                duration: const Duration(milliseconds: 375),
+                                child: SlideAnimation(
+                                  verticalOffset: 50.0,
+                                  child: FadeInAnimation(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 16.0),
+                                      child: statWidgets[index],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                            childCount: statWidgets.length,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

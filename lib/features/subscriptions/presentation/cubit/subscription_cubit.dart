@@ -46,7 +46,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     final subToAdd = subscription.id.isEmpty
         ? subscription.copyWith(id: _uuid.v4())
         : subscription;
-    emit(const SubscriptionState.loading());
+    // ENTFERNT: emit(const SubscriptionState.loading());
     try {
       await _addSubscription(subToAdd);
       _masterSubscriptionList.add(subToAdd);
@@ -59,7 +59,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   }
 
   Future<void> updateSubscription(SubscriptionEntity subscription) async {
-    emit(const SubscriptionState.loading());
+    // ENTFERNT: emit(const SubscriptionState.loading()); // Das hat das Flackern verursacht
     try {
       await _updateSubscription(subscription);
       final index =
@@ -78,12 +78,13 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
   }
 
   Future<void> deleteSubscription(String id) async {
-    emit(const SubscriptionState.loading());
+    // ENTFERNT: emit(const SubscriptionState.loading());
     try {
       await _deleteSubscription(id);
       _masterSubscriptionList.removeWhere((s) => s.id == id);
       _applyFiltersAndSort();
-    } catch (e) {
+    } catch (e)
+    {
       emit(SubscriptionState.error(
           message: "Failed to delete subscription: ${e.toString()}"));
       _applyFiltersAndSort();
@@ -95,6 +96,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     if (index != -1) {
       final sub = _masterSubscriptionList[index];
       final updatedSub = sub.copyWith(isActive: !sub.isActive);
+      // Ruft direkt die optimistische 'updateSubscription' auf
       await updateSubscription(updatedSub);
     }
   }
@@ -197,6 +199,7 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
     ));
   }
 
+  // ... (Rest der Methoden bleiben unverändert) ...
   void changeSortOption(SortOption option) {
     _applyFiltersAndSort(newSortOption: option);
   }

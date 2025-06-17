@@ -5,7 +5,6 @@ import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -73,27 +72,35 @@ class _CategorySpendingPieChartCardState
             const SizedBox(height: 24),
             SizedBox(
               height: 180,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          _touchedIndex = -1;
-                          return;
-                        }
-                        _touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 45,
-                  sections: _generatePieChartSections(theme, relevantData),
-                ),
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 750),
+                curve: Curves.easeInOutCubic,
+                builder: (context, value, child) {
+                  return PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                          setState(() {
+                            if (!event.isInterestedForInteractions ||
+                                pieTouchResponse == null ||
+                                pieTouchResponse.touchedSection == null) {
+                              _touchedIndex = -1;
+                              return;
+                            }
+                            _touchedIndex = pieTouchResponse
+                                .touchedSection!.touchedSectionIndex;
+                          });
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 2,
+                      centerSpaceRadius: 45,
+                      sections:
+                          _generatePieChartSections(theme, relevantData, value),
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 24),
@@ -105,7 +112,7 @@ class _CategorySpendingPieChartCardState
   }
 
   List<PieChartSectionData> _generatePieChartSections(
-      ThemeData theme, List<CategorySpending> data) {
+      ThemeData theme, List<CategorySpending> data, double animationValue) {
     return List.generate(data.length, (i) {
       final isTouched = i == _touchedIndex;
       final fontSize = isTouched ? 14.0 : 10.0;
@@ -114,8 +121,9 @@ class _CategorySpendingPieChartCardState
 
       return PieChartSectionData(
         color: categoryData.category.categoryDisplayIconColor(theme),
-        value: categoryData.totalAmount,
-        title: '${(categoryData.percentage * 100).toStringAsFixed(0)}%',
+        value: categoryData.totalAmount * animationValue,
+        title:
+            '${(categoryData.percentage * 100 * animationValue).toStringAsFixed(0)}%',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
@@ -146,7 +154,7 @@ class _CategorySpendingPieChartCardState
             color: isTouched
                 ? categoryData.category
                     .categoryDisplayIconColor(theme)
-                    .withValues(alpha: 51)
+                    .withOpacity(0.2)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),

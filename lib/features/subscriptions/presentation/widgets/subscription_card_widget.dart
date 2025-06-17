@@ -25,31 +25,25 @@ class SubscriptionCardWidget extends StatelessWidget {
   String _getBillingCycleShortLabel(BuildContext context, BillingCycle cycle) {
     switch (cycle) {
       case BillingCycle.weekly:
-        return context.l10n
-            .translate('billing_cycle_short_weekly');
+        return context.l10n.translate('billing_cycle_short_weekly');
       case BillingCycle.monthly:
-        return context.l10n
-            .translate('billing_cycle_short_monthly');
+        return context.l10n.translate('billing_cycle_short_monthly');
       case BillingCycle.quarterly:
-        return context.l10n
-            .translate('billing_cycle_short_quarterly');
+        return context.l10n.translate('billing_cycle_short_quarterly');
       case BillingCycle.biAnnual:
-        return context.l10n
-            .translate('billing_cycle_short_biAnnual');
+        return context.l10n.translate('billing_cycle_short_biAnnual');
       case BillingCycle.yearly:
-        return context.l10n
-            .translate('billing_cycle_short_yearly');
+        return context.l10n.translate('billing_cycle_short_yearly');
       case BillingCycle.custom:
-        return context.l10n
-            .translate('billing_cycle_short_custom');
+        return context.l10n.translate('billing_cycle_short_custom');
     }
   }
 
   Color _getDaysUntilBillingColor(BuildContext context, int days) {
     final theme = Theme.of(context);
     if (days < 0) return theme.colorScheme.error;
-    if (days <= 3) return theme.colorScheme.error.withAlpha(204); // 80% opacity
-    if (days <= 7) return AppColors.warning.withAlpha(230); // 90% opacity
+    if (days <= 3) return theme.colorScheme.error.withAlpha(204);
+    if (days <= 7) return AppColors.warning.withAlpha(230);
     return theme.colorScheme.onSurfaceVariant;
   }
 
@@ -65,29 +59,33 @@ class SubscriptionCardWidget extends StatelessWidget {
           context.l10n.translate('subscription_card_days_until_label_today'),
       tomorrowText:
           context.l10n.translate('subscription_card_days_until_label_tomorrow'),
-      daysAgoText: context
-          .l10n
-          .translate('subscription_card_days_until_label_overdue_prefix') +
-          '{days} ' +
-          context.l10n
-              .translate('subscription_card_days_until_label_overdue_suffix'),
-      daysFutureText: context
-              .l10n
-              .translate('subscription_card_days_until_label_prefix') +
-          '{days} ' +
-          context.l10n
-              .translate('subscription_card_days_until_label_suffix'),
+      daysAgoText:
+          '${context.l10n.translate('subscription_card_days_until_label_overdue_prefix')} {days} ${context.l10n.translate('subscription_card_days_until_label_overdue_suffix')}',
+      daysFutureText:
+          '${context.l10n.translate('subscription_card_days_until_label_prefix')} {days} ${context.l10n.translate('subscription_card_days_until_label_suffix')}',
     );
+    
+    final bool isInactive = !subscription.isActive;
 
-    return AnimatedOpacity(
-      duration: const Duration(milliseconds: 300),
-      opacity: subscription.isActive ? 1.0 : 0.7,
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          onLongPress: onLongPress,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        onLongPress: onLongPress,
+        child: Container(
+          foregroundDecoration: BoxDecoration(
+            color: isInactive
+                ? theme.colorScheme.onSurface.withAlpha(20) // Subtiles graues Overlay
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(
+                theme.cardTheme.shape is RoundedRectangleBorder
+                    ? ((theme.cardTheme.shape as RoundedRectangleBorder)
+                            .borderRadius as BorderRadius)
+                        .topLeft
+                        .x
+                    : 12.0),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
@@ -140,12 +138,19 @@ class SubscriptionCardWidget extends StatelessWidget {
                   children: [
                     Text(
                       '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(context, subscription.billingCycle)}',
+                      // HIER IST DIE ÄNDERUNG:
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                        decoration: !subscription.isActive
+                        // Farbe ist jetzt abhängig vom Status
+                        color: isInactive
+                            ? theme.colorScheme.onSurfaceVariant
+                            : theme.colorScheme.primary,
+                        // Dekoration (Durchstrich) ist auch abhängig vom Status
+                        decoration: isInactive
                             ? TextDecoration.lineThrough
                             : TextDecoration.none,
+                        // Die Farbe des Durchstrichs erbt jetzt die Textfarbe (also grau)
+                        decorationThickness: 1.5,
                       ),
                     ),
                     const SizedBox(height: 4.0),
@@ -189,7 +194,7 @@ class SubscriptionCardWidget extends StatelessWidget {
     final hasRemoteLogo =
         subscription.logoUrl != null && subscription.logoUrl!.isNotEmpty;
     final Color bgColor = subscription.color ??
-        subscription.category.categoryDisplayIconColor(theme).withAlpha(25);
+        subscription.category.categoryDisplayIconColor(theme).withAlpha(26);
     final Color fgColor = subscription.color != null
         ? (ThemeData.estimateBrightnessForColor(subscription.color!) ==
                 Brightness.dark
@@ -225,7 +230,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                     errorWidget: (context, url, error) => Center(
                       child: Icon(
                         subscription.category.displayIcon,
-                        color: fgColor.withAlpha(178),
+                        color: fgColor.withAlpha(179),
                         size: 28,
                       ),
                     ),
@@ -249,10 +254,10 @@ class SubscriptionCardWidget extends StatelessWidget {
               padding: const EdgeInsets.all(2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: theme.cardColor.withAlpha(220),
+                color: theme.cardColor.withAlpha(217),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 26),
+                    color: Colors.black.withAlpha(26),
                     blurRadius: 2,
                     offset: const Offset(0, 1),
                   )

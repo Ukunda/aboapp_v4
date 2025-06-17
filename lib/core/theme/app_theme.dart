@@ -27,7 +27,7 @@ abstract class AppTheme {
 
   static final _cardShapeLight = RoundedRectangleBorder(
     borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-    side: BorderSide(color: _borderLight.withValues(alpha: 179), width: 1.0),
+    side: BorderSide(color: _borderLight.withOpacity(0.7), width: 1.0),
   );
 
   static const _cardShapeDark = RoundedRectangleBorder(
@@ -79,9 +79,11 @@ abstract class AppTheme {
     required ShapeBorder cardShape,
     required Color borderColor,
   }) {
+    // KORREKTUR: onSurfaceVariantColor wird an _buildTextTheme übergeben
     final textTheme = _buildTextTheme(
         base: ThemeData(brightness: brightness).textTheme,
-        onSurfaceColor: onSurfaceColor);
+        onSurfaceColor: onSurfaceColor,
+        onSurfaceVariantColor: onSurfaceVariantColor);
 
     return ThemeData(
       useMaterial3: true,
@@ -101,6 +103,8 @@ abstract class AppTheme {
         onBackground: onSurfaceColor,
         error: Colors.red.shade400,
         onError: Colors.white,
+        // onSurfaceVariant wird hier gesetzt und im Theme verwendet
+        onSurfaceVariant: onSurfaceVariantColor,
       ),
       appBarTheme: AppBarTheme(
         elevation: 0,
@@ -152,8 +156,11 @@ abstract class AppTheme {
     );
   }
 
+  // KORREKTUR: Diese Methode akzeptiert jetzt onSurfaceVariantColor
   static TextTheme _buildTextTheme(
-      {required TextTheme base, required Color onSurfaceColor}) {
+      {required TextTheme base,
+      required Color onSurfaceColor,
+      required Color onSurfaceVariantColor}) {
     return base
         .copyWith(
           displayMedium: AppTypography.displayMedium
@@ -165,12 +172,21 @@ abstract class AppTheme {
           titleMedium: AppTypography.titleMedium
               .copyWith(color: onSurfaceColor, fontWeight: FontWeight.w600),
           bodyLarge: AppTypography.bodyLarge.copyWith(color: onSurfaceColor),
-          bodyMedium: AppTypography.bodyMedium
-              .copyWith(color: onSurfaceColor.withValues(alpha: 204)),
+          // KORREKTUR: Verwendet die deckende onSurfaceVariantColor
+          bodyMedium:
+              AppTypography.bodyMedium.copyWith(color: onSurfaceVariantColor),
         )
         .apply(
-          bodyColor: onSurfaceColor.withValues(alpha: 204),
+          // KORREKTUR: Verwendet die deckende onSurfaceVariantColor für Standard-Body-Text
+          bodyColor: onSurfaceVariantColor,
           displayColor: onSurfaceColor,
         );
+  }
+}
+
+// Helper extension to comply with original code structure if needed elsewhere.
+extension ColorWithValues on Color {
+  Color withValues({int? alpha}) {
+    return withAlpha(alpha ?? this.alpha);
   }
 }

@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
-import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
