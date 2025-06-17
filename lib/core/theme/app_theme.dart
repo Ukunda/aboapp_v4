@@ -22,7 +22,8 @@ abstract class AppTheme {
   static const Color _backgroundDark = Color(0xFF000000);
   static const Color _surfaceDark = Color(0xFF1C1C1E);
   static const Color _onSurfaceDark = Color(0xFFE5E5EA);
-  static const Color _onSurfaceVariantDark = Color(0xFF8A8A8E);
+  // Increased contrast for dark mode readability
+  static const Color _onSurfaceVariantDark = Color(0xFFC7C7CC);
 
   static final _cardShapeLight = RoundedRectangleBorder(
     borderRadius: const BorderRadius.all(Radius.circular(20.0)),
