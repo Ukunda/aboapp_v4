@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:aboapp/core/utils/color_extensions.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;

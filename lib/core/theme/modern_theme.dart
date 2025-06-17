@@ -7,7 +7,6 @@ import 'package:aboapp/features/subscriptions/presentation/screens/home_screen.d
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
-import 'package:aboapp/core/utils/color_extensions.dart';
 
 class MainContainerScreen extends StatefulWidget {
   final String location;

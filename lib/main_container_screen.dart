@@ -8,7 +8,6 @@ import 'package:aboapp/features/statistics/presentation/screens/statistics_scree
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:aboapp/core/utils/color_extensions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;

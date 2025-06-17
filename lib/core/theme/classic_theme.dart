@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_colors.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
-import 'package:aboapp/core/utils/color_extensions.dart';
 
 abstract class ClassicTheme {
   static ThemeData get lightTheme {

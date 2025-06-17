@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
-import 'package:aboapp/core/utils/color_extensions.dart';
 
 // VEREINFACHT: Nur noch eine Theme-Klasse für die gesamte App.
 abstract class AppTheme {

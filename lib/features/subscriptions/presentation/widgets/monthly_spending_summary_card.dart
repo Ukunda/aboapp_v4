@@ -6,7 +6,6 @@ import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:aboapp/core/utils/color_extensions.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;

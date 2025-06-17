@@ -4,7 +4,6 @@ import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.d
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:aboapp/core/utils/color_extensions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
