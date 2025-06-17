@@ -3,6 +3,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'injection.config.dart';
 
@@ -23,6 +24,11 @@ Future<void> configureDependencies() async => await $initGetIt(getIt);
 abstract class RegisterExternalDependencies {
   @lazySingleton
   Uuid get uuid => const Uuid();
+
+  @lazySingleton
+  FlutterSecureStorage get secureStorage => const FlutterSecureStorage(
+        aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      );
 
   // NEU: Asynchrone Factory für SharedPreferences.
   // @preResolve weist den Generator an, auf das Future zu warten.
