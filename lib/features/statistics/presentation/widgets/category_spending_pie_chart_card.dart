@@ -5,6 +5,7 @@ import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -162,7 +163,7 @@ class _CategorySpendingPieChartCardState
               ),
               const SizedBox(width: 6),
               Text(
-                categoryData.category.displayName,
+                categoryData.category.displayName(context),
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),

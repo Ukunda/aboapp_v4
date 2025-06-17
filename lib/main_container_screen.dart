@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class MainContainerScreen extends StatefulWidget {
   final String location;
@@ -112,7 +113,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           app_haptics.HapticFeedback.lightImpact();
           context.pushNamed(AppRoutes.addSubscription);
         },
-        tooltip: 'Add Subscription',
+        tooltip: context.l10n.translate('home_add_subscription_tooltip'),
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -123,12 +124,18 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             _buildBottomNavItem(
-                icon: Icons.home_filled, label: 'Home', index: 0),
+                icon: Icons.home_filled,
+                label: context.l10n.translate('bottom_nav_subscriptions'),
+                index: 0),
             _buildBottomNavItem(
-                icon: Icons.pie_chart_rounded, label: 'Stats', index: 1),
+                icon: Icons.pie_chart_rounded,
+                label: context.l10n.translate('bottom_nav_statistics'),
+                index: 1),
             const SizedBox(width: 48), // The notch space
             _buildBottomNavItem(
-                icon: Icons.settings_rounded, label: 'Settings', index: 2),
+                icon: Icons.settings_rounded,
+                label: context.l10n.translate('bottom_nav_settings'),
+                index: 2),
             _buildBottomNavItem(
                 icon: Icons.person_rounded,
                 label: 'Profile',

@@ -6,6 +6,7 @@ import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;
@@ -53,7 +54,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Monthly Spending', // TODO: Localize
+                  context.l10n.translate('home_monthly_spending_title'),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -66,7 +67,8 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '${activeSubscriptions.length} Active', // TODO: Localize
+                    context.l10n.translate('home_active_count',
+                        args: {'count': activeSubscriptions.length.toString()}),
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -101,7 +103,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Yearly Total', // TODO: Localize
+                  context.l10n.translate('stats_yearly_total_label'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

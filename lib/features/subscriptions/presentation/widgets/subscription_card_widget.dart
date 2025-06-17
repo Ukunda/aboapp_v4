@@ -5,6 +5,7 @@ import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:aboapp/core/utils/date_formatter.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,21 +22,26 @@ class SubscriptionCardWidget extends StatelessWidget {
     this.onLongPress,
   });
 
-  String _getBillingCycleShortLabel(BillingCycle cycle) {
-    // TODO: Localize
+  String _getBillingCycleShortLabel(BuildContext context, BillingCycle cycle) {
     switch (cycle) {
       case BillingCycle.weekly:
-        return 'wk';
+        return context.l10n
+            .translate('billing_cycle_short_weekly');
       case BillingCycle.monthly:
-        return 'mo';
+        return context.l10n
+            .translate('billing_cycle_short_monthly');
       case BillingCycle.quarterly:
-        return 'qtr';
+        return context.l10n
+            .translate('billing_cycle_short_quarterly');
       case BillingCycle.biAnnual:
-        return '6mo';
+        return context.l10n
+            .translate('billing_cycle_short_biAnnual');
       case BillingCycle.yearly:
-        return 'yr';
+        return context.l10n
+            .translate('billing_cycle_short_yearly');
       case BillingCycle.custom:
-        return 'cust';
+        return context.l10n
+            .translate('billing_cycle_short_custom');
     }
   }
 
@@ -55,10 +61,22 @@ class SubscriptionCardWidget extends StatelessWidget {
     final daysUntil = subscription.daysUntilBilling;
     final daysLabel = DateFormatter.formatDaysUntil(
       subscription.nextBillingDate,
-      todayText: 'Today',
-      tomorrowText: 'Tomorrow',
-      daysAgoText: '{days} days ago',
-      daysFutureText: 'in {days} days',
+      todayText:
+          context.l10n.translate('subscription_card_days_until_label_today'),
+      tomorrowText:
+          context.l10n.translate('subscription_card_days_until_label_tomorrow'),
+      daysAgoText: context
+          .l10n
+          .translate('subscription_card_days_until_label_overdue_prefix') +
+          '{days} ' +
+          context.l10n
+              .translate('subscription_card_days_until_label_overdue_suffix'),
+      daysFutureText: context
+              .l10n
+              .translate('subscription_card_days_until_label_prefix') +
+          '{days} ' +
+          context.l10n
+              .translate('subscription_card_days_until_label_suffix'),
     );
 
     return AnimatedOpacity(
@@ -89,7 +107,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 2.0),
                       Text(
-                        subscription.category.displayName,
+                        subscription.category.displayName(context),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -121,7 +139,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(subscription.billingCycle)}',
+                      '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(context, subscription.billingCycle)}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
@@ -278,29 +296,28 @@ extension CategoryDisplayHelpers on SubscriptionCategory {
     }
   }
 
-  String get displayName {
-    // TODO: Localize these
+  String displayName(BuildContext context) {
     switch (this) {
       case SubscriptionCategory.streaming:
-        return 'Streaming';
+        return context.l10n.translate('category_streaming');
       case SubscriptionCategory.software:
-        return 'Software';
+        return context.l10n.translate('category_software');
       case SubscriptionCategory.gaming:
-        return 'Gaming';
+        return context.l10n.translate('category_gaming');
       case SubscriptionCategory.fitness:
-        return 'Fitness';
+        return context.l10n.translate('category_fitness');
       case SubscriptionCategory.music:
-        return 'Music';
+        return context.l10n.translate('category_music');
       case SubscriptionCategory.news:
-        return 'News & Mags';
+        return context.l10n.translate('category_news');
       case SubscriptionCategory.cloud:
-        return 'Cloud Storage';
+        return context.l10n.translate('category_cloud');
       case SubscriptionCategory.utilities:
-        return 'Utilities';
+        return context.l10n.translate('category_utilities');
       case SubscriptionCategory.education:
-        return 'Education';
+        return context.l10n.translate('category_education');
       case SubscriptionCategory.other:
-        return 'Other';
+        return context.l10n.translate('category_other');
     }
   }
 

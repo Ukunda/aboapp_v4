@@ -6,6 +6,7 @@ import 'package:aboapp/features/subscriptions/domain/entities/subscription_entit
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class TopSubscriptionsListCard extends StatelessWidget {
   final List<SubscriptionEntity> topSubscriptions;
@@ -27,7 +28,8 @@ class TopSubscriptionsListCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No subscriptions to display in top list.', // TODO: Localize
+              context.l10n
+                  .translate('stats_top_subscriptions_empty_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -46,7 +48,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
               padding: const EdgeInsets.only(
                   left: 16.0, top: 8.0, right: 16.0, bottom: 4.0),
               child: Text(
-                'Top Spending Subscriptions', // TODO: Localize
+                context.l10n.translate('stats_top_subscriptions_title'),
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
@@ -55,7 +57,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
               child: Text(
-                '(Based on Monthly Equivalent Cost)', // TODO: Localize
+                context.l10n.translate('stats_top_subscriptions_subtitle'),
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
@@ -88,8 +90,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    sub.category
-                        .displayName, // Use extension from subscription_card_widget
+                    sub.category.displayName(context),
                     style: theme.textTheme.bodySmall
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
@@ -105,7 +106,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'per month', // TODO: Localize (as it's monthly equivalent)
+                        context.l10n.translate('stats_per_month_label'),
                         style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                       )
