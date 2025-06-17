@@ -9,11 +9,11 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:uuid/uuid.dart' as _i706;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i800;
 
 import '../../features/settings/data/datasources/settings_local_datasource.dart'
     as _i723;
@@ -69,16 +69,16 @@ Future<_i174.GetIt> $initGetIt(
     preResolve: true,
   );
   gh.lazySingleton<_i706.Uuid>(() => registerExternalDependencies.uuid);
-  gh.lazySingleton<_i800.FlutterSecureStorage>(
+  gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => registerExternalDependencies.secureStorage);
+  gh.lazySingleton<_i723.SettingsLocalDataSource>(() =>
+      _i723.SettingsLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()));
+  gh.lazySingleton<_i327.SubscriptionLocalDataSource>(() =>
+      _i327.SubscriptionLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()));
   gh.singleton<_i282.AppRouter>(
       () => _i282.AppRouter(gh<_i460.SharedPreferences>()));
-  gh.lazySingleton<_i723.SettingsLocalDataSource>(
-      () => _i723.SettingsLocalDataSourceImpl(gh<_i800.FlutterSecureStorage>()));
   gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i723.SettingsLocalDataSource>()));
-  gh.lazySingleton<_i327.SubscriptionLocalDataSource>(() =>
-      _i327.SubscriptionLocalDataSourceImpl(gh<_i800.FlutterSecureStorage>()));
   gh.lazySingleton<_i384.SubscriptionRepository>(() =>
       _i944.SubscriptionRepositoryImpl(
           localDataSource: gh<_i327.SubscriptionLocalDataSource>()));

@@ -178,9 +178,13 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
                     FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
                   ],
                   validator: (v) {
-                    if (v == null || v.trim().isEmpty) return 'Pflichtfeld';
-                    if (double.tryParse(v.trim().replaceAll(',', '.')) == null)
+                    if (v == null || v.trim().isEmpty) {
+                      return 'Pflichtfeld';
+                    }
+                    if (double.tryParse(v.trim().replaceAll(',', '.')) ==
+                        null) {
                       return 'Ungültiger Betrag';
+                    }
                     return null;
                   },
                 ),
@@ -344,20 +348,20 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
 }
 
 extension on BillingCycle {
-  String get displayName {
+  String displayName(BuildContext context) {
     switch (this) {
       case BillingCycle.weekly:
-        return 'Wöchentlich';
+        return context.l10n.translate('billing_cycle_weekly');
       case BillingCycle.monthly:
-        return 'Monatlich';
+        return context.l10n.translate('billing_cycle_monthly');
       case BillingCycle.quarterly:
-        return 'Quartalsweise';
+        return context.l10n.translate('billing_cycle_quarterly');
       case BillingCycle.biAnnual:
-        return 'Halbjährlich';
+        return context.l10n.translate('billing_cycle_biAnnual');
       case BillingCycle.yearly:
-        return 'Jährlich';
+        return context.l10n.translate('billing_cycle_yearly');
       case BillingCycle.custom:
-        return 'Benutzerdef.';
+        return context.l10n.translate('billing_cycle_custom');
     }
   }
 }

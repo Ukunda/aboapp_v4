@@ -1,9 +1,11 @@
 // lib/features/subscriptions/presentation/cubit/subscription_cubit.dart
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/domain/usecases/add_subscription_usecase.dart';
 import 'package:aboapp/features/subscriptions/domain/usecases/delete_subscription_usecase.dart';
 import 'package:aboapp/features/subscriptions/domain/usecases/get_all_subscriptions_usecase.dart';
 import 'package:aboapp/features/subscriptions/domain/usecases/update_subscription_usecase.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';

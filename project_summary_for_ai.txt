@@ -1,6 +1,6 @@
 ﻿============================================================
   PROJECT SUMMARY - Relevant files for project: C:\Hobby\aboapp_v4\aboapp_v4
-  Generated: 2025-06-17 10:12:26
+  Generated: 2025-06-17 14:57:26
 ============================================================
 
 ===== FILE: analysis_options.yaml =====
@@ -49,7 +49,7 @@ plugins {
 android {
     namespace = "com.example.aboapp_v4"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -1234,6 +1234,7 @@ import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 import 'package:uuid/uuid.dart' as _i706;
+import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i800;
 
 import '../../features/settings/data/datasources/settings_local_datasource.dart'
     as _i723;
@@ -1289,14 +1290,16 @@ Future<_i174.GetIt> $initGetIt(
     preResolve: true,
   );
   gh.lazySingleton<_i706.Uuid>(() => registerExternalDependencies.uuid);
+  gh.lazySingleton<_i800.FlutterSecureStorage>(
+      () => registerExternalDependencies.secureStorage);
   gh.singleton<_i282.AppRouter>(
       () => _i282.AppRouter(gh<_i460.SharedPreferences>()));
   gh.lazySingleton<_i723.SettingsLocalDataSource>(
-      () => _i723.SettingsLocalDataSourceImpl(gh<_i460.SharedPreferences>()));
+      () => _i723.SettingsLocalDataSourceImpl(gh<_i800.FlutterSecureStorage>()));
   gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i723.SettingsLocalDataSource>()));
   gh.lazySingleton<_i327.SubscriptionLocalDataSource>(() =>
-      _i327.SubscriptionLocalDataSourceImpl(gh<_i460.SharedPreferences>()));
+      _i327.SubscriptionLocalDataSourceImpl(gh<_i800.FlutterSecureStorage>()));
   gh.lazySingleton<_i384.SubscriptionRepository>(() =>
       _i944.SubscriptionRepositoryImpl(
           localDataSource: gh<_i327.SubscriptionLocalDataSource>()));
@@ -1347,6 +1350,7 @@ class _$RegisterExternalDependencies
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'injection.config.dart';
 
@@ -1367,6 +1371,11 @@ Future<void> configureDependencies() async => await $initGetIt(getIt);
 abstract class RegisterExternalDependencies {
   @lazySingleton
   Uuid get uuid => const Uuid();
+
+  @lazySingleton
+  FlutterSecureStorage get secureStorage => const FlutterSecureStorage(
+        aOptions: AndroidOptions(encryptedSharedPreferences: true),
+      );
 
   // NEU: Asynchrone Factory für SharedPreferences.
   // @preResolve weist den Generator an, auf das Future zu warten.
@@ -1443,6 +1452,17 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
+
+===== FILE: l10n_extensions.dart =====
+===== PATH: lib/core/localization/l10n_extensions.dart =====
+
+import 'package:flutter/material.dart';
+import 'app_localizations.dart';
+
+extension LocalizationExtension on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this)!;
+}
+
 
 ===== FILE: app_router.dart =====
 ===== PATH: lib/core/routing/app_router.dart =====
@@ -1630,7 +1650,7 @@ abstract class AppTheme {
 
   static final _cardShapeLight = RoundedRectangleBorder(
     borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-    side: BorderSide(color: _borderLight.withOpacity(0.7), width: 1.0),
+    side: BorderSide(color: _borderLight.withValues(alpha: 179), width: 1.0),
   );
 
   static const _cardShapeDark = RoundedRectangleBorder(
@@ -1769,10 +1789,10 @@ abstract class AppTheme {
               .copyWith(color: onSurfaceColor, fontWeight: FontWeight.w600),
           bodyLarge: AppTypography.bodyLarge.copyWith(color: onSurfaceColor),
           bodyMedium: AppTypography.bodyMedium
-              .copyWith(color: onSurfaceColor.withOpacity(0.8)),
+              .copyWith(color: onSurfaceColor.withValues(alpha: 204)),
         )
         .apply(
-          bodyColor: onSurfaceColor.withOpacity(0.8),
+          bodyColor: onSurfaceColor.withValues(alpha: 204),
           displayColor: onSurfaceColor,
         );
   }
@@ -1998,7 +2018,7 @@ abstract class ClassicTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceLight.withOpacity(0.5),
+        fillColor: AppColors.surfaceLight.withValues(alpha: 128),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -2024,7 +2044,7 @@ abstract class ClassicTheme {
         labelStyle: AppTypography.bodyMedium
             .copyWith(color: AppColors.onSurfaceVariantLight),
         hintStyle: AppTypography.bodyMedium
-            .copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)),
+            .copyWith(color: AppColors.onSurfaceVariantLight.withValues(alpha: 179)),
         floatingLabelStyle:
             AppTypography.bodySmall.copyWith(color: AppColors.primary),
       ),
@@ -2139,7 +2159,7 @@ abstract class ClassicTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceDark.withOpacity(0.5),
+        fillColor: AppColors.surfaceDark.withValues(alpha: 128),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -2166,7 +2186,7 @@ abstract class ClassicTheme {
         labelStyle: AppTypography.bodyMedium
             .copyWith(color: AppColors.onSurfaceVariantDark),
         hintStyle: AppTypography.bodyMedium
-            .copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)),
+            .copyWith(color: AppColors.onSurfaceVariantDark.withValues(alpha: 179)),
         floatingLabelStyle:
             AppTypography.bodySmall.copyWith(color: AppColors.primaryLight),
       ),
@@ -2372,7 +2392,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           decoration: BoxDecoration(
               border: Border(
                   top: BorderSide(
-                      color: theme.dividerColor.withOpacity(0.5), width: 1.0))),
+                      color: theme.dividerColor.withValues(alpha: 128), width: 1.0))),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -2417,7 +2437,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
 
     // Die Farben werden jetzt direkt vom überarbeiteten Theme korrekt übernommen.
     final color = isDisabled
-        ? theme.colorScheme.onSurface.withOpacity(0.3)
+        ? theme.colorScheme.onSurface.withValues(alpha: 77)
         : isSelected
             ? theme.colorScheme.primary
             : theme.colorScheme.onSurfaceVariant;
@@ -2431,6 +2451,25 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           child: Icon(icon, color: color, size: 28),
         ),
       ),
+    );
+  }
+}
+
+
+===== FILE: color_extensions.dart =====
+===== PATH: lib/core/utils/color_extensions.dart =====
+
+import 'package:flutter/material.dart';
+
+extension ColorWithValues on Color {
+  /// Returns a new color with the provided ARGB component values.
+  /// Components that are null retain their existing value.
+  Color withValues({int? alpha, int? red, int? green, int? blue}) {
+    return Color.fromARGB(
+      alpha ?? this.alpha,
+      red ?? this.red,
+      green ?? this.green,
+      blue ?? this.blue,
     );
   }
 }
@@ -2671,6 +2710,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aboapp/core/di/injection.dart';
+import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -2742,11 +2782,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _completeOnboarding() async {
-    _salaryPageKey.currentState?.saveSettings();
+    app_haptics.HapticFeedback.lightImpact();
+    final salaryPageState = _salaryPageKey.currentState;
+    if (salaryPageState != null) {
+      await salaryPageState.saveSettings();
+    }
     final prefs = getIt<SharedPreferences>();
     await prefs.setBool('onboarding_complete', true);
     if (mounted) {
-      context.goNamed(AppRoutes.home);
+      context.go(AppRoutes.home);
     }
   }
 
@@ -2756,6 +2800,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final isLastPage = _currentPageIndex == _onboardingPages.length - 1;
 
     return Scaffold(
+      // FIX: Setting resizeToAvoidBottomInset to false prevents the UI from
+      // squashing. The scroll views inside the pages will handle the keyboard.
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -2765,8 +2812,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.only(top: 8.0, right: 16.0),
                 child: TextButton(
                   onPressed: _completeOnboarding,
-                  child: Text(isLastPage ? 'Done' : 'Skip',
-                      style: TextStyle(color: theme.colorScheme.primary)),
+                  child: Text(isLastPage ? 'Done' : 'Skip'),
                 ),
               ),
             ),
@@ -2775,20 +2821,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: _pageController,
                 itemCount: _onboardingPages.length,
                 onPageChanged: (index) {
+                  app_haptics.HapticFeedback.selectionClick();
                   setState(() {
                     _currentPageIndex = index;
                   });
                 },
                 itemBuilder: (context, index) {
                   final pageData = _onboardingPages[index];
+                  // The SalaryOnboardingPage now has its own scroll view.
+                  // Wrap other pages too for consistency and to prevent overflow.
                   if (pageData.customContent != null) {
                     return pageData.customContent!;
                   }
-                  return OnboardingPageContentWidget(
-                    title: pageData.titleKey,
-                    description: pageData.descriptionKey,
-                    iconData: pageData.iconData,
-                    iconColor: pageData.iconColor,
+                  return SingleChildScrollView(
+                    child: OnboardingPageContentWidget(
+                      title: pageData.titleKey,
+                      description: pageData.descriptionKey,
+                      iconData: pageData.iconData,
+                      iconColor: pageData.iconColor,
+                    ),
                   );
                 },
               ),
@@ -2799,7 +2850,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 currentPageIndex: _currentPageIndex,
                 pageCount: _onboardingPages.length,
                 activeColor: theme.colorScheme.primary,
-                inactiveColor: theme.colorScheme.onSurface.withOpacity(0.2),
+                inactiveColor: theme.colorScheme.onSurface.withAlpha(51), // 20%
               ),
             ),
             Padding(
@@ -2808,13 +2859,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
+                  // FIX: Explicitly set background and foreground colors for contrast.
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30.0),
                     ),
                   ),
                   onPressed: () {
+                    app_haptics.HapticFeedback.lightImpact();
                     if (!isLastPage) {
                       _pageController.nextPage(
                         duration: const Duration(milliseconds: 400),
@@ -2826,8 +2881,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     isLastPage ? 'Get Started' : 'Next',
-                    style: theme.textTheme.labelLarge
-                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -2839,7 +2892,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
-
 
 ===== FILE: onboarding_page_content_widget.dart =====
 ===== PATH: lib/features/onboarding/presentation/widgets/onboarding_page_content_widget.dart =====
@@ -2875,7 +2927,7 @@ class OnboardingPageContentWidget extends StatelessWidget {
             width: screenSize.width * 0.4, // Responsive icon container
             height: screenSize.width * 0.4,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15), // Subtle background
+              color: iconColor.withValues(alpha: 38), // Subtle background
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -2957,6 +3009,7 @@ import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 
 class SalaryOnboardingPage extends StatefulWidget {
   const SalaryOnboardingPage({super.key});
@@ -2970,10 +3023,12 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
   SalaryCycle _salaryCycle = SalaryCycle.monthly;
   bool _hasThirteenthSalary = false;
 
-  void saveSettings() {
-    final salary = double.tryParse(_salaryController.text.replaceAll(',', '.'));
+  Future<void> saveSettings() async {
+    final salaryText = _salaryController.text.trim().replaceAll(',', '.');
+    final salary = double.tryParse(salaryText);
+
     if (salary != null && salary > 0) {
-      context.read<SettingsCubit>().updateSalarySettings(
+      await context.read<SettingsCubit>().updateSalarySettings(
             salary: salary,
             salaryCycle: _salaryCycle,
             hasThirteenthSalary: _hasThirteenthSalary,
@@ -2990,77 +3045,88 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // FIX: Wrap the Column in a SingleChildScrollView to prevent overflow
+    // and allow scrolling when the keyboard is displayed.
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(Icons.insights_rounded, size: 80, color: Colors.blue.shade600),
-          const SizedBox(height: 24),
-          Text(
-            "Optional: Salary Insights",
-            textAlign: TextAlign.center,
-            style: theme.textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "Enter your salary to see what percentage of it goes to subscriptions. This is optional and stored only on your device.",
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyLarge
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 32),
-          TextFormField(
-            controller: _salaryController,
-            decoration: InputDecoration(
-              labelText: "Salary Amount",
-              hintText: "e.g., 5000",
-              prefixIcon: Icon(Icons.attach_money_rounded),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(Icons.insights_rounded, size: 80, color: Colors.blue.shade600),
+            const SizedBox(height: 24),
+            Text(
+              "Optional: Salary Insights",
+              textAlign: TextAlign.center,
+              style: theme.textTheme.headlineSmall
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
-            ],
-          ),
-          const SizedBox(height: 16),
-          SegmentedButton<SalaryCycle>(
-            segments: const [
-              ButtonSegment(
-                  value: SalaryCycle.monthly,
-                  label: Text("Monthly"),
-                  icon: Icon(Icons.calendar_view_month)),
-              ButtonSegment(
-                  value: SalaryCycle.yearly,
-                  label: Text("Yearly"),
-                  icon: Icon(Icons.calendar_today)),
-            ],
-            selected: {_salaryCycle},
-            onSelectionChanged: (newSelection) {
-              setState(() {
-                _salaryCycle = newSelection.first;
-              });
-            },
-          ),
-          const SizedBox(height: 8),
-          if (_salaryCycle == SalaryCycle.monthly)
-            SwitchListTile.adaptive(
-              title: const Text("I receive a 13th salary"),
-              value: _hasThirteenthSalary,
-              onChanged: (value) {
+            const SizedBox(height: 12),
+            Text(
+              "Enter your salary to see what percentage of it goes to subscriptions. This is optional and stored only on your device.",
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyLarge
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(height: 32),
+            TextFormField(
+              controller: _salaryController,
+              decoration: InputDecoration(
+                labelText: "Salary Amount",
+                hintText: "e.g., 5000",
+                prefixIcon: const Icon(Icons.attach_money_rounded),
+              ),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
+              ],
+            ),
+            const SizedBox(height: 16),
+            SegmentedButton<SalaryCycle>(
+              segments: const [
+                ButtonSegment(
+                    value: SalaryCycle.monthly,
+                    label: Text("Monthly"),
+                    icon: Icon(Icons.calendar_view_month)),
+                ButtonSegment(
+                    value: SalaryCycle.yearly,
+                    label: Text("Yearly"),
+                    icon: Icon(Icons.calendar_today)),
+              ],
+              selected: {_salaryCycle},
+              onSelectionChanged: (newSelection) {
+                app_haptics.HapticFeedback.selectionClick();
                 setState(() {
-                  _hasThirteenthSalary = value;
+                  _salaryCycle = newSelection.first;
                 });
               },
-              contentPadding: EdgeInsets.zero,
+              style: SegmentedButton.styleFrom(
+                selectedForegroundColor: theme.colorScheme.onPrimary,
+                selectedBackgroundColor: theme.colorScheme.primary,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              ),
             ),
-        ],
+            const SizedBox(height: 8),
+            if (_salaryCycle == SalaryCycle.monthly)
+              SwitchListTile.adaptive(
+                title: const Text("I receive a 13th salary"),
+                value: _hasThirteenthSalary,
+                onChanged: (value) {
+                  app_haptics.HapticFeedback.lightImpact();
+                  setState(() {
+                    _hasThirteenthSalary = value;
+                  });
+                },
+                contentPadding: EdgeInsets.zero,
+                activeColor: theme.colorScheme.primary,
+              ),
+          ],
+        ),
       ),
     );
   }
 }
-
 
 ===== FILE: settings_local_datasource.dart =====
 ===== PATH: lib/features/settings/data/datasources/settings_local_datasource.dart =====
@@ -3068,18 +3134,19 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
 // lib/features/settings/data/datasources/settings_local_datasource.dart
 
 import 'dart:convert';
+import 'dart:io'; // For Platform.localeName
 import 'package:aboapp/features/settings/data/models/settings_model.dart';
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart'; // For NumberFormat
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class SettingsLocalDataSource {
   Future<SettingsModel> getSettings();
   Future<void> saveThemeMode(ThemeMode themeMode);
   Future<void> saveLocale(Locale locale);
   Future<void> saveCurrencyCode(String currencyCode);
-  // NEU
   Future<void> saveSalarySettings({
     required double? salary,
     required SalaryCycle salaryCycle,
@@ -3088,32 +3155,78 @@ abstract class SettingsLocalDataSource {
 }
 
 const String settingsKey = 'APP_SETTINGS';
+const Set<String> _supportedLanguages = {'en', 'de'};
+const Set<String> _supportedCurrencies = {'USD', 'EUR', 'GBP', 'JPY', 'CHF'};
 
 @LazySingleton(as: SettingsLocalDataSource)
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
-  final SharedPreferences sharedPreferences;
+  final FlutterSecureStorage secureStorage;
 
-  SettingsLocalDataSourceImpl(this.sharedPreferences);
+  SettingsLocalDataSourceImpl(this.secureStorage);
 
   @override
   Future<SettingsModel> getSettings() async {
-    final jsonString = sharedPreferences.getString(settingsKey);
+    final jsonString = await secureStorage.read(key: settingsKey);
     if (jsonString != null) {
       try {
         return SettingsModel.fromJson(
             jsonDecode(jsonString) as Map<String, dynamic>);
       } catch (e) {
-        await sharedPreferences.remove(settingsKey);
-        return SettingsModel.fromEntity(SettingsEntity.defaultSettings());
+        // Data is corrupted, remove it and create fresh defaults
+        await secureStorage.delete(key: settingsKey);
+        return await _createDefaultSettingsWithAutoDetect();
       }
     } else {
-      return SettingsModel.fromEntity(SettingsEntity.defaultSettings());
+      // No settings found, create initial defaults with auto-detection
+      return await _createDefaultSettingsWithAutoDetect();
     }
   }
 
+  /// Creates a default settings model, attempting to use the device's
+  /// locale to determine a sensible default currency and language.
+  Future<SettingsModel> _createDefaultSettingsWithAutoDetect() async {
+    var defaultSettings = SettingsEntity.defaultSettings();
+
+    try {
+      final String deviceLocaleStr = Platform.localeName;
+
+      // --- Auto-detect and set Currency ---
+      // CORRECTION: Use `currencyName` which returns the ISO 4217 code.
+      final format = NumberFormat.simpleCurrency(locale: deviceLocaleStr);
+      final detectedCurrencyCode = format.currencyName;
+
+      if (detectedCurrencyCode != null &&
+          _supportedCurrencies.contains(detectedCurrencyCode)) {
+        defaultSettings =
+            defaultSettings.copyWith(currencyCode: detectedCurrencyCode);
+      }
+
+      // --- Auto-detect and set Locale ---
+      final localeParts = deviceLocaleStr.split(RegExp(r'[_-]'));
+      if (localeParts.isNotEmpty) {
+        final langCode = localeParts[0].toLowerCase();
+        if (_supportedLanguages.contains(langCode)) {
+          final countryCode = localeParts.length > 1 ? localeParts[1] : null;
+          defaultSettings =
+              defaultSettings.copyWith(locale: Locale(langCode, countryCode));
+        }
+      }
+    } catch (e) {
+      // Silently fail, the hardcoded defaults ('USD', 'en_US') from
+      // SettingsEntity.defaultSettings() will be used.
+    }
+
+    final model = SettingsModel.fromEntity(defaultSettings);
+    // Save these new defaults so auto-detection only runs once.
+    await _saveSettingsModel(model);
+    return model;
+  }
+
   Future<void> _saveSettingsModel(SettingsModel settings) async {
-    await sharedPreferences.setString(
-        settingsKey, jsonEncode(settings.toJson()));
+    await secureStorage.write(
+      key: settingsKey,
+      value: jsonEncode(settings.toJson()),
+    );
   }
 
   @override
@@ -3135,7 +3248,6 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
         currentSettings.copyWith(currencyCode: currencyCode));
   }
 
-  // NEU
   @override
   Future<void> saveSalarySettings(
       {required double? salary,
@@ -3149,7 +3261,6 @@ class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
     ));
   }
 }
-
 
 ===== FILE: settings_model.dart =====
 ===== PATH: lib/features/settings/data/models/settings_model.dart =====
@@ -4047,12 +4158,18 @@ class SaveThemeSettingUseCase {
 ===== FILE: settings_screen.dart =====
 ===== PATH: lib/features/settings/presentation/cubit/screens/settings_screen.dart =====
 
+// lib/features/settings/presentation/cubit/screens/settings_screen.dart
+
+import 'package:aboapp/core/di/injection.dart';
+import 'package:aboapp/core/routing/app_router.dart';
 import 'package:aboapp/features/settings/domain/entities/settings_entity.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -4076,6 +4193,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _updateLocalState(SettingsState state) {
     if (state.salary != null) {
       _salaryController.text = state.salary.toString();
+    } else {
+      _salaryController.clear();
     }
     _salaryCycle = state.salaryCycle;
     _hasThirteenthSalary = state.hasThirteenthSalary;
@@ -4095,6 +4214,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
           hasThirteenthSalary: _hasThirteenthSalary,
         );
     FocusScope.of(context).unfocus(); // Close keyboard
+  }
+
+  void _showRerunOnboardingDialog() {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Rerun Welcome Screen?'),
+        content: const Text(
+            'This will show the welcome screen the next time you open the app. Your existing subscriptions and settings will not be deleted.'),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(dialogContext).pop(),
+          ),
+          TextButton(
+            child: Text('Confirm',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            onPressed: () async {
+              Navigator.of(dialogContext).pop(); // Close the dialog first
+              final prefs = getIt<SharedPreferences>();
+              await prefs.setBool('onboarding_complete', false);
+              if (mounted) {
+                // Navigate to the onboarding route, clearing the navigation stack
+                context.go(AppRoutes.onboarding);
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
@@ -4126,8 +4275,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return BlocListener<SettingsCubit, SettingsState>(
       listener: (context, state) {
-        // Update local form state if cubit state changes from another source
-        _updateLocalState(state);
+        if (mounted) {
+          _updateLocalState(state);
+        }
       },
       child: Scaffold(
         appBar: AppBar(
@@ -4135,7 +4285,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         ),
         body: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
-            if (state.isLoading) {
+            if (state.isLoading && _salaryController.text.isEmpty) { // Show loader only on initial load
               return const Center(child: CircularProgressIndicator.adaptive());
             }
             if (state.error != null) {
@@ -4154,6 +4304,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const Divider(height: 32),
                 _buildSectionHeader(context, 'Salary Insights'),
                 _buildSalarySection(context, state),
+                const Divider(height: 32),
+                _buildSectionHeader(context, 'Advanced'),
+                _buildAdvancedSection(context),
                 const Divider(height: 32),
                 _buildSectionHeader(context, 'About'),
                 _buildAboutSection(context),
@@ -4186,6 +4339,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: Text(_getLocaleDisplayName(context, state.locale)),
             onTap: () => _showLocaleDialog(context, state.locale),
           ),
+          const Divider(height: 1, indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.attach_money_rounded),
             title: const Text('Currency'),
@@ -4261,20 +4415,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+  
+  Widget _buildAdvancedSection(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      color: theme.colorScheme.errorContainer.withAlpha(77), // ~30% opacity
+      child: ListTile(
+        leading: Icon(Icons.replay_circle_filled_rounded,
+            color: theme.colorScheme.error),
+        title: Text('Rerun Welcome Screen',
+            style: TextStyle(color: theme.colorScheme.onErrorContainer)),
+        subtitle: Text('Shows the initial setup screens again',
+            style: TextStyle(
+                color: theme.colorScheme.onErrorContainer.withAlpha(204))), // ~80% opacity
+        onTap: _showRerunOnboardingDialog,
+      ),
+    );
+  }
 
   Widget _buildAboutSection(BuildContext context) {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.info_outline_rounded),
         title: const Text('About AboApp'),
-        subtitle: const Text('Version 3.0.0 - Refactored'),
+        subtitle: const Text('Version 4.0.0'),
         onTap: () {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
               title: const Text('About AboApp'),
               content: const Text(
-                  'Subscription management made easy.\nVersion 3.0.0'),
+                  'Subscription management made easy.\nVersion 4.0.0'),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
@@ -4293,10 +4464,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding:
           const EdgeInsets.only(top: 8.0, bottom: 8.0, left: 8.0, right: 8.0),
       child: Text(
-        title,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        title.toUpperCase(),
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
               color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 0.8
             ),
       ),
     );
@@ -4369,6 +4541,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 groupValue: currentCurrencyCode,
                 onChanged: (value) {
                   if (value != null) {
+                    // CORRECTION: Typo `SettingsCTubit` fixed to `SettingsCubit`
                     context.read<SettingsCubit>().updateCurrencyCode(value);
                     Navigator.of(ctx).pop();
                   }
@@ -4381,7 +4554,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-
 
 ===== FILE: settings_cubit.dart =====
 ===== PATH: lib/features/settings/presentation/cubit/settings_cubit.dart =====
@@ -6508,6 +6680,7 @@ import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.d
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // For BillingCycle
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class BillingTypeBreakdownCard extends StatelessWidget {
   final List<BillingTypeSpending> billingTypeSpendingData;
@@ -6518,20 +6691,19 @@ class BillingTypeBreakdownCard extends StatelessWidget {
   });
 
   String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
-    // TODO: Localize
     switch (cycle) {
       case BillingCycle.weekly:
-        return 'Weekly';
+        return context.l10n.translate('billing_cycle_weekly');
       case BillingCycle.monthly:
-        return 'Monthly';
+        return context.l10n.translate('billing_cycle_monthly');
       case BillingCycle.quarterly:
-        return 'Quarterly';
+        return context.l10n.translate('billing_cycle_quarterly');
       case BillingCycle.biAnnual:
-        return 'Bi-Annual';
+        return context.l10n.translate('billing_cycle_biAnnual');
       case BillingCycle.yearly:
-        return 'Yearly';
+        return context.l10n.translate('billing_cycle_yearly');
       case BillingCycle.custom:
-        return 'Custom';
+        return context.l10n.translate('billing_cycle_custom');
     }
   }
 
@@ -6560,7 +6732,7 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No billing type data available.', // TODO: Localize
+              context.l10n.translate('stats_billing_type_empty_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -6579,13 +6751,13 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Breakdown by Billing Cycle', // TODO: Localize
+              context.l10n.translate('stats_billing_type_title'),
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              '(Based on Monthly Equivalent Cost)', // TODO: Localize
+              context.l10n.translate('stats_billing_type_subtitle'),
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -6636,7 +6808,12 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${item.subscriptionCount} sub${item.subscriptionCount == 1 ? "" : "s"}', // TODO: Localize
+                        '${item.subscriptionCount} ' +
+                            (item.subscriptionCount == 1
+                                ? context.l10n
+                                    .translate('stats_subscription_abbrev_single')
+                                : context.l10n.translate(
+                                    'stats_subscription_abbrev_multiple')),
                         style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,
@@ -6689,6 +6866,7 @@ import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -6829,7 +7007,7 @@ class _CategorySpendingPieChartCardState
             color: isTouched
                 ? categoryData.category
                     .categoryDisplayIconColor(theme)
-                    .withOpacity(0.2)
+                    .withValues(alpha: 51)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
@@ -6846,7 +7024,7 @@ class _CategorySpendingPieChartCardState
               ),
               const SizedBox(width: 6),
               Text(
-                categoryData.category.displayName,
+                categoryData.category.displayName(context),
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontWeight: isTouched ? FontWeight.bold : FontWeight.normal,
                 ),
@@ -7119,7 +7297,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         .clamp(10.0, double.infinity),
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.dividerColor.withOpacity(0.5),
+                        color: theme.dividerColor.withValues(alpha: 128),
                         strokeWidth: 0.5,
                       );
                     },
@@ -7222,8 +7400,8 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.2),
-                            theme.colorScheme.secondary.withOpacity(0.05),
+                            theme.colorScheme.primary.withValues(alpha: 51),
+                            theme.colorScheme.secondary.withValues(alpha: 13),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
@@ -7276,6 +7454,7 @@ import 'package:aboapp/features/subscriptions/domain/entities/subscription_entit
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart'; // For CategoryDisplayHelpers
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class TopSubscriptionsListCard extends StatelessWidget {
   final List<SubscriptionEntity> topSubscriptions;
@@ -7297,7 +7476,8 @@ class TopSubscriptionsListCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No subscriptions to display in top list.', // TODO: Localize
+              context.l10n
+                  .translate('stats_top_subscriptions_empty_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -7316,7 +7496,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
               padding: const EdgeInsets.only(
                   left: 16.0, top: 8.0, right: 16.0, bottom: 4.0),
               child: Text(
-                'Top Spending Subscriptions', // TODO: Localize
+                context.l10n.translate('stats_top_subscriptions_title'),
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
@@ -7325,7 +7505,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
               child: Text(
-                '(Based on Monthly Equivalent Cost)', // TODO: Localize
+                context.l10n.translate('stats_top_subscriptions_subtitle'),
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
@@ -7358,8 +7538,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   subtitle: Text(
-                    sub.category
-                        .displayName, // Use extension from subscription_card_widget
+                    sub.category.displayName(context),
                     style: theme.textTheme.bodySmall
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),
@@ -7375,7 +7554,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        'per month', // TODO: Localize (as it's monthly equivalent)
+                        context.l10n.translate('stats_per_month_label'),
                         style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                       )
@@ -7400,7 +7579,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
 import 'dart:convert';
 import 'package:aboapp/features/subscriptions/data/models/subscription_model.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class SubscriptionLocalDataSource {
   Future<List<SubscriptionModel>> getAllSubscriptions();
@@ -7414,22 +7593,22 @@ const String cachedSubscriptionsKey = 'CACHED_SUBSCRIPTIONS';
 
 @LazySingleton(as: SubscriptionLocalDataSource)
 class SubscriptionLocalDataSourceImpl implements SubscriptionLocalDataSource {
-  final SharedPreferences sharedPreferences;
+  final FlutterSecureStorage secureStorage;
 
-  SubscriptionLocalDataSourceImpl(this.sharedPreferences);
+  SubscriptionLocalDataSourceImpl(this.secureStorage);
 
   @override
   Future<List<SubscriptionModel>> getAllSubscriptions() async {
-    final jsonStringList = sharedPreferences.getStringList(cachedSubscriptionsKey);
-    if (jsonStringList != null) {
+    final jsonString = await secureStorage.read(key: cachedSubscriptionsKey);
+    if (jsonString != null) {
       try {
-        return jsonStringList
-            .map((jsonString) =>
-                SubscriptionModel.fromJson(jsonDecode(jsonString) as Map<String, dynamic>))
+        final List<dynamic> decoded = jsonDecode(jsonString) as List<dynamic>;
+        return decoded
+            .map((json) => SubscriptionModel.fromJson(json as Map<String, dynamic>))
             .toList();
       } catch (e) {
         // Handle corrupted data, e.g., by clearing it or logging
-        await sharedPreferences.remove(cachedSubscriptionsKey);
+        await secureStorage.delete(key: cachedSubscriptionsKey);
         throw Exception('Failed to parse subscriptions from local storage: $e');
       }
     } else {
@@ -7439,9 +7618,9 @@ class SubscriptionLocalDataSourceImpl implements SubscriptionLocalDataSource {
 
   @override
   Future<void> cacheSubscriptions(List<SubscriptionModel> subscriptions) async {
-    final List<String> jsonStringList =
-        subscriptions.map((sub) => jsonEncode(sub.toJson())).toList();
-    await sharedPreferences.setStringList(cachedSubscriptionsKey, jsonStringList);
+    final jsonString =
+        jsonEncode(subscriptions.map((sub) => sub.toJson()).toList());
+    await secureStorage.write(key: cachedSubscriptionsKey, value: jsonString);
   }
 
   @override
@@ -10082,22 +10261,22 @@ enum SortOption {
 }
 
 extension SortOptionDisplay on SortOption {
-  String get displayName {
+  String displayName(BuildContext context) {
     switch (this) {
       case SortOption.nameAsc:
-        return 'Name (A-Z)';
+        return context.l10n.translate('sort_option_nameAsc');
       case SortOption.nameDesc:
-        return 'Name (Z-A)';
+        return context.l10n.translate('sort_option_nameDesc');
       case SortOption.priceAsc:
-        return 'Price (Low-High)';
+        return context.l10n.translate('sort_option_priceAsc');
       case SortOption.priceDesc:
-        return 'Price (High-Low)';
+        return context.l10n.translate('sort_option_priceDesc');
       case SortOption.nextBillingDateAsc:
-        return 'Next Billing Date';
+        return context.l10n.translate('sort_option_nextBillingDateAsc');
       case SortOption.nextBillingDateDesc:
-        return 'Next Billing Date (Desc)';
+        return context.l10n.translate('sort_option_nextBillingDateDesc');
       case SortOption.category:
-        return 'Category';
+        return context.l10n.translate('sort_option_category');
     }
   }
 }
@@ -10117,6 +10296,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class AddEditSubscriptionScreen extends StatefulWidget {
   final SubscriptionEntity? initialSubscription;
@@ -10217,7 +10397,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
       borderSide: BorderSide.none,
     );
 
-    // KORREKTUR: Farbverlauf für weichere Übergänge angepasst
     final focusedBorder = AnimatedGradientInputBorder(
       animation: _animationController,
       gradientColors: [
@@ -10302,25 +10481,30 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildSectionTitle(theme, 'Intervall'),
-                        AnimatedBuilder(
-                          animation: _animationController,
-                          builder: (context, child) =>
-                              DropdownButtonFormField<BillingCycle>(
-                            value: _selectedCycle,
-                            decoration: _inputDecoration(
-                              theme: theme,
-                              icon: Icons.calendar_view_month,
-                              defaultBorder: defaultBorder,
-                              focusedBorder: focusedBorder,
-                            ),
-                            items: BillingCycle.values
-                                .where((c) => c != BillingCycle.custom)
-                                .map((c) => DropdownMenuItem(
-                                    value: c, child: Text(c.displayName)))
-                                .toList(),
-                            onChanged: (v) => setState(
-                                () => _selectedCycle = v ?? _selectedCycle),
+                        DropdownButtonFormField<BillingCycle>(
+                          value: _selectedCycle,
+                          // FIX: isExpanded tells the dropdown to fill the available space
+                          // and manage its content's overflow, preventing it from
+                          // pushing the parent Row beyond its limits.
+                          isExpanded: true,
+                          decoration: _inputDecoration(
+                            theme: theme,
+                            icon: Icons.calendar_view_month,
+                            defaultBorder: defaultBorder,
+                            focusedBorder: focusedBorder,
                           ),
+                          items: BillingCycle.values
+                              .where((c) => c != BillingCycle.custom)
+                              .map((c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(
+                                    c.displayName(context),
+                                    // FIX: Ensure long text gets an ellipsis
+                                    overflow: TextOverflow.ellipsis,
+                                  )))
+                              .toList(),
+                          onChanged: (v) => setState(
+                              () => _selectedCycle = v ?? _selectedCycle),
                         ),
                       ],
                     ),
@@ -10341,14 +10525,15 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
                               defaultBorder: defaultBorder,
                             ),
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top:
-                                      1.0), // Kleine Anpassung für vertikale Zentrierung
+                              padding: const EdgeInsets.only(top: 1.0),
                               child: Text(
                                 DateFormat.yMd(
                                         settingsState.locale.toLanguageTag())
                                     .format(_nextBillingDate),
                                 style: theme.textTheme.bodyLarge,
+                                // FIX: Handle potential overflow for very long date formats.
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
                               ),
                             ),
                           ),
@@ -10395,7 +10580,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
     );
   }
 
-  // KORREKTUR: Hilfsmethode für das getrennte Label
   Widget _buildSectionTitle(ThemeData theme, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0, left: 4.0),
@@ -10407,7 +10591,6 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
     );
   }
 
-  // KORREKTUR: InputDecoration verwendet jetzt 'hintText' statt 'labelText'
   InputDecoration _inputDecoration({
     required ThemeData theme,
     required IconData icon,
@@ -10436,7 +10619,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
       runSpacing: 10.0,
       children: SubscriptionCategory.values.map((cat) {
         return AnimatedGradientChip(
-          label: cat.displayName,
+          label: cat.displayName(context),
           icon: cat.displayIcon,
           isSelected: _selectedCategory == cat,
           selectedColor: cat.categoryDisplayIconColor(theme),
@@ -10466,7 +10649,6 @@ extension on BillingCycle {
   }
 }
 
-
 ===== FILE: home_screen.dart =====
 ===== PATH: lib/features/subscriptions/presentation/screens/home_screen.dart =====
 
@@ -10484,6 +10666,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10681,7 +10864,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (var cat in cats) {
       chips.add(Chip(
-        label: Text(cat.displayName),
+        label: Text(cat.displayName(context)),
         onDeleted: () {
           context.read<SubscriptionCubit>().toggleCategoryFilter(cat);
         },
@@ -10852,6 +11035,7 @@ import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_
 import 'package:aboapp/widgets/animated_gradient_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final SortOption currentSortOption;
@@ -10929,21 +11113,22 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Sort & Filter", style: theme.textTheme.headlineSmall),
+                Text(context.l10n.translate('filter_sheet_title'),
+                    style: theme.textTheme.headlineSmall),
                 TextButton(
                   onPressed: _resetFilters,
-                  child: const Text("Reset"),
+                  child: Text(context.l10n.translate('filter_sheet_reset')),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            Text("SORT BY",
+            Text(context.l10n.translate('filter_sheet_sort_by').toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
             _buildSortDropdown(theme),
             const SizedBox(height: 24),
-            Text("CATEGORIES",
+            Text(context.l10n.translate('filter_sheet_categories').toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -10960,10 +11145,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
                   }
                 });
               },
-              getLabel: (item) => item.displayName,
+              getLabel: (item) => item.displayName(context),
             ),
             const SizedBox(height: 24),
-            Text("BILLING CYCLES",
+            Text(context.l10n
+                    .translate('filter_sheet_billing_cycles')
+                    .toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -10993,7 +11180,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
               ),
-              child: const Text("Apply Filters"),
+              child: Text(context.l10n.translate('filter_sheet_apply')),
             ),
             const SizedBox(height: 8),
           ],
@@ -11033,7 +11220,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
               child: Padding(
                 // Etwas mehr vertikaler Platz für jedes Element
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(option.displayName),
+                child: Text(option.displayName(context)),
               ),
             );
           }).toList(),
@@ -11109,7 +11296,7 @@ class CustomGradientFilterChip extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             decoration: BoxDecoration(
               color: isSelected
-                  ? theme.colorScheme.primary.withOpacity(0.1)
+                  ? theme.colorScheme.primary.withValues(alpha: 26)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(50.0),
               border: isSelected ? null : Border.all(color: theme.dividerColor),
@@ -11142,6 +11329,7 @@ import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;
@@ -11189,7 +11377,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Monthly Spending', // TODO: Localize
+                  context.l10n.translate('home_monthly_spending_title'),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -11198,11 +11386,12 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 26),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '${activeSubscriptions.length} Active', // TODO: Localize
+                    context.l10n.translate('home_active_count',
+                        args: {'count': activeSubscriptions.length.toString()}),
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -11227,7 +11416,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
 
             // Divider
             Divider(
-              color: theme.dividerColor.withOpacity(0.5),
+              color: theme.dividerColor.withValues(alpha: 128),
               height: 1,
             ),
             const SizedBox(height: 16.0),
@@ -11237,7 +11426,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Yearly Total', // TODO: Localize
+                  context.l10n.translate('stats_yearly_total_label'),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -11271,6 +11460,7 @@ import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:aboapp/core/utils/date_formatter.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11287,21 +11477,26 @@ class SubscriptionCardWidget extends StatelessWidget {
     this.onLongPress,
   });
 
-  String _getBillingCycleShortLabel(BillingCycle cycle) {
-    // TODO: Localize
+  String _getBillingCycleShortLabel(BuildContext context, BillingCycle cycle) {
     switch (cycle) {
       case BillingCycle.weekly:
-        return 'wk';
+        return context.l10n
+            .translate('billing_cycle_short_weekly');
       case BillingCycle.monthly:
-        return 'mo';
+        return context.l10n
+            .translate('billing_cycle_short_monthly');
       case BillingCycle.quarterly:
-        return 'qtr';
+        return context.l10n
+            .translate('billing_cycle_short_quarterly');
       case BillingCycle.biAnnual:
-        return '6mo';
+        return context.l10n
+            .translate('billing_cycle_short_biAnnual');
       case BillingCycle.yearly:
-        return 'yr';
+        return context.l10n
+            .translate('billing_cycle_short_yearly');
       case BillingCycle.custom:
-        return 'cust';
+        return context.l10n
+            .translate('billing_cycle_short_custom');
     }
   }
 
@@ -11321,10 +11516,22 @@ class SubscriptionCardWidget extends StatelessWidget {
     final daysUntil = subscription.daysUntilBilling;
     final daysLabel = DateFormatter.formatDaysUntil(
       subscription.nextBillingDate,
-      todayText: 'Today',
-      tomorrowText: 'Tomorrow',
-      daysAgoText: '{days} days ago',
-      daysFutureText: 'in {days} days',
+      todayText:
+          context.l10n.translate('subscription_card_days_until_label_today'),
+      tomorrowText:
+          context.l10n.translate('subscription_card_days_until_label_tomorrow'),
+      daysAgoText: context
+          .l10n
+          .translate('subscription_card_days_until_label_overdue_prefix') +
+          '{days} ' +
+          context.l10n
+              .translate('subscription_card_days_until_label_overdue_suffix'),
+      daysFutureText: context
+              .l10n
+              .translate('subscription_card_days_until_label_prefix') +
+          '{days} ' +
+          context.l10n
+              .translate('subscription_card_days_until_label_suffix'),
     );
 
     return AnimatedOpacity(
@@ -11355,7 +11562,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 2.0),
                       Text(
-                        subscription.category.displayName,
+                        subscription.category.displayName(context),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -11387,7 +11594,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(subscription.billingCycle)}',
+                      '${CurrencyFormatter.format(subscription.price, currencyCode: settingsState.currencyCode, locale: settingsState.locale)} / ${_getBillingCycleShortLabel(context, subscription.billingCycle)}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.primary,
@@ -11500,7 +11707,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                 color: theme.cardColor.withAlpha(220),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 26),
                     blurRadius: 2,
                     offset: const Offset(0, 1),
                   )
@@ -11544,29 +11751,28 @@ extension CategoryDisplayHelpers on SubscriptionCategory {
     }
   }
 
-  String get displayName {
-    // TODO: Localize these
+  String displayName(BuildContext context) {
     switch (this) {
       case SubscriptionCategory.streaming:
-        return 'Streaming';
+        return context.l10n.translate('category_streaming');
       case SubscriptionCategory.software:
-        return 'Software';
+        return context.l10n.translate('category_software');
       case SubscriptionCategory.gaming:
-        return 'Gaming';
+        return context.l10n.translate('category_gaming');
       case SubscriptionCategory.fitness:
-        return 'Fitness';
+        return context.l10n.translate('category_fitness');
       case SubscriptionCategory.music:
-        return 'Music';
+        return context.l10n.translate('category_music');
       case SubscriptionCategory.news:
-        return 'News & Mags';
+        return context.l10n.translate('category_news');
       case SubscriptionCategory.cloud:
-        return 'Cloud Storage';
+        return context.l10n.translate('category_cloud');
       case SubscriptionCategory.utilities:
-        return 'Utilities';
+        return context.l10n.translate('category_utilities');
       case SubscriptionCategory.education:
-        return 'Education';
+        return context.l10n.translate('category_education');
       case SubscriptionCategory.other:
-        return 'Other';
+        return context.l10n.translate('category_other');
     }
   }
 
@@ -11644,6 +11850,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class MainContainerScreen extends StatefulWidget {
   final String location;
@@ -11745,7 +11952,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           app_haptics.HapticFeedback.lightImpact();
           context.pushNamed(AppRoutes.addSubscription);
         },
-        tooltip: 'Add Subscription',
+        tooltip: context.l10n.translate('home_add_subscription_tooltip'),
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -11756,12 +11963,18 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             _buildBottomNavItem(
-                icon: Icons.home_filled, label: 'Home', index: 0),
+                icon: Icons.home_filled,
+                label: context.l10n.translate('bottom_nav_subscriptions'),
+                index: 0),
             _buildBottomNavItem(
-                icon: Icons.pie_chart_rounded, label: 'Stats', index: 1),
+                icon: Icons.pie_chart_rounded,
+                label: context.l10n.translate('bottom_nav_statistics'),
+                index: 1),
             const SizedBox(width: 48), // The notch space
             _buildBottomNavItem(
-                icon: Icons.settings_rounded, label: 'Settings', index: 2),
+                icon: Icons.settings_rounded,
+                label: context.l10n.translate('bottom_nav_settings'),
+                index: 2),
             _buildBottomNavItem(
                 icon: Icons.person_rounded,
                 label: 'Profile',
@@ -11783,7 +11996,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
     final bool isDisabled = index > 2;
 
     final color = isDisabled
-        ? theme.colorScheme.onSurface.withOpacity(0.3)
+        ? theme.colorScheme.onSurface.withValues(alpha: 77)
         : isSelected
             ? theme.colorScheme.primary
             : theme.colorScheme.onSurfaceVariant;
@@ -12203,7 +12416,6 @@ class _AnimatedGradientOutlineState extends State<AnimatedGradientOutline>
       Colors.pink.shade200,
     ];
 
-    // KORREKTUR: Veraltete 'withOpacity' entfernt
     final errorGradient = [
       theme.colorScheme.error.withAlpha(180),
       Colors.orange.shade400.withAlpha(180),
@@ -12401,7 +12613,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 72,
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6), // Kept withOpacity
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 153),
             ),
             const SizedBox(height: 24),
             Text(
@@ -12485,6 +12697,8 @@ dependencies:
 
   # Local Storage
   shared_preferences: ^2.2.3
+  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage_web: ^1.2.1
 
   # Local Notifications (if reminders are a feature)
   # flutter_local_notifications: ^17.0.0 
