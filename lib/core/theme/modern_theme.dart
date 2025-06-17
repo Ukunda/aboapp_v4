@@ -7,6 +7,7 @@ import 'package:aboapp/features/subscriptions/presentation/screens/home_screen.d
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/utils/color_extensions.dart';
 
 class MainContainerScreen extends StatefulWidget {
   final String location;
@@ -113,7 +114,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           decoration: BoxDecoration(
               border: Border(
                   top: BorderSide(
-                      color: theme.dividerColor.withOpacity(0.5), width: 1.0))),
+                      color: theme.dividerColor.withValues(alpha: 128), width: 1.0))),
           child: Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -158,7 +159,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
 
     // Die Farben werden jetzt direkt vom überarbeiteten Theme korrekt übernommen.
     final color = isDisabled
-        ? theme.colorScheme.onSurface.withOpacity(0.3)
+        ? theme.colorScheme.onSurface.withValues(alpha: 77)
         : isSelected
             ? theme.colorScheme.primary
             : theme.colorScheme.onSurfaceVariant;

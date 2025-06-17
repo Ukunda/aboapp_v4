@@ -4,6 +4,7 @@ import 'package:aboapp/core/theme/app_colors.dart';
 import 'package:aboapp/core/utils/currency_formatter.dart';
 import 'package:aboapp/core/utils/date_formatter.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -234,7 +235,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                 color: theme.cardColor.withAlpha(220),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 26),
                     blurRadius: 2,
                     offset: const Offset(0, 1),
                   )

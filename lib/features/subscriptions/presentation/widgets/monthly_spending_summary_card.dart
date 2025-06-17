@@ -6,6 +6,7 @@ import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;
@@ -62,7 +63,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
+                    color: theme.colorScheme.primary.withValues(alpha: 26),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -91,7 +92,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
 
             // Divider
             Divider(
-              color: theme.dividerColor.withOpacity(0.5),
+              color: theme.dividerColor.withValues(alpha: 128),
               height: 1,
             ),
             const SizedBox(height: 16.0),

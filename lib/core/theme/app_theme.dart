@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 
 // VEREINFACHT: Nur noch eine Theme-Klasse für die gesamte App.
 abstract class AppTheme {
@@ -26,7 +27,7 @@ abstract class AppTheme {
 
   static final _cardShapeLight = RoundedRectangleBorder(
     borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-    side: BorderSide(color: _borderLight.withOpacity(0.7), width: 1.0),
+    side: BorderSide(color: _borderLight.withValues(alpha: 179), width: 1.0),
   );
 
   static const _cardShapeDark = RoundedRectangleBorder(
@@ -165,10 +166,10 @@ abstract class AppTheme {
               .copyWith(color: onSurfaceColor, fontWeight: FontWeight.w600),
           bodyLarge: AppTypography.bodyLarge.copyWith(color: onSurfaceColor),
           bodyMedium: AppTypography.bodyMedium
-              .copyWith(color: onSurfaceColor.withOpacity(0.8)),
+              .copyWith(color: onSurfaceColor.withValues(alpha: 204)),
         )
         .apply(
-          bodyColor: onSurfaceColor.withOpacity(0.8),
+          bodyColor: onSurfaceColor.withValues(alpha: 204),
           displayColor: onSurfaceColor,
         );
   }

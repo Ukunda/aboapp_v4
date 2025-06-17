@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:aboapp/core/theme/app_colors.dart';
 import 'package:aboapp/core/theme/app_typography.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 
 abstract class ClassicTheme {
   static ThemeData get lightTheme {
@@ -87,7 +88,7 @@ abstract class ClassicTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceLight.withOpacity(0.5),
+        fillColor: AppColors.surfaceLight.withValues(alpha: 128),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -113,7 +114,7 @@ abstract class ClassicTheme {
         labelStyle: AppTypography.bodyMedium
             .copyWith(color: AppColors.onSurfaceVariantLight),
         hintStyle: AppTypography.bodyMedium
-            .copyWith(color: AppColors.onSurfaceVariantLight.withOpacity(0.7)),
+            .copyWith(color: AppColors.onSurfaceVariantLight.withValues(alpha: 179)),
         floatingLabelStyle:
             AppTypography.bodySmall.copyWith(color: AppColors.primary),
       ),
@@ -228,7 +229,7 @@ abstract class ClassicTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceDark.withOpacity(0.5),
+        fillColor: AppColors.surfaceDark.withValues(alpha: 128),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: OutlineInputBorder(
@@ -255,7 +256,7 @@ abstract class ClassicTheme {
         labelStyle: AppTypography.bodyMedium
             .copyWith(color: AppColors.onSurfaceVariantDark),
         hintStyle: AppTypography.bodyMedium
-            .copyWith(color: AppColors.onSurfaceVariantDark.withOpacity(0.7)),
+            .copyWith(color: AppColors.onSurfaceVariantDark.withValues(alpha: 179)),
         floatingLabelStyle:
             AppTypography.bodySmall.copyWith(color: AppColors.primaryLight),
       ),
