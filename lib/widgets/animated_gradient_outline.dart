@@ -68,7 +68,6 @@ class _AnimatedGradientOutlineState extends State<AnimatedGradientOutline>
       Colors.pink.shade200,
     ];
 
-    // KORREKTUR: Veraltete 'withOpacity' entfernt
     final errorGradient = [
       theme.colorScheme.error.withAlpha(180),
       Colors.orange.shade400.withAlpha(180),

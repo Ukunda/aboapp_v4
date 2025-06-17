@@ -4,6 +4,7 @@ import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.d
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
@@ -145,7 +146,7 @@ class _CategorySpendingPieChartCardState
             color: isTouched
                 ? categoryData.category
                     .categoryDisplayIconColor(theme)
-                    .withOpacity(0.2)
+                    .withValues(alpha: 51)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),

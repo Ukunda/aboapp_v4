@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;
@@ -29,7 +30,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 72,
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6), // Kept withOpacity
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 153),
             ),
             const SizedBox(height: 24),
             Text(

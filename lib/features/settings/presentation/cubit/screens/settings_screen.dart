@@ -259,7 +259,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAdvancedSection(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      // CORRECTION: Replaced deprecated `withOpacity` with `withAlpha`.
       color: theme.colorScheme.errorContainer.withAlpha(77), // ~30% opacity
       child: ListTile(
         leading: Icon(Icons.replay_circle_filled_rounded,
@@ -268,9 +267,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             style: TextStyle(color: theme.colorScheme.onErrorContainer)),
         subtitle: Text('Shows the initial setup screens again',
             style: TextStyle(
-                // CORRECTION: Replaced deprecated `withOpacity` with `withAlpha`.
-                color:
-                    theme.colorScheme.onErrorContainer.withAlpha(204))), // ~80% opacity
+                color: theme.colorScheme.onErrorContainer.withAlpha(204))), // ~80% opacity
         onTap: _showRerunOnboardingDialog,
       ),
     );

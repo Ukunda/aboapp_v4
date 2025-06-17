@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 
 class OnboardingPageContentWidget extends StatelessWidget {
   final String title;
@@ -29,7 +30,7 @@ class OnboardingPageContentWidget extends StatelessWidget {
             width: screenSize.width * 0.4, // Responsive icon container
             height: screenSize.width * 0.4,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15), // Subtle background
+              color: iconColor.withValues(alpha: 38), // Subtle background
               shape: BoxShape.circle,
             ),
             child: Icon(

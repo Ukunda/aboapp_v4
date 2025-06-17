@@ -4,6 +4,7 @@ import 'package:aboapp/features/subscriptions/domain/entities/subscription_entit
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
 // Import für die .displayName Erweiterung auf SubscriptionCategory
 import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_card_widget.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 // Import für den GradientOutlinePainter
 import 'package:aboapp/widgets/animated_gradient_chip.dart';
 import 'package:flutter/material.dart';
@@ -265,7 +266,7 @@ class CustomGradientFilterChip extends StatelessWidget {
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
             decoration: BoxDecoration(
               color: isSelected
-                  ? theme.colorScheme.primary.withOpacity(0.1)
+                  ? theme.colorScheme.primary.withValues(alpha: 26)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(50.0),
               border: isSelected ? null : Border.all(color: theme.dividerColor),

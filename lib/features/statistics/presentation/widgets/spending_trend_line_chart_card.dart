@@ -4,6 +4,7 @@ import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.d
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/utils/color_extensions.dart';
 import 'package:intl/intl.dart';
 
 class SpendingTrendLineChartCard extends StatelessWidget {
@@ -58,7 +59,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         .clamp(10.0, double.infinity),
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.dividerColor.withOpacity(0.5),
+                        color: theme.dividerColor.withValues(alpha: 128),
                         strokeWidth: 0.5,
                       );
                     },
@@ -161,8 +162,8 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.2),
-                            theme.colorScheme.secondary.withOpacity(0.05),
+                            theme.colorScheme.primary.withValues(alpha: 51),
+                            theme.colorScheme.secondary.withValues(alpha: 13),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
