@@ -2,8 +2,7 @@ name: aboapp
 description: "A Flutter app for subscription management, refactored for clarity and maintainability."
 publish_to: 'none' # Prevent accidental publishing
 
-version: 3.0.0+1 # Starting fresh version for the refactor
-
+version: 4.0.0+2 # Starting fresh version for the refactor
 environment:
   sdk: '>=3.3.0 <4.0.0' # Targeting a recent Dart SDK
 
