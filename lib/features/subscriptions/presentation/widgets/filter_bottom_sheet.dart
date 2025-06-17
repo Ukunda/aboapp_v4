@@ -8,6 +8,7 @@ import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_
 import 'package:aboapp/widgets/animated_gradient_chip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class FilterBottomSheet extends StatefulWidget {
   final SortOption currentSortOption;
@@ -85,21 +86,22 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Sort & Filter", style: theme.textTheme.headlineSmall),
+                Text(context.l10n.translate('filter_sheet_title'),
+                    style: theme.textTheme.headlineSmall),
                 TextButton(
                   onPressed: _resetFilters,
-                  child: const Text("Reset"),
+                  child: Text(context.l10n.translate('filter_sheet_reset')),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            Text("SORT BY",
+            Text(context.l10n.translate('filter_sheet_sort_by').toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
             _buildSortDropdown(theme),
             const SizedBox(height: 24),
-            Text("CATEGORIES",
+            Text(context.l10n.translate('filter_sheet_categories').toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -116,10 +118,12 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
                   }
                 });
               },
-              getLabel: (item) => item.displayName,
+              getLabel: (item) => item.displayName(context),
             ),
             const SizedBox(height: 24),
-            Text("BILLING CYCLES",
+            Text(context.l10n
+                    .translate('filter_sheet_billing_cycles')
+                    .toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -149,7 +153,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
               ),
-              child: const Text("Apply Filters"),
+              child: Text(context.l10n.translate('filter_sheet_apply')),
             ),
             const SizedBox(height: 8),
           ],
@@ -189,7 +193,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
               child: Padding(
                 // Etwas mehr vertikaler Platz für jedes Element
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(option.displayName),
+                child: Text(option.displayName(context)),
               ),
             );
           }).toList(),

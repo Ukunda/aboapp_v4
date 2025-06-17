@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class AddEditSubscriptionScreen extends StatefulWidget {
   final SubscriptionEntity? initialSubscription;
@@ -210,7 +211,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
                               .map((c) => DropdownMenuItem(
                                   value: c,
                                   child: Text(
-                                    c.displayName,
+                                    c.displayName(context),
                                     // FIX: Ensure long text gets an ellipsis
                                     overflow: TextOverflow.ellipsis,
                                   )))
@@ -331,7 +332,7 @@ class _AddEditSubscriptionScreenState extends State<AddEditSubscriptionScreen>
       runSpacing: 10.0,
       children: SubscriptionCategory.values.map((cat) {
         return AnimatedGradientChip(
-          label: cat.displayName,
+          label: cat.displayName(context),
           icon: cat.displayIcon,
           isSelected: _selectedCategory == cat,
           selectedColor: cat.categoryDisplayIconColor(theme),

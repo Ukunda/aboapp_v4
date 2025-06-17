@@ -6,6 +6,7 @@ import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.d
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // For BillingCycle
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class BillingTypeBreakdownCard extends StatelessWidget {
   final List<BillingTypeSpending> billingTypeSpendingData;
@@ -16,20 +17,19 @@ class BillingTypeBreakdownCard extends StatelessWidget {
   });
 
   String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
-    // TODO: Localize
     switch (cycle) {
       case BillingCycle.weekly:
-        return 'Weekly';
+        return context.l10n.translate('billing_cycle_weekly');
       case BillingCycle.monthly:
-        return 'Monthly';
+        return context.l10n.translate('billing_cycle_monthly');
       case BillingCycle.quarterly:
-        return 'Quarterly';
+        return context.l10n.translate('billing_cycle_quarterly');
       case BillingCycle.biAnnual:
-        return 'Bi-Annual';
+        return context.l10n.translate('billing_cycle_biAnnual');
       case BillingCycle.yearly:
-        return 'Yearly';
+        return context.l10n.translate('billing_cycle_yearly');
       case BillingCycle.custom:
-        return 'Custom';
+        return context.l10n.translate('billing_cycle_custom');
     }
   }
 
@@ -58,7 +58,7 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No billing type data available.', // TODO: Localize
+              context.l10n.translate('stats_billing_type_empty_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -77,13 +77,13 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Breakdown by Billing Cycle', // TODO: Localize
+              context.l10n.translate('stats_billing_type_title'),
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              '(Based on Monthly Equivalent Cost)', // TODO: Localize
+              context.l10n.translate('stats_billing_type_subtitle'),
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -134,7 +134,12 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${item.subscriptionCount} sub${item.subscriptionCount == 1 ? "" : "s"}', // TODO: Localize
+                        '${item.subscriptionCount} ' +
+                            (item.subscriptionCount == 1
+                                ? context.l10n
+                                    .translate('stats_subscription_abbrev_single')
+                                : context.l10n.translate(
+                                    'stats_subscription_abbrev_multiple')),
                         style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,
