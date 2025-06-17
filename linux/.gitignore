@@ -1,1 +1,81 @@
-flutter/ephemeral
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+#=======================================================================
+# Sensitive files - WICHTIG!
+# Verhindert, dass Ihre App-Signaturschlüssel und Passwörter
+# in die Versionskontrolle gelangen.
+#=======================================================================
+**/key.properties
+*.jks
+*.keystore
+
+#=======================================================================
+# Flutter/Dart specific
+#=======================================================================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Von Flutter generierte plattformspezifische Dateien
+**/ios/Flutter/.last_build_id
+/ios/Flutter/App.framework
+/ios/Flutter/Flutter.framework
+/ios/Flutter/ephemeral/
+/ios/Pods/
+/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+/windows/flutter/ephemeral/
+/linux/flutter/ephemeral/
+/macos/Flutter/ephemeral/
+
+
+# Symbolication und Obfuscation
+app.*.symbols
+app.*.map.json
+
+#=======================================================================
+# IDE / Editor specific
+#=======================================================================
+# IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+#=======================================================================
+# Build artifacts
+#=======================================================================
+# Android Studio
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+/android/.gradle/
+/android/app/build/
+
+# Xcode
+/ios/DerivedData/
+/ios/build/
+/ios/*sync/
+
+#=======================================================================
+# HINWEIS zu generiertem Code (`.g.dart`, `.freezed.dart`):
+# Diese Dateien werden üblicherweise NICHT ignoriert, sondern in die
+# Versionskontrolle eingecheckt. Das stellt sicher, dass andere Entwickler
+# das Projekt ohne den Build-Runner ausführen können.
+#=======================================================================
