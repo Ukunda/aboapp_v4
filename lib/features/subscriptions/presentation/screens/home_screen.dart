@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 focusNode: _searchFocusNode,
                                 autofocus: true,
                                 decoration: InputDecoration(
-                                    hintText: 'Search subscriptions...',
+                                    hintText: context.l10n.translate('home_search_subscriptions_hint'),
                                     border: InputBorder.none,
                                     isDense: true,
                                     hintStyle: theme.appBarTheme.titleTextStyle
@@ -95,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .read<SubscriptionCubit>()
                                     .searchSubscriptions(query),
                               )
-                            : const Text('My Subscriptions'),
+                            : Text(context.l10n.translate('home_my_subscriptions')),
                       ),
                       actions: [
                         if (!_isSearching)
@@ -120,14 +121,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                             },
-                            tooltip: 'Filter & Sort',
+                            tooltip: context.l10n.translate('home_filter_sort_tooltip'),
                           ),
                         IconButton(
                           icon: Icon(_isSearching
                               ? Icons.close_rounded
                               : Icons.search_rounded),
                           onPressed: () => _toggleSearch(context),
-                          tooltip: _isSearching ? 'Close Search' : 'Search',
+                          tooltip: _isSearching
+                              ? context.l10n.translate('home_close_search_tooltip')
+                              : context.l10n.translate('home_search_tooltip'),
                         ),
                       ],
                       floating: true,
@@ -153,12 +156,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Center(
                           child: EmptyStateWidget(
                             icon: Icons.search_off_rounded,
-                            title: 'No Subscriptions Found',
-                            message: 'Try adjusting your search or filters.',
+                            title: context.l10n.translate('home_no_subscriptions_found_title'),
+                            message: context.l10n.translate('home_no_results_message'),
                             onRetry: () => context
                                 .read<SubscriptionCubit>()
                                 .clearAllFilters(),
-                            retryText: 'Clear Filters',
+                            retryText: context.l10n.translate('home_clear_filters_button'),
                           ),
                         ),
                       )
@@ -190,11 +193,11 @@ class _HomeScreenState extends State<HomeScreen> {
             error: (message) => Center(
               child: EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: 'Error',
+                title: context.l10n.translate('error_occurred'),
                 message: message,
                 onRetry: () =>
                     context.read<SubscriptionCubit>().loadSubscriptions(),
-                retryText: 'Retry',
+                retryText: context.l10n.translate('retry'),
               ),
             ),
           );
@@ -288,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.edit_rounded),
-              title: const Text('Edit Subscription'),
+              title: Text(context.l10n.translate('subscription_action_edit')),
               onTap: () {
                 Navigator.pop(builderContext);
                 context.pushNamed(
@@ -303,8 +306,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Icons.pause_circle_outline_rounded
                   : Icons.play_circle_outline_rounded),
               title: Text(subscription.isActive
-                  ? 'Pause Subscription'
-                  : 'Resume Subscription'),
+                  ? context.l10n.translate('subscription_action_pause')
+                  : context.l10n.translate('subscription_action_resume')),
               onTap: () {
                 Navigator.pop(builderContext);
                 context
@@ -317,8 +320,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Icons.notifications_off_rounded
                   : Icons.notifications_active_rounded),
               title: Text(subscription.notificationsEnabled
-                  ? 'Disable Notifications'
-                  : 'Enable Notifications'),
+                  ? context.l10n.translate('subscription_action_disable_notifications')
+                  : context.l10n.translate('subscription_action_enable_notifications')),
               onTap: () {
                 Navigator.pop(builderContext);
                 context
@@ -329,24 +332,33 @@ class _HomeScreenState extends State<HomeScreen> {
             ListTile(
               leading: Icon(Icons.delete_forever_rounded,
                   color: theme.colorScheme.error),
-              title: Text('Delete Subscription',
-                  style: TextStyle(color: theme.colorScheme.error)),
+              title: Text(
+                context.l10n.translate('subscription_action_delete'),
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
               onTap: () async {
                 Navigator.pop(builderContext);
                 final confirmDelete = await showDialog<bool>(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
-                    title: const Text('Confirm Delete'),
+                    title: Text(context.l10n
+                        .translate('subscription_delete_confirm_title')),
                     content: Text(
-                        'Are you sure you want to delete "${subscription.name}"? This cannot be undone.'),
+                      context.l10n.translate(
+                        'subscription_delete_confirm_message',
+                        args: {'name': subscription.name},
+                      ),
+                    ),
                     actions: <Widget>[
                       TextButton(
-                        child: const Text('Cancel'),
+                        child: Text(context.l10n.translate('cancel')),
                         onPressed: () => Navigator.of(dialogContext).pop(false),
                       ),
                       TextButton(
-                        child: Text('Delete',
-                            style: TextStyle(color: theme.colorScheme.error)),
+                        child: Text(
+                          context.l10n.translate('delete'),
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
                         onPressed: () => Navigator.of(dialogContext).pop(true),
                       ),
                     ],

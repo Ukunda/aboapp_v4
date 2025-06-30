@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class SalaryOnboardingPage extends StatefulWidget {
   const SalaryOnboardingPage({super.key});
@@ -52,14 +53,14 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             Icon(Icons.insights_rounded, size: 80, color: Colors.blue.shade600),
             const SizedBox(height: 24),
             Text(
-              "Optional: Salary Insights",
+              context.l10n.translate('onboarding_salary_optional_title'),
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
-              "Enter your salary to see what percentage of it goes to subscriptions. This is optional and stored only on your device.",
+              context.l10n.translate('onboarding_salary_optional_desc'),
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
@@ -68,7 +69,8 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             TextFormField(
               controller: _salaryController,
               decoration: InputDecoration(
-                labelText: "Salary Amount",
+                labelText:
+                    context.l10n.translate('settings_salary_amount_label'),
                 hintText: "e.g., 5000",
                 prefixIcon: const Icon(Icons.attach_money_rounded),
               ),
@@ -79,14 +81,14 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             ),
             const SizedBox(height: 16),
             SegmentedButton<SalaryCycle>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                     value: SalaryCycle.monthly,
-                    label: Text("Monthly"),
+                    label: Text(context.l10n.translate('billing_cycle_monthly')),
                     icon: Icon(Icons.calendar_view_month)),
                 ButtonSegment(
                     value: SalaryCycle.yearly,
-                    label: Text("Yearly"),
+                    label: Text(context.l10n.translate('billing_cycle_yearly')),
                     icon: Icon(Icons.calendar_today)),
               ],
               selected: {_salaryCycle},
@@ -105,7 +107,8 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             const SizedBox(height: 8),
             if (_salaryCycle == SalaryCycle.monthly)
               SwitchListTile.adaptive(
-                title: const Text("I receive a 13th salary"),
+                title:
+                    Text(context.l10n.translate('settings_salary_13th_checkbox')),
                 value: _hasThirteenthSalary,
                 onChanged: (value) {
                   app_haptics.HapticFeedback.lightImpact();

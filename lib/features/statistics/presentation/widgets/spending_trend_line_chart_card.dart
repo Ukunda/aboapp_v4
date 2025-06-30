@@ -5,6 +5,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class SpendingTrendLineChartCard extends StatelessWidget {
   final MonthlySpendingTrendData spendingTrendData;
@@ -25,7 +26,10 @@ class SpendingTrendLineChartCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No spending trend data available for ${spendingTrendData.year}.',
+              context.l10n.translate(
+                'stats_spending_trend_empty_message',
+                args: {'year': spendingTrendData.year.toString()},
+              ),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -40,7 +44,10 @@ class SpendingTrendLineChartCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Spending Trend - ${spendingTrendData.year}',
+              context.l10n.translate(
+                'stats_spending_trend_title',
+                args: {'year': spendingTrendData.year.toString()},
+              ),
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),

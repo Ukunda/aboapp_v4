@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -60,17 +61,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Rerun Welcome Screen?'),
-        content: const Text(
-            'This will show the welcome screen the next time you open the app. Your existing subscriptions and settings will not be deleted.'),
+        title: Text(context.l10n.translate('settings_rerun_onboarding_title')),
+        content: Text(
+            context.l10n.translate('settings_rerun_onboarding_message')),
         actions: <Widget>[
           TextButton(
-            child: const Text('Cancel'),
+            child: Text(context.l10n.translate('cancel')),
             onPressed: () => Navigator.of(dialogContext).pop(),
           ),
           TextButton(
-            child: Text('Confirm',
-                style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+            child: Text(
+              context.l10n.translate('confirm'),
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
             onPressed: () async {
               Navigator.of(dialogContext).pop(); // Close the dialog first
               final prefs = getIt<SharedPreferences>();
@@ -89,17 +92,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.system:
-        return 'System Default';
+        return context.l10n.translate('settings_theme_system');
       case ThemeMode.light:
-        return 'Light';
+        return context.l10n.translate('settings_theme_light');
       case ThemeMode.dark:
-        return 'Dark';
+        return context.l10n.translate('settings_theme_dark');
     }
   }
 
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
-    if (locale.languageCode == 'en') return 'English';
-    if (locale.languageCode == 'de') return 'Deutsch (German)';
+    if (locale.languageCode == 'en')
+      return context.l10n.translate('settings_language_english');
+    if (locale.languageCode == 'de')
+      return context.l10n.translate('settings_language_german');
     return locale.toLanguageTag();
   }
 
@@ -121,7 +126,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Settings'),
+          title: Text(context.l10n.translate('settings_title')),
         ),
         body: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
@@ -136,19 +141,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             return ListView(
               padding: const EdgeInsets.all(16.0),
               children: <Widget>[
-                _buildSectionHeader(context, 'Appearance'),
+                _buildSectionHeader(context, context.l10n.translate('settings_section_appearance')),
                 _buildAppearanceSection(context, state),
                 const Divider(height: 32),
-                _buildSectionHeader(context, 'Regional'),
+                _buildSectionHeader(context, context.l10n.translate('settings_section_regional')),
                 _buildRegionalSection(context, state),
                 const Divider(height: 32),
-                _buildSectionHeader(context, 'Salary Insights'),
+                _buildSectionHeader(context, context.l10n.translate('settings_section_salary')),
                 _buildSalarySection(context, state),
                 const Divider(height: 32),
-                _buildSectionHeader(context, 'Advanced'),
+                _buildSectionHeader(context, context.l10n.translate('settings_section_advanced')),
                 _buildAdvancedSection(context),
                 const Divider(height: 32),
-                _buildSectionHeader(context, 'About'),
+                _buildSectionHeader(context, context.l10n.translate('settings_section_about')),
                 _buildAboutSection(context),
               ],
             );
@@ -162,7 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.brightness_6_rounded),
-        title: const Text('Theme'),
+        title: Text(context.l10n.translate('settings_theme_title')),
         subtitle: Text(_getThemeModeDisplayName(context, state.themeMode)),
         onTap: () => _showThemeModeDialog(context, state.themeMode),
       ),
@@ -175,14 +180,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           ListTile(
             leading: const Icon(Icons.language_rounded),
-            title: const Text('Language'),
+            title: Text(context.l10n.translate('settings_language_title')),
             subtitle: Text(_getLocaleDisplayName(context, state.locale)),
             onTap: () => _showLocaleDialog(context, state.locale),
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.attach_money_rounded),
-            title: const Text('Currency'),
+            title: Text(context.l10n.translate('settings_currency_title')),
             subtitle: Text(
                 _supportedCurrencies[state.currencyCode] ?? state.currencyCode),
             onTap: () => _showCurrencyDialog(context, state.currencyCode),
@@ -204,12 +209,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "Your Salary",
+              context.l10n.translate('settings_salary_title'),
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 4),
             Text(
-              "This is optional and helps generate personal spending statistics. The data is stored only on your device.",
+              context.l10n.translate('settings_salary_description'),
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -217,7 +222,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextFormField(
               controller: _salaryController,
               decoration: InputDecoration(
-                labelText: "Salary Amount",
+                labelText: context.l10n.translate('settings_salary_amount_label'),
                 prefixText: "$currencySymbol ",
               ),
               keyboardType:
@@ -229,10 +234,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 16),
             SegmentedButton<SalaryCycle>(
-              segments: const [
+              segments: [
                 ButtonSegment(
-                    value: SalaryCycle.monthly, label: Text("Monthly")),
-                ButtonSegment(value: SalaryCycle.yearly, label: Text("Yearly")),
+                    value: SalaryCycle.monthly,
+                    label: Text(context.l10n.translate('billing_cycle_monthly'))),
+                ButtonSegment(
+                    value: SalaryCycle.yearly,
+                    label: Text(context.l10n.translate('billing_cycle_yearly'))),
               ],
               selected: {_salaryCycle ?? SalaryCycle.monthly},
               onSelectionChanged: (newSelection) {
@@ -242,7 +250,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             if (_salaryCycle == SalaryCycle.monthly)
               SwitchListTile.adaptive(
-                title: const Text("I receive a 13th salary"),
+                title: Text(context.l10n.translate('settings_salary_13th_checkbox')),
                 value: _hasThirteenthSalary ?? false,
                 onChanged: (value) {
                   setState(() => _hasThirteenthSalary = value);
@@ -263,9 +271,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: ListTile(
         leading: Icon(Icons.replay_circle_filled_rounded,
             color: theme.colorScheme.error),
-        title: Text('Rerun Welcome Screen',
+        title: Text(
+            context.l10n.translate('settings_rerun_onboarding_title'),
             style: TextStyle(color: theme.colorScheme.onErrorContainer)),
-        subtitle: Text('Shows the initial setup screens again',
+        subtitle: Text(
+            context.l10n.translate('settings_rerun_onboarding_subtitle'),
             style: TextStyle(
                 color: theme.colorScheme.onErrorContainer.withAlpha(204))), // ~80% opacity
         onTap: _showRerunOnboardingDialog,
@@ -277,19 +287,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.info_outline_rounded),
-        title: const Text('About AboApp'),
-        subtitle: const Text('Version 4.0.0'),
+        title: Text(context.l10n.translate('settings_about_app_title')),
+        subtitle:
+            Text(context.l10n.translate('settings_app_version', args: {'version': '4.0.0'})),
         onTap: () {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('About AboApp'),
-              content: const Text(
-                  'Subscription management made easy.\nVersion 4.0.0'),
+              title: Text(context.l10n.translate('settings_about_app_title')),
+              content: Text(
+                '${context.l10n.translate('settings_app_description_long')}\n${context.l10n.translate('settings_app_version', args: {'version': '4.0.0'})}',
+              ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Close'),
+                  child: Text(context.l10n.translate('close')),
                 )
               ],
             ),
@@ -318,7 +330,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Select Theme'),
+        title: Text(context.l10n.translate('settings_dialog_select_theme_title')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ThemeMode.values.map((themeMode) {
@@ -344,7 +356,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Select Language'),
+        title: Text(context.l10n.translate('settings_dialog_select_language_title')),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: supportedLocales.map((locale) {
@@ -369,7 +381,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Select Currency'),
+        title: Text(context.l10n.translate('settings_dialog_select_currency_title')),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView(

@@ -8,12 +8,10 @@
   "close": "Close",
   "error_occurred": "An Error Occurred",
   "loading": "Loading...",
-
   "bottom_nav_subscriptions": "Subscriptions",
   "bottom_nav_statistics": "Statistics",
   "bottom_nav_settings": "Settings",
   "bottom_nav_about": "About",
-
   "home_my_subscriptions": "My Subscriptions",
   "home_search_subscriptions_hint": "Search subscriptions...",
   "home_search_tooltip": "Search",
@@ -35,7 +33,6 @@
   "filter_sheet_categories": "Categories",
   "filter_sheet_billing_cycles": "Billing Cycles",
   "filter_sheet_apply": "Apply Filters",
-  
   "sort_option_nameAsc": "Name (A-Z)",
   "sort_option_nameDesc": "Name (Z-A)",
   "sort_option_priceAsc": "Price (Low-High)",
@@ -43,7 +40,6 @@
   "sort_option_nextBillingDateAsc": "Next Billing (Soonest)",
   "sort_option_nextBillingDateDesc": "Next Billing (Latest)",
   "sort_option_category": "Category",
-
   "subscription_card_trial_badge": "TRIAL",
   "subscription_card_days_until_label_prefix": "",
   "subscription_card_days_until_label_suffix": "days",
@@ -61,7 +57,6 @@
   "subscription_delete_confirm_message": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
   "subscription_deleted_snackbar": "\"{name}\" deleted.",
   "subscription_undo_snackbar_action": "Undo",
-
   "add_edit_screen_title_add": "Add Subscription",
   "add_edit_screen_title_edit": "Edit Subscription",
   "add_edit_screen_save_tooltip": "Save Subscription",
@@ -93,21 +88,18 @@
   "add_edit_screen_button_add": "Add Subscription",
   "add_edit_screen_button_update": "Update Subscription",
   "add_edit_screen_snackbar_invalid_custom_cycle": "Invalid custom cycle days. Please correct.",
-
   "billing_cycle_weekly": "Weekly",
   "billing_cycle_monthly": "Monthly",
   "billing_cycle_quarterly": "Quarterly",
   "billing_cycle_biAnnual": "Every 6 Months",
   "billing_cycle_yearly": "Yearly",
   "billing_cycle_custom": "Custom (Days)",
-  
   "billing_cycle_short_weekly": "wk",
   "billing_cycle_short_monthly": "mo",
   "billing_cycle_short_quarterly": "qtr",
   "billing_cycle_short_biAnnual": "6mo",
   "billing_cycle_short_yearly": "yr",
   "billing_cycle_short_custom": "cust",
-
   "category_streaming": "Streaming",
   "category_software": "Software",
   "category_gaming": "Gaming",
@@ -118,7 +110,6 @@
   "category_utilities": "Utilities",
   "category_education": "Education",
   "category_other": "Other",
-  
   "settings_title": "Settings",
   "settings_section_appearance": "Appearance",
   "settings_theme_title": "Theme",
@@ -137,7 +128,6 @@
   "settings_about_app_title": "About AboApp",
   "settings_app_version": "Version {version}",
   "settings_app_description_long": "Subscription management made easy, keeping you in control of your recurring expenses.",
-
   "stats_title": "Statistics",
   "stats_year_selector_tooltip": "Select Year",
   "stats_empty_title": "No Statistics Yet",
@@ -169,6 +159,21 @@
   "onboarding_page4_desc": "Get timely reminders before your subscriptions are due.",
   "onboarding_skip_button": "Skip",
   "onboarding_next_button": "Next",
-  "onboarding_get_started_button": "Get Started"
-  
+  "onboarding_get_started_button": "Get Started",
+  "bottom_nav_profile": "Profile",
+  "home_filter_sort_tooltip": "Filter & Sort",
+  "home_no_subscriptions_found_title": "No Subscriptions Found",
+  "settings_section_salary": "Salary Insights",
+  "settings_section_advanced": "Advanced",
+  "settings_rerun_onboarding_title": "Rerun Welcome Screen?",
+  "settings_rerun_onboarding_message": "This will show the welcome screen the next time you open the app. Your existing subscriptions and settings will not be deleted.",
+  "settings_rerun_onboarding_subtitle": "Shows the initial setup screens again",
+  "confirm": "Confirm",
+  "settings_salary_title": "Your Salary",
+  "settings_salary_description": "This is optional and helps generate personal spending statistics. The data is stored only on your device.",
+  "settings_salary_amount_label": "Salary Amount",
+  "settings_salary_13th_checkbox": "I receive a 13th salary",
+  "onboarding_salary_optional_title": "Optional: Salary Insights",
+  "onboarding_salary_optional_desc": "Enter your salary to see what percentage of it goes to subscriptions. This is optional and stored only on your device.",
+  "page_not_found_title": "Page Not Found"
 }

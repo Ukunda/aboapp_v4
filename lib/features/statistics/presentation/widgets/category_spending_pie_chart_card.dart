@@ -5,6 +5,7 @@ import 'package:aboapp/features/subscriptions/presentation/widgets/subscription_
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class CategorySpendingPieChartCard extends StatefulWidget {
   final List<CategorySpending> categorySpendingData;
@@ -34,7 +35,7 @@ class _CategorySpendingPieChartCardState
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No category spending data available.',
+              context.l10n.translate('stats_category_empty_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -50,7 +51,7 @@ class _CategorySpendingPieChartCardState
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No significant category spending.',
+              context.l10n.translate('stats_category_empty_significant_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -65,7 +66,7 @@ class _CategorySpendingPieChartCardState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Spending by Category',
+              context.l10n.translate('stats_category_spending_title'),
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),

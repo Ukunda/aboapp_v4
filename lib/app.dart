@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:aboapp/core/localization/app_localizations.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class AboApp extends StatelessWidget {
   const AboApp({super.key});
@@ -34,7 +35,7 @@ class AboApp extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp.router(
-            title: 'AboApp V4',
+            title: context.l10n.translate('app_title'),
             debugShowCheckedModeBanner: false,
             // VEREINFACHT: Wir verwenden jetzt immer das AppTheme.
             theme: AppTheme.lightTheme,
