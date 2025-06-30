@@ -1,16 +1,19 @@
 # aboapp_v4
 
-A new Flutter project.
+## Projektbeschreibung
+AboApp verwaltet deine Abonnements, analysiert deren Kosten und bietet Salary Insights, damit du deine Finanzen stets im Blick hast. Zu den Hauptfunktionen zählen:
 
-## Getting Started
+- **Subscription-Verwaltung** zum einfachen Hinzufügen und Kündigen von Verträgen
+- **Statistiken** mit Diagrammen und Übersichten deiner Ausgaben
+- **Salary Insights** zur Planung deines Budgets im Monatsverlauf
 
-This project is a starting point for a Flutter application.
+## Installation
+1. Stelle sicher, dass Flutter installiert ist.
+2. Führe `flutter pub get` aus, um alle Abhängigkeiten zu laden.
+3. Starte ein Gerät oder einen Emulator und führe `flutter run` aus.
 
-A few resources to get you started if this is your first Flutter project:
+Unterstützte Plattformen: Android, iOS, Web und Desktop (Windows, macOS, Linux).
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Weitere Informationen
+- [Datenschutzerklärung](PRIVACY_POLICY.md)
+- [Taskliste](Tasklist.md)
