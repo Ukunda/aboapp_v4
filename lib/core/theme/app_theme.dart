@@ -116,7 +116,7 @@ abstract class AppTheme {
         titleTextStyle: textTheme.headlineSmall,
         iconTheme: IconThemeData(color: onSurfaceColor),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         color: surfaceColor,
         shape: cardShape,
