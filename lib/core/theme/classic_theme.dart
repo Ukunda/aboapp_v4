@@ -55,16 +55,16 @@ abstract class ClassicTheme {
         titleTextStyle: AppTypography.titleLarge,
         iconTheme: IconThemeData(color: AppColors.onSurfaceLight),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 1.0,
         color: AppColors.surfaceLight,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
           side: const BorderSide(color: AppColors.borderLight, width: 0.5),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
@@ -196,16 +196,16 @@ abstract class ClassicTheme {
         titleTextStyle: AppTypography.titleLarge,
         iconTheme: IconThemeData(color: AppColors.onSurfaceDark),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 1.0,
         color: AppColors.surfaceDark,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.0),
           side: const BorderSide(color: AppColors.borderDark, width: 0.5),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryLight,
