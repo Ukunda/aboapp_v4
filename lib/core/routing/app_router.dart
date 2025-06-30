@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 abstract class AppRoutes {
   static const String onboarding = '/onboarding';
@@ -78,7 +79,9 @@ class AppRouter {
         ),
       ],
       errorBuilder: (context, state) => Scaffold(
-        appBar: AppBar(title: const Text('Page Not Found')),
+        appBar: AppBar(
+          title: Text(context.l10n.translate('page_not_found_title')),
+        ),
         body: Center(child: Text('Error: \n${state.error}')),
       ),
     );

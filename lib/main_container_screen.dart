@@ -138,7 +138,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
                 index: 2),
             _buildBottomNavItem(
                 icon: Icons.person_rounded,
-                label: 'Profile',
+                label: context.l10n.translate('bottom_nav_profile'),
                 index: 3), // Example for future use
           ],
         ),

@@ -8,12 +8,10 @@
   "close": "Schließen",
   "error_occurred": "Ein Fehler ist aufgetreten",
   "loading": "Lädt...",
-
   "bottom_nav_subscriptions": "Abos",
   "bottom_nav_statistics": "Statistik",
   "bottom_nav_settings": "Einstellungen",
   "bottom_nav_about": "Über",
-  
   "home_my_subscriptions": "Meine Abos",
   "home_search_subscriptions_hint": "Abos suchen...",
   "home_search_tooltip": "Suchen",
@@ -35,7 +33,6 @@
   "filter_sheet_categories": "Kategorien",
   "filter_sheet_billing_cycles": "Zahlungszyklen",
   "filter_sheet_apply": "Filter anwenden",
-
   "sort_option_nameAsc": "Name (A-Z)",
   "sort_option_nameDesc": "Name (Z-A)",
   "sort_option_priceAsc": "Preis (Gering-Hoch)",
@@ -43,7 +40,6 @@
   "sort_option_nextBillingDateAsc": "Nächste Zahlung (Früheste)",
   "sort_option_nextBillingDateDesc": "Nächste Zahlung (Späteste)",
   "sort_option_category": "Kategorie",
-  
   "subscription_card_trial_badge": "PROBE",
   "subscription_card_days_until_label_prefix": "in ",
   "subscription_card_days_until_label_suffix": "Tagen",
@@ -61,7 +57,6 @@
   "subscription_delete_confirm_message": "Möchtest du \"{name}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "subscription_deleted_snackbar": "\"{name}\" gelöscht.",
   "subscription_undo_snackbar_action": "Rückgängig",
-  
   "add_edit_screen_title_add": "Abo hinzufügen",
   "add_edit_screen_title_edit": "Abo bearbeiten",
   "add_edit_screen_save_tooltip": "Abo speichern",
@@ -93,21 +88,18 @@
   "add_edit_screen_button_add": "Abo hinzufügen",
   "add_edit_screen_button_update": "Abo aktualisieren",
   "add_edit_screen_snackbar_invalid_custom_cycle": "Ungültige Zyklustage. Bitte korrigieren.",
-
   "billing_cycle_weekly": "Wöchentlich",
   "billing_cycle_monthly": "Monatlich",
   "billing_cycle_quarterly": "Vierteljährlich",
   "billing_cycle_biAnnual": "Halbjährlich",
   "billing_cycle_yearly": "Jährlich",
   "billing_cycle_custom": "Benutzerdefiniert (Tage)",
-  
   "billing_cycle_short_weekly": "Wo",
   "billing_cycle_short_monthly": "Mo",
   "billing_cycle_short_quarterly": "Qt",
   "billing_cycle_short_biAnnual": "6Mo",
   "billing_cycle_short_yearly": "Jr",
   "billing_cycle_short_custom": "Ind",
-
   "category_streaming": "Streaming",
   "category_software": "Software",
   "category_gaming": "Gaming",
@@ -118,7 +110,6 @@
   "category_utilities": "Haushalt",
   "category_education": "Bildung",
   "category_other": "Sonstiges",
-
   "settings_title": "Einstellungen",
   "settings_section_appearance": "Erscheinungsbild",
   "settings_theme_title": "Design",
@@ -137,7 +128,6 @@
   "settings_about_app_title": "Über AboApp",
   "settings_app_version": "Version {version}",
   "settings_app_description_long": "Abo-Verwaltung leicht gemacht, damit du deine wiederkehrenden Kosten im Griff hast.",
-
   "stats_title": "Statistiken",
   "stats_year_selector_tooltip": "Jahr auswählen",
   "stats_empty_title": "Noch keine Statistiken",
@@ -158,5 +148,21 @@
   "stats_top_subscriptions_empty_message": "Keine Abos in der Top-Liste anzuzeigen.",
   "stats_per_month_label": "pro Monat",
   "stats_subscription_abbrev_single": "Abo",
-  "stats_subscription_abbrev_multiple": "Abos"
+  "stats_subscription_abbrev_multiple": "Abos",
+  "bottom_nav_profile": "Profil",
+  "home_filter_sort_tooltip": "Filtern & Sortieren",
+  "home_no_subscriptions_found_title": "Keine Abos gefunden",
+  "settings_section_salary": "Gehaltsinformationen",
+  "settings_section_advanced": "Erweitert",
+  "settings_rerun_onboarding_title": "Willkommensbildschirm erneut anzeigen?",
+  "settings_rerun_onboarding_message": "Der Willkommensbildschirm wird beim naechsten Start der App erneut angezeigt. Deine bestehenden Abos und Einstellungen bleiben erhalten.",
+  "settings_rerun_onboarding_subtitle": "Zeigt die Einfuehrung erneut",
+  "confirm": "Bestätigen",
+  "settings_salary_title": "Dein Gehalt",
+  "settings_salary_description": "Optional, hilft persönliche Ausgabenstatistiken zu erstellen. Die Daten werden nur auf deinem Gerät gespeichert.",
+  "settings_salary_amount_label": "Gehaltsbetrag",
+  "settings_salary_13th_checkbox": "Ich erhalte einen 13. Monatslohn",
+  "onboarding_salary_optional_title": "Optional: Gehaltsinformationen",
+  "onboarding_salary_optional_desc": "Gib dein Gehalt ein, um zu sehen, welcher Anteil für Abos ausgegeben wird. Diese Angabe ist optional und wird nur auf deinem Gerät gespeichert.",
+  "page_not_found_title": "Seite nicht gefunden"
 }

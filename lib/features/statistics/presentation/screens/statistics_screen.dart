@@ -9,6 +9,7 @@ import 'package:aboapp/widgets/empty_state_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
@@ -39,16 +40,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 const Center(child: CircularProgressIndicator.adaptive()),
             empty: (message) => EmptyStateWidget(
               icon: Icons.insights_rounded,
-              title: 'No Statistics Yet',
+              title: context.l10n.translate('stats_empty_title'),
               message: message,
             ),
             error: (message) => EmptyStateWidget(
               icon: Icons.error_outline_rounded,
-              title: 'Error Loading Statistics',
+              title: context.l10n.translate('stats_error_title'),
               message: message,
               onRetry: () =>
                   context.read<StatisticsCubit>().generateStatistics(),
-              retryText: 'Retry',
+              retryText: context.l10n.translate('retry'),
             ),
             loaded: (
               activeSubscriptions,
@@ -93,7 +94,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   child: CustomScrollView(
                     slivers: <Widget>[
                       SliverAppBar(
-                        title: const Text('Statistics'),
+                        title: Text(context.l10n.translate('stats_title')),
                         floating: true,
                         snap: true,
                         actions: [

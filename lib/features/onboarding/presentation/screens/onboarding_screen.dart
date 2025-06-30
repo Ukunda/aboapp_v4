@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aboapp/core/di/injection.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -44,29 +45,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.didChangeDependencies();
     _onboardingPages = [
       _OnboardingScreenData(
-        titleKey: 'Welcome to AboApp',
-        descriptionKey: 'Easily manage all your subscriptions in one place.',
+        titleKey: 'onboarding_page1_title',
+        descriptionKey: 'onboarding_page1_desc',
         iconData: Icons.account_balance_wallet_outlined,
         iconColor: Theme.of(context).colorScheme.primary,
       ),
       _OnboardingScreenData(
-        titleKey: 'Add Subscriptions',
-        descriptionKey:
-            'Track your recurring payments and never miss a due date.',
+        titleKey: 'onboarding_page2_title',
+        descriptionKey: 'onboarding_page2_desc',
         iconData: Icons.add_circle_outline_rounded,
         iconColor: Colors.green.shade600,
       ),
       _OnboardingScreenData(
-        titleKey: 'Salary Insights',
-        descriptionKey:
-            'Enter your salary to see how much you spend on subscriptions.',
+        titleKey: 'onboarding_salary_optional_title',
+        descriptionKey: 'onboarding_salary_optional_desc',
         iconData: Icons.insights_rounded,
         iconColor: Colors.blue.shade600,
         customContent: SalaryOnboardingPage(key: _salaryPageKey),
       ),
       _OnboardingScreenData(
-        titleKey: 'Get Notified',
-        descriptionKey: 'Receive reminders before your next billing date.',
+        titleKey: 'onboarding_page4_title',
+        descriptionKey: 'onboarding_page4_desc',
         iconData: Icons.notifications_active_outlined,
         iconColor: Colors.purple.shade600,
       ),
@@ -110,7 +109,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.only(top: 8.0, right: 16.0),
                 child: TextButton(
                   onPressed: _completeOnboarding,
-                  child: Text(isLastPage ? 'Done' : 'Skip'),
+                  child: Text(isLastPage
+                      ? context.l10n.translate('onboarding_get_started_button')
+                      : context.l10n.translate('onboarding_skip_button')),
                 ),
               ),
             ),
@@ -133,8 +134,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   }
                   return SingleChildScrollView(
                     child: OnboardingPageContentWidget(
-                      title: pageData.titleKey,
-                      description: pageData.descriptionKey,
+                      title: context.l10n.translate(pageData.titleKey),
+                      description: context.l10n.translate(pageData.descriptionKey),
                       iconData: pageData.iconData,
                       iconColor: pageData.iconColor,
                     ),
@@ -178,7 +179,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     }
                   },
                   child: Text(
-                    isLastPage ? 'Get Started' : 'Next',
+                    isLastPage
+                        ? context.l10n.translate('onboarding_get_started_button')
+                        : context.l10n.translate('onboarding_next_button'),
                   ),
                 ),
               ),
