@@ -17,4 +17,4 @@ Unterstützte Plattformen: Android, iOS, Web und Desktop (Windows, macOS, Linux)
 ## Weitere Informationen
 - [Datenschutzerklärung](PRIVACY_POLICY.md)
 - [Taskliste](Tasklist.md)
-- [Lizenz](LICENSE)
+

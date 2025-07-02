@@ -15,17 +15,20 @@ android {
     // Key-Properties laden
     val keyProperties = Properties()
     val keyPropertiesFile = rootProject.file("key.properties")
-    if (keyPropertiesFile.exists()) {
+    val hasKeyProperties = keyPropertiesFile.exists()
+    if (hasKeyProperties) {
         keyProperties.load(FileInputStream(keyPropertiesFile))
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keyProperties["keyAlias"] as String?
-            keyPassword = keyProperties["keyPassword"] as String?
-            // Sicherere Zuweisung für die storeFile
-            storeFile = if (keyProperties["storeFile"] != null) file(keyProperties["storeFile"] as String) else null
-            storePassword = keyProperties["storePassword"] as String?
+        if (hasKeyProperties) {
+            create("release") {
+                keyAlias = keyProperties["keyAlias"] as String?
+                keyPassword = keyProperties["keyPassword"] as String?
+                // Sicherere Zuweisung für die storeFile
+                storeFile = if (keyProperties["storeFile"] != null) file(keyProperties["storeFile"] as String) else null
+                storePassword = keyProperties["storePassword"] as String?
+            }
         }
     }
 
@@ -48,12 +51,14 @@ android {
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            if (hasKeyProperties) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             isShrinkResources = true
             getDefaultProguardFile("proguard-android-optimize.txt")
 
-            
+
         }
     }
 }
