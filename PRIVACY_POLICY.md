@@ -29,6 +29,7 @@ Der Schutz Ihrer Daten ist das Kernstück unserer Architektur.
 
 * **Lokale Speicherung:** Alle von Ihnen eingegebenen Daten werden **ausschließlich lokal auf Ihrem Gerät** gespeichert. Es findet keine Übertragung an einen von uns betriebenen Server statt.
 * **Verschlüsselung:** Wir verwenden `flutter_secure_storage`, um Ihre Daten sicher im verschlüsselten Speicher Ihres Geräts (z.B. Keychain auf iOS, Keystore auf Android) abzulegen. Dies bietet einen robusten Schutz vor unbefugtem Zugriff.
+* **E-Mail-Import:** Beim optionalen Scannen Ihres Postfachs werden Nachrichten nur lokal analysiert. Es werden keine Inhalte an unsere Server übertragen.
 
 ## 4. Wie wir Ihre Daten verwenden
 
