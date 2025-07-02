@@ -4,6 +4,7 @@ import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class SalaryInsightCard extends StatelessWidget {
   final double percentageOfSalary;
@@ -53,13 +54,19 @@ class SalaryInsightCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Salary Contribution",
+                    context.l10n.translate('stats_salary_contribution_title'),
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    "You're spending $formattedPercentage% of your yearly salary ($formattedSalary) on subscriptions.",
+                    context.l10n.translate(
+                      'stats_salary_contribution_message',
+                      args: {
+                        'percentage': formattedPercentage,
+                        'salary': formattedSalary,
+                      },
+                    ),
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),

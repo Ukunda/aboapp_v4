@@ -71,10 +71,11 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
               decoration: InputDecoration(
                 labelText:
                     context.l10n.translate('settings_salary_amount_label'),
-                hintText: "e.g., 5000",
+                hintText: context.l10n.translate('onboarding_salary_hint'),
                 prefixIcon: const Icon(Icons.attach_money_rounded),
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[\d,.]'))
               ],
@@ -84,7 +85,8 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
               segments: [
                 ButtonSegment(
                     value: SalaryCycle.monthly,
-                    label: Text(context.l10n.translate('billing_cycle_monthly')),
+                    label:
+                        Text(context.l10n.translate('billing_cycle_monthly')),
                     icon: Icon(Icons.calendar_view_month)),
                 ButtonSegment(
                     value: SalaryCycle.yearly,
@@ -107,8 +109,8 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             const SizedBox(height: 8),
             if (_salaryCycle == SalaryCycle.monthly)
               SwitchListTile.adaptive(
-                title:
-                    Text(context.l10n.translate('settings_salary_13th_checkbox')),
+                title: Text(
+                    context.l10n.translate('settings_salary_13th_checkbox')),
                 value: _hasThirteenthSalary,
                 onChanged: (value) {
                   app_haptics.HapticFeedback.lightImpact();

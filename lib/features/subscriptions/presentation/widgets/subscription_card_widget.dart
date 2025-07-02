@@ -64,7 +64,7 @@ class SubscriptionCardWidget extends StatelessWidget {
       daysFutureText:
           '${context.l10n.translate('subscription_card_days_until_label_prefix')} {days} ${context.l10n.translate('subscription_card_days_until_label_suffix')}',
     );
-    
+
     final bool isInactive = !subscription.isActive;
 
     return Card(
@@ -76,7 +76,8 @@ class SubscriptionCardWidget extends StatelessWidget {
         child: Container(
           foregroundDecoration: BoxDecoration(
             color: isInactive
-                ? theme.colorScheme.onSurface.withAlpha(20) // Subtiles graues Overlay
+                ? theme.colorScheme.onSurface
+                    .withAlpha(20) // Subtiles graues Overlay
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(
                 theme.cardTheme.shape is RoundedRectangleBorder
@@ -120,7 +121,8 @@ class SubscriptionCardWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            'TRIAL',
+                            context.l10n
+                                .translate('subscription_card_trial_badge'),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.onTertiaryContainer,
                               fontWeight: FontWeight.bold,

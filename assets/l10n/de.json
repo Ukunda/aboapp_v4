@@ -149,6 +149,8 @@
   "stats_per_month_label": "pro Monat",
   "stats_subscription_abbrev_single": "Abo",
   "stats_subscription_abbrev_multiple": "Abos",
+  "stats_salary_contribution_title": "Gehaltsanteil",
+  "stats_salary_contribution_message": "Du gibst {percentage}% deines Jahresgehalts ({salary}) für Abos aus.",
   "bottom_nav_profile": "Profil",
   "home_filter_sort_tooltip": "Filtern & Sortieren",
   "home_no_subscriptions_found_title": "Keine Abos gefunden",
@@ -164,5 +166,6 @@
   "settings_salary_13th_checkbox": "Ich erhalte einen 13. Monatslohn",
   "onboarding_salary_optional_title": "Optional: Gehaltsinformationen",
   "onboarding_salary_optional_desc": "Gib dein Gehalt ein, um zu sehen, welcher Anteil für Abos ausgegeben wird. Diese Angabe ist optional und wird nur auf deinem Gerät gespeichert.",
+  "onboarding_salary_hint": "z.B. 5000",
   "page_not_found_title": "Seite nicht gefunden"
 }

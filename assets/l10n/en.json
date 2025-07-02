@@ -149,6 +149,8 @@
   "stats_per_month_label": "per month",
   "stats_subscription_abbrev_single": "sub",
   "stats_subscription_abbrev_multiple": "subs",
+  "stats_salary_contribution_title": "Salary Contribution",
+  "stats_salary_contribution_message": "You're spending {percentage}% of your yearly salary ({salary}) on subscriptions.",
   "onboarding_page1_title": "Welcome to AboApp!",
   "onboarding_page1_desc": "Track your subscriptions and save money effortlessly.",
   "onboarding_page2_title": "Add Subscriptions Easily",
@@ -175,5 +177,6 @@
   "settings_salary_13th_checkbox": "I receive a 13th salary",
   "onboarding_salary_optional_title": "Optional: Salary Insights",
   "onboarding_salary_optional_desc": "Enter your salary to see what percentage of it goes to subscriptions. This is optional and stored only on your device.",
+  "onboarding_salary_hint": "e.g., 5000",
   "page_not_found_title": "Page Not Found"
 }
