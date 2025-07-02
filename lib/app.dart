@@ -2,7 +2,6 @@
 
 import 'package:aboapp/core/di/injection.dart';
 import 'package:aboapp/core/routing/app_router.dart';
-// VEREINFACHT: Nur noch ein Theme importieren
 import 'package:aboapp/core/theme/app_theme.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
@@ -35,7 +34,7 @@ class AboApp extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp.router(
-            title: context.l10n.translate('app_title'),
+            onGenerateTitle: (context) => context.l10n.translate('app_title'),
             debugShowCheckedModeBanner: false,
             // VEREINFACHT: Wir verwenden jetzt immer das AppTheme.
             theme: AppTheme.lightTheme,
