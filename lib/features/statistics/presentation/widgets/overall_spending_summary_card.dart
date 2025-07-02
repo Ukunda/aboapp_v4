@@ -3,6 +3,7 @@ import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class OverallSpendingSummaryCard extends StatelessWidget {
   final double totalMonthlySpending;
@@ -33,7 +34,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Spending Overview',
+              context.l10n.translate('stats_overall_spending_title'),
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -43,7 +44,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                 _buildMetric(
                   context: context,
                   currencyFormat: currencyFormat,
-                  label: 'Monthly',
+                  label: context.l10n.translate('billing_cycle_monthly'),
                   value: totalMonthlySpending,
                   style: theme.textTheme.headlineMedium!.copyWith(
                     color: theme.colorScheme.primary,
@@ -55,7 +56,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                 _buildMetric(
                   context: context,
                   currencyFormat: currencyFormat,
-                  label: 'Yearly',
+                  label: context.l10n.translate('billing_cycle_yearly'),
                   value: totalYearlySpending,
                   style: theme.textTheme.headlineMedium!.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,

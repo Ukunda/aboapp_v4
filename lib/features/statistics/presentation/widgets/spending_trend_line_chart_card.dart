@@ -93,17 +93,15 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                             reservedSize: 30,
                             interval: 2,
                             getTitlesWidget: (value, meta) {
-                              const months = [
-                                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-                              ];
-                              final int monthIndex = value.toInt() - 1;
-                              if (monthIndex >= 0 &&
-                                  monthIndex < months.length) {
+                              final int monthIndex = value.toInt();
+                              if (monthIndex >= 1 && monthIndex <= 12) {
+                                final monthName = DateFormat.MMM(
+                                        settingsState.locale.toLanguageTag())
+                                    .format(DateTime(2020, monthIndex));
                                 return SideTitleWidget(
                                   axisSide: meta.axisSide,
                                   space: 8.0,
-                                  child: Text(months[monthIndex],
+                                  child: Text(monthName,
                                       style: theme.textTheme.bodySmall),
                                 );
                               }
@@ -186,14 +184,13 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                         touchTooltipData: LineTouchTooltipData(
                           getTooltipColor: (spot) =>
                               theme.colorScheme.surfaceContainerHighest,
-                          getTooltipItems:
-                              (List<LineBarSpot> touchedBarSpots) {
+                          getTooltipItems: (List<LineBarSpot> touchedBarSpots) {
                             return touchedBarSpots.map((barSpot) {
                               final flSpot = barSpot;
                               final monthName = DateFormat.MMMM(
                                       settingsState.locale.toLanguageTag())
-                                  .format(DateTime(
-                                      spendingTrendData.year, flSpot.x.toInt()));
+                                  .format(DateTime(spendingTrendData.year,
+                                      flSpot.x.toInt()));
                               return LineTooltipItem(
                                 '$monthName: ${CurrencyFormatter.format(flSpot.y, currencyCode: settingsState.currencyCode, locale: settingsState.locale, decimalDigits: 0)}\n',
                                 TextStyle(
