@@ -80,6 +80,10 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   }
 
   void _onBottomNavItemTapped(int index) {
+    if (index == 3) {
+      context.pushNamed(AppRoutes.suggestions);
+      return;
+    }
     if (_currentIndex == index) return;
     app_haptics.HapticFeedback.selectionClick();
     _pageController.animateToPage(
@@ -137,9 +141,9 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
                 label: context.l10n.translate('bottom_nav_settings'),
                 index: 2),
             _buildBottomNavItem(
-                icon: Icons.person_rounded,
-                label: context.l10n.translate('bottom_nav_profile'),
-                index: 3), // Example for future use
+                icon: Icons.mail_rounded,
+                label: context.l10n.translate('bottom_nav_import'),
+                index: 3),
           ],
         ),
       ),
@@ -153,8 +157,8 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   }) {
     final theme = Theme.of(context);
     final isSelected = _currentIndex == index;
-    // Index 3 (Profile) ist vorerst deaktiviert
-    final bool isDisabled = index > 2;
+    // Import screen is accessed via navigation
+    final bool isDisabled = false;
 
     final color = isDisabled
         ? theme.colorScheme.onSurface.withValues(alpha: 77)

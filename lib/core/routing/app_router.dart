@@ -3,6 +3,7 @@
 import 'package:aboapp/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:aboapp/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart';
+import 'package:aboapp/features/subscriptions/presentation/screens/subscription_suggestions_screen.dart';
 import 'package:aboapp/main_container_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,7 @@ abstract class AppRoutes {
   static const String home = '/home';
   static const String statistics = '/statistics';
   static const String settings = '/settings';
+  static const String suggestions = '/suggestions';
   static const String addSubscription = 'add';
   static const String editSubscription = 'edit/:id';
 }
@@ -74,6 +76,11 @@ class AppRouter {
               path: AppRoutes.settings,
               name: AppRoutes.settings,
               builder: (context, state) => const SizedBox.shrink(),
+            ),
+            GoRoute(
+              path: AppRoutes.suggestions,
+              name: AppRoutes.suggestions,
+              builder: (context, state) => const SubscriptionSuggestionsScreen(),
             ),
           ],
         ),

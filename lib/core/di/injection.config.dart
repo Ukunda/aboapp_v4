@@ -33,6 +33,8 @@ import '../../features/settings/domain/usecases/save_theme_setting_usecase.dart'
     as _i150;
 import '../../features/settings/presentation/cubit/settings_cubit.dart'
     as _i792;
+import '../../features/subscriptions/data/datasources/email_subscription_datasource.dart'
+    as _i390;
 import '../../features/subscriptions/data/datasources/subscription_local_datasource.dart'
     as _i327;
 import '../../features/subscriptions/data/repositories/subscription_repository_impl.dart'
@@ -45,10 +47,14 @@ import '../../features/subscriptions/domain/usecases/delete_subscription_usecase
     as _i170;
 import '../../features/subscriptions/domain/usecases/get_all_subscriptions_usecase.dart'
     as _i899;
+import '../../features/subscriptions/domain/usecases/scan_email_subscriptions_usecase.dart'
+    as _i711;
 import '../../features/subscriptions/domain/usecases/update_subscription_usecase.dart'
     as _i684;
 import '../../features/subscriptions/presentation/cubit/subscription_cubit.dart'
     as _i854;
+import '../../features/subscriptions/presentation/cubit/subscription_suggestion_cubit.dart'
+    as _i694;
 import '../routing/app_router.dart' as _i282;
 import 'injection.dart' as _i464;
 
@@ -71,27 +77,35 @@ Future<_i174.GetIt> $initGetIt(
   gh.lazySingleton<_i706.Uuid>(() => registerExternalDependencies.uuid);
   gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => registerExternalDependencies.secureStorage);
+  gh.lazySingleton<_i390.EmailSubscriptionDataSource>(
+      () => _i390.EmailSubscriptionDataSourceImpl());
   gh.lazySingleton<_i723.SettingsLocalDataSource>(() =>
       _i723.SettingsLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()));
   gh.lazySingleton<_i327.SubscriptionLocalDataSource>(() =>
       _i327.SubscriptionLocalDataSourceImpl(gh<_i558.FlutterSecureStorage>()));
   gh.singleton<_i282.AppRouter>(
       () => _i282.AppRouter(gh<_i460.SharedPreferences>()));
+  gh.lazySingleton<_i711.ScanEmailSubscriptionsUseCase>(() =>
+      _i711.ScanEmailSubscriptionsUseCase(
+          gh<_i390.EmailSubscriptionDataSource>()));
   gh.lazySingleton<_i674.SettingsRepository>(
       () => _i955.SettingsRepositoryImpl(gh<_i723.SettingsLocalDataSource>()));
   gh.lazySingleton<_i384.SubscriptionRepository>(() =>
       _i944.SubscriptionRepositoryImpl(
           localDataSource: gh<_i327.SubscriptionLocalDataSource>()));
-  gh.lazySingleton<_i1029.GetSettingsUseCase>(
-      () => _i1029.GetSettingsUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i851.SaveCurrencySettingUseCase>(
       () => _i851.SaveCurrencySettingUseCase(gh<_i674.SettingsRepository>()));
-  gh.lazySingleton<_i682.SaveLocaleSettingUseCase>(
-      () => _i682.SaveLocaleSettingUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i969.SaveSalarySettingsUseCase>(
       () => _i969.SaveSalarySettingsUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i1029.GetSettingsUseCase>(
+      () => _i1029.GetSettingsUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i150.SaveThemeSettingUseCase>(
       () => _i150.SaveThemeSettingUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i682.SaveLocaleSettingUseCase>(
+      () => _i682.SaveLocaleSettingUseCase(gh<_i674.SettingsRepository>()));
+  gh.factory<_i694.SubscriptionSuggestionCubit>(() =>
+      _i694.SubscriptionSuggestionCubit(
+          gh<_i711.ScanEmailSubscriptionsUseCase>()));
   gh.factory<_i792.SettingsCubit>(() => _i792.SettingsCubit(
         gh<_i1029.GetSettingsUseCase>(),
         gh<_i150.SaveThemeSettingUseCase>(),
