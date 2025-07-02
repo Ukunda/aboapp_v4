@@ -7,6 +7,7 @@ import 'package:aboapp/core/theme/app_theme.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart';
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cubit.dart';
+import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_suggestion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -31,12 +32,14 @@ class AboApp extends StatelessWidget {
         BlocProvider<StatisticsCubit>(
           create: (context) => getIt<StatisticsCubit>(),
         ),
+        BlocProvider<SubscriptionSuggestionCubit>(
+          create: (context) => getIt<SubscriptionSuggestionCubit>(),
+        ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp.router(
-            onGenerateTitle: (context) =>
-                context.l10n.translate('app_title'),
+            onGenerateTitle: (context) => context.l10n.translate('app_title'),
             debugShowCheckedModeBanner: false,
             // VEREINFACHT: Wir verwenden jetzt immer das AppTheme.
             theme: AppTheme.lightTheme,
