@@ -15,7 +15,8 @@ import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class MainContainerScreen extends StatefulWidget {
   final String location;
-  const MainContainerScreen({super.key, required this.location});
+  final Widget child;
+  const MainContainerScreen({super.key, required this.location, required this.child});
 
   @override
   State<MainContainerScreen> createState() => _MainContainerScreenState();
@@ -96,20 +97,25 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: _onPageChanged,
-        physics: const BouncingScrollPhysics(),
-        children: <Widget>[
-          const HomeScreen(),
-          BlocProvider(
-            create: (context) => StatisticsCubit(
-              subscriptionCubit: context.read<SubscriptionCubit>(),
-              settingsCubit: context.read<SettingsCubit>(),
-            ),
-            child: const StatisticsScreen(),
+      body: Stack(
+        children: [
+          PageView(
+            controller: _pageController,
+            onPageChanged: _onPageChanged,
+            physics: const BouncingScrollPhysics(),
+            children: <Widget>[
+              const HomeScreen(),
+              BlocProvider(
+                create: (context) => StatisticsCubit(
+                  subscriptionCubit: context.read<SubscriptionCubit>(),
+                  settingsCubit: context.read<SettingsCubit>(),
+                ),
+                child: const StatisticsScreen(),
+              ),
+              const SettingsScreen(),
+            ],
           ),
-          const SettingsScreen(),
+          widget.child,
         ],
       ),
       floatingActionButton: FloatingActionButton(
