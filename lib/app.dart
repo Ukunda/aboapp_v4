@@ -35,7 +35,8 @@ class AboApp extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp.router(
-            title: context.l10n.translate('app_title'),
+            onGenerateTitle: (context) =>
+                context.l10n.translate('app_title'),
             debugShowCheckedModeBanner: false,
             // VEREINFACHT: Wir verwenden jetzt immer das AppTheme.
             theme: AppTheme.lightTheme,
