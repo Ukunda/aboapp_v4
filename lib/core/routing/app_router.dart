@@ -46,7 +46,10 @@ class AppRouter {
         ),
         ShellRoute(
           builder: (context, state, child) {
-            return MainContainerScreen(location: state.uri.toString());
+            return MainContainerScreen(
+              location: state.uri.toString(),
+              child: child,
+            );
           },
           routes: [
             GoRoute(
