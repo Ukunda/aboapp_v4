@@ -1,3 +1,5 @@
+// lib/features/subscriptions/data/models/subscription_model.dart
+
 import 'package:aboapp/core/utils/color_serializer.dart';
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +9,10 @@ part 'subscription_model.freezed.dart';
 part 'subscription_model.g.dart';
 
 @freezed
-@JsonSerializable(
-  explicitToJson: true,
-  createFactory: false,
-  createToJson: false,
-) // Avoid duplicate top-level functions
 class SubscriptionModel with _$SubscriptionModel {
-  const SubscriptionModel._(); // Private constructor remains
+  const SubscriptionModel._();
 
+  // FIX: Die @JsonKey-Annotationen sind jetzt korrekt an den Parametern platziert.
   const factory SubscriptionModel({
     required String id,
     required String name,

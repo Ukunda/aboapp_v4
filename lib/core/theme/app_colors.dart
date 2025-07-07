@@ -22,7 +22,8 @@ abstract class AppColors {
   static const Color backgroundDark = Color(0xFF111827); // Very Dark Blue/Gray
   static const Color surfaceDark = Color(0xFF1F2937); // Dark Gray
   static const Color onSurfaceDark = Color(0xFFF3F4F6); // Light Gray
-  static const Color onSurfaceVariantDark = Color(0xFF9CA3AF); // Medium-Light Gray
+  // Lightened for better readability in Dark Mode
+  static const Color onSurfaceVariantDark = Color(0xFFC7C7CC);
 
   // Semantic Colors
   static const Color error = Color(0xFFEF4444); // Red

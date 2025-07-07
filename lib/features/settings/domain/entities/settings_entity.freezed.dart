@@ -18,7 +18,11 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$SettingsEntity {
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   Locale get locale => throw _privateConstructorUsedError;
-  String get currencyCode => throw _privateConstructorUsedError;
+  String get currencyCode =>
+      throw _privateConstructorUsedError; // --- NEUE FELDER FÜR GEHALT ---
+  double? get salary => throw _privateConstructorUsedError;
+  SalaryCycle get salaryCycle => throw _privateConstructorUsedError;
+  bool get hasThirteenthSalary => throw _privateConstructorUsedError;
 
   /// Create a copy of SettingsEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -33,7 +37,13 @@ abstract class $SettingsEntityCopyWith<$Res> {
           SettingsEntity value, $Res Function(SettingsEntity) then) =
       _$SettingsEntityCopyWithImpl<$Res, SettingsEntity>;
   @useResult
-  $Res call({ThemeMode themeMode, Locale locale, String currencyCode});
+  $Res call(
+      {ThemeMode themeMode,
+      Locale locale,
+      String currencyCode,
+      double? salary,
+      SalaryCycle salaryCycle,
+      bool hasThirteenthSalary});
 }
 
 /// @nodoc
@@ -54,6 +64,9 @@ class _$SettingsEntityCopyWithImpl<$Res, $Val extends SettingsEntity>
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
+    Object? salary = freezed,
+    Object? salaryCycle = null,
+    Object? hasThirteenthSalary = null,
   }) {
     return _then(_value.copyWith(
       themeMode: null == themeMode
@@ -68,6 +81,18 @@ class _$SettingsEntityCopyWithImpl<$Res, $Val extends SettingsEntity>
           ? _value.currencyCode
           : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
+      salary: freezed == salary
+          ? _value.salary
+          : salary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      salaryCycle: null == salaryCycle
+          ? _value.salaryCycle
+          : salaryCycle // ignore: cast_nullable_to_non_nullable
+              as SalaryCycle,
+      hasThirteenthSalary: null == hasThirteenthSalary
+          ? _value.hasThirteenthSalary
+          : hasThirteenthSalary // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -80,7 +105,13 @@ abstract class _$$SettingsEntityImplCopyWith<$Res>
       __$$SettingsEntityImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({ThemeMode themeMode, Locale locale, String currencyCode});
+  $Res call(
+      {ThemeMode themeMode,
+      Locale locale,
+      String currencyCode,
+      double? salary,
+      SalaryCycle salaryCycle,
+      bool hasThirteenthSalary});
 }
 
 /// @nodoc
@@ -99,6 +130,9 @@ class __$$SettingsEntityImplCopyWithImpl<$Res>
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
+    Object? salary = freezed,
+    Object? salaryCycle = null,
+    Object? hasThirteenthSalary = null,
   }) {
     return _then(_$SettingsEntityImpl(
       themeMode: null == themeMode
@@ -113,6 +147,18 @@ class __$$SettingsEntityImplCopyWithImpl<$Res>
           ? _value.currencyCode
           : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
+      salary: freezed == salary
+          ? _value.salary
+          : salary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      salaryCycle: null == salaryCycle
+          ? _value.salaryCycle
+          : salaryCycle // ignore: cast_nullable_to_non_nullable
+              as SalaryCycle,
+      hasThirteenthSalary: null == hasThirteenthSalary
+          ? _value.hasThirteenthSalary
+          : hasThirteenthSalary // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -123,7 +169,10 @@ class _$SettingsEntityImpl implements _SettingsEntity {
   const _$SettingsEntityImpl(
       {required this.themeMode,
       required this.locale,
-      required this.currencyCode});
+      required this.currencyCode,
+      this.salary,
+      this.salaryCycle = SalaryCycle.monthly,
+      this.hasThirteenthSalary = false});
 
   @override
   final ThemeMode themeMode;
@@ -131,10 +180,19 @@ class _$SettingsEntityImpl implements _SettingsEntity {
   final Locale locale;
   @override
   final String currencyCode;
+// --- NEUE FELDER FÜR GEHALT ---
+  @override
+  final double? salary;
+  @override
+  @JsonKey()
+  final SalaryCycle salaryCycle;
+  @override
+  @JsonKey()
+  final bool hasThirteenthSalary;
 
   @override
   String toString() {
-    return 'SettingsEntity(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode)';
+    return 'SettingsEntity(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode, salary: $salary, salaryCycle: $salaryCycle, hasThirteenthSalary: $hasThirteenthSalary)';
   }
 
   @override
@@ -146,11 +204,17 @@ class _$SettingsEntityImpl implements _SettingsEntity {
                 other.themeMode == themeMode) &&
             (identical(other.locale, locale) || other.locale == locale) &&
             (identical(other.currencyCode, currencyCode) ||
-                other.currencyCode == currencyCode));
+                other.currencyCode == currencyCode) &&
+            (identical(other.salary, salary) || other.salary == salary) &&
+            (identical(other.salaryCycle, salaryCycle) ||
+                other.salaryCycle == salaryCycle) &&
+            (identical(other.hasThirteenthSalary, hasThirteenthSalary) ||
+                other.hasThirteenthSalary == hasThirteenthSalary));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode);
+  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode,
+      salary, salaryCycle, hasThirteenthSalary);
 
   /// Create a copy of SettingsEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -166,14 +230,23 @@ abstract class _SettingsEntity implements SettingsEntity {
   const factory _SettingsEntity(
       {required final ThemeMode themeMode,
       required final Locale locale,
-      required final String currencyCode}) = _$SettingsEntityImpl;
+      required final String currencyCode,
+      final double? salary,
+      final SalaryCycle salaryCycle,
+      final bool hasThirteenthSalary}) = _$SettingsEntityImpl;
 
   @override
   ThemeMode get themeMode;
   @override
   Locale get locale;
   @override
-  String get currencyCode;
+  String get currencyCode; // --- NEUE FELDER FÜR GEHALT ---
+  @override
+  double? get salary;
+  @override
+  SalaryCycle get salaryCycle;
+  @override
+  bool get hasThirteenthSalary;
 
   /// Create a copy of SettingsEntity
   /// with the given fields replaced by the non-null parameter values.

@@ -29,7 +29,7 @@ class OnboardingPageContentWidget extends StatelessWidget {
             width: screenSize.width * 0.4, // Responsive icon container
             height: screenSize.width * 0.4,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.15), // Subtle background
+              color: iconColor.withValues(alpha: 38), // Subtle background
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -44,7 +44,7 @@ class OnboardingPageContentWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16.0),

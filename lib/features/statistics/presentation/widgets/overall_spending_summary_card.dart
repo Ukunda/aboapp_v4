@@ -1,6 +1,9 @@
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/widgets/animated_counter_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class OverallSpendingSummaryCard extends StatelessWidget {
   final double totalMonthlySpending;
@@ -15,45 +18,51 @@ class OverallSpendingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
+    final currencyFormat = NumberFormat.currency(
+      locale: settingsState.locale.toLanguageTag(),
+      symbol: NumberFormat.simpleCurrency(
+              locale: settingsState.locale.toLanguageTag())
+          .currencySymbol,
+    );
 
     return Card(
-      elevation: 1.0,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Spending Overview', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              context.l10n.translate('stats_overall_spending_title'),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildMetric(
-                  context,
-                  label: 'Monthly Total', // TODO: Localize
-                  value: totalMonthlySpending,
+                  context: context,
                   currencyFormat: currencyFormat,
-                  style: theme.textTheme.headlineSmall!.copyWith(
+                  label: context.l10n.translate('billing_cycle_monthly'),
+                  value: totalMonthlySpending,
+                  style: theme.textTheme.headlineMedium!.copyWith(
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                   labelStyle: theme.textTheme.bodySmall!,
                 ),
+                const SizedBox(width: 24),
                 _buildMetric(
-                  context,
-                  label: 'Yearly Total', // TODO: Localize
-                  value: totalYearlySpending,
+                  context: context,
                   currencyFormat: currencyFormat,
-                  style: theme.textTheme.titleLarge!.copyWith(
-                    color: theme.colorScheme.secondary,
-                     fontWeight: FontWeight.w600,
+                  label: context.l10n.translate('billing_cycle_yearly'),
+                  value: totalYearlySpending,
+                  style: theme.textTheme.headlineMedium!.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w600,
                   ),
-                   labelStyle: theme.textTheme.bodySmall!,
+                  labelStyle: theme.textTheme.bodySmall!,
                 ),
               ],
             ),
@@ -63,29 +72,34 @@ class OverallSpendingSummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildMetric(
-    BuildContext context, {
+  Widget _buildMetric({
+    required BuildContext context,
+    required NumberFormat currencyFormat,
     required String label,
     required double value,
-    required NumberFormat currencyFormat,
     required TextStyle style,
     required TextStyle labelStyle,
   }) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        AnimatedCounterWidget(
-          value: value,
-          formatter: (val) => currencyFormat.format(val),
-          style: style,
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: labelStyle.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
-        ),
-      ],
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: AnimatedCounterWidget(
+              value: value,
+              formatter: (val) => currencyFormat.format(val),
+              style: style,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: labelStyle.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,10 +1,12 @@
-import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // For number formatting
+// lib/features/subscriptions/presentation/widgets/monthly_spending_summary_card.dart
 
-// Assuming you'll have a shared animated counter widget.
-// If not, this would be a simpler Text widget.
-import 'package:aboapp/widgets/animated_counter_widget.dart'; // We'll create this shared widget next
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
+import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart';
+import 'package:aboapp/widgets/animated_counter_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class MonthlySpendingSummaryCard extends StatelessWidget {
   final List<SubscriptionEntity> activeSubscriptions;
@@ -17,8 +19,16 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Replace 'de_DE' and '€' with locale/currency from SettingsCubit/Provider
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 2);
+    final settingsState = context.watch<SettingsCubit>().state;
+
+    // Dynamically format currency based on user settings
+    final currencyFormat = NumberFormat.currency(
+      locale: settingsState.locale.toLanguageTag(),
+      symbol: NumberFormat.simpleCurrency(
+              locale: settingsState.locale.toLanguageTag())
+          .currencySymbol,
+      decimalDigits: 2,
+    );
 
     final double totalMonthlySpending = activeSubscriptions.fold(
       0.0,
@@ -26,129 +36,92 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
     );
 
     final double yearlySpending = totalMonthlySpending * 12;
-    final double dailyAverage = activeSubscriptions.isNotEmpty
-        ? totalMonthlySpending / 30.4375 // Average days in a month
-        : 0.0;
 
     return Card(
-      elevation: 2.0, // Subtle elevation
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16.0),
-          gradient: LinearGradient(
-            colors: [
-              theme.colorScheme.primaryContainer.withOpacity(0.6),
-              theme.colorScheme.primaryContainer.withOpacity(0.9),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
+      // The card's appearance is now mainly controlled by the global ModernTheme/ClassicTheme
+      // This makes it consistent across the app.
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: theme.cardTheme.elevation,
+      shape: theme.cardTheme.shape,
+      color: theme.cardTheme.color,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Row for Title and Active Count
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Monthly Spending', // TODO: Localize
+                  context.l10n.translate('home_monthly_spending_title'),
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimaryContainer,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 26),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    '${activeSubscriptions.length} Active', // TODO: Localize
-                    style: theme.textTheme.labelSmall?.copyWith(
+                    context.l10n.translate('home_active_count',
+                        args: {'count': activeSubscriptions.length.toString()}),
+                    style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 8.0),
+
+            // Main spending amount (the "Hero" element)
             AnimatedCounterWidget(
               value: totalMonthlySpending,
               formatter: (value) => currencyFormat.format(value),
-              style: theme.textTheme.displaySmall!.copyWith(
-                color: theme.colorScheme.primary,
+              style: theme.textTheme.displayMedium!.copyWith(
+                color: theme.colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
               duration: const Duration(milliseconds: 700),
             ),
-            Text(
-              'per month', // TODO: Localize
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withOpacity(0.8),
-              ),
+            const SizedBox(height: 16.0),
+
+            // Divider
+            Divider(
+              color: theme.dividerColor.withValues(alpha: 128),
+              height: 1,
             ),
             const SizedBox(height: 16.0),
-            const Divider(),
-            const SizedBox(height: 8.0),
+
+            // Secondary info (Yearly Total)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildStatItem(
-                  context,
-                  theme,
-                  currencyFormat,
-                  label: 'Yearly Total', // TODO: Localize
-                  value: yearlySpending,
-                  color: theme.colorScheme.onPrimaryContainer,
+                Text(
+                  context.l10n.translate('stats_yearly_total_label'),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-                _buildStatItem(
-                  context,
-                  theme,
-                  currencyFormat,
-                  label: 'Daily Average', // TODO: Localize
-                  value: dailyAverage,
-                  color: theme.colorScheme.onPrimaryContainer,
+                AnimatedCounterWidget(
+                  value: yearlySpending,
+                  formatter: (val) => currencyFormat.format(val),
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                  duration: const Duration(milliseconds: 600),
                 ),
               ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildStatItem(
-    BuildContext context,
-    ThemeData theme,
-    NumberFormat currencyFormat, {
-    required String label,
-    required double value,
-    required Color color,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: color.withOpacity(0.8),
-          ),
-        ),
-        const SizedBox(height: 2.0),
-        AnimatedCounterWidget(
-          value: value,
-          formatter: (val) => currencyFormat.format(val),
-          style: theme.textTheme.titleSmall!.copyWith(
-            fontWeight: FontWeight.w600,
-            color: color,
-          ),
-          duration: const Duration(milliseconds: 600),
-        ),
-      ],
     );
   }
 }

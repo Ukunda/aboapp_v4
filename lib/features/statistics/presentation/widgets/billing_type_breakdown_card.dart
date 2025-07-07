@@ -1,7 +1,12 @@
+// lib/features/statistics/presentation/widgets/billing_type_breakdown_card.dart
+
+import 'package:aboapp/core/utils/currency_formatter.dart';
+import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:aboapp/features/statistics/presentation/cubit/statistics_cubit.dart'; // For BillingTypeSpending
 import 'package:aboapp/features/subscriptions/domain/entities/subscription_entity.dart'; // For BillingCycle
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class BillingTypeBreakdownCard extends StatelessWidget {
   final List<BillingTypeSpending> billingTypeSpendingData;
@@ -10,34 +15,41 @@ class BillingTypeBreakdownCard extends StatelessWidget {
     super.key,
     required this.billingTypeSpendingData,
   });
-  
+
   String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
-    // TODO: Localize
     switch (cycle) {
-      case BillingCycle.weekly: return 'Weekly';
-      case BillingCycle.monthly: return 'Monthly';
-      case BillingCycle.quarterly: return 'Quarterly';
-      case BillingCycle.biAnnual: return 'Bi-Annual';
-      case BillingCycle.yearly: return 'Yearly';
-      case BillingCycle.custom: return 'Custom';
+      case BillingCycle.weekly:
+        return context.l10n.translate('billing_cycle_weekly');
+      case BillingCycle.monthly:
+        return context.l10n.translate('billing_cycle_monthly');
+      case BillingCycle.quarterly:
+        return context.l10n.translate('billing_cycle_quarterly');
+      case BillingCycle.biAnnual:
+        return context.l10n.translate('billing_cycle_biAnnual');
+      case BillingCycle.yearly:
+        return context.l10n.translate('billing_cycle_yearly');
+      case BillingCycle.custom:
+        return context.l10n.translate('billing_cycle_custom');
     }
   }
 
   Color _getBillingCycleColor(BuildContext context, BillingCycle cycle) {
     // Use a consistent color mapping, possibly from AppColors or theme extensions
     final colors = [
-      Colors.blue.shade300, Colors.purple.shade300, Colors.teal.shade300,
-      Colors.orange.shade300, Colors.red.shade300, Colors.grey.shade400
+      Colors.blue.shade300,
+      Colors.purple.shade300,
+      Colors.teal.shade300,
+      Colors.orange.shade300,
+      Colors.red.shade300,
+      Colors.grey.shade400
     ];
     return colors[cycle.index % colors.length];
   }
 
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    // TODO: Use locale/currency from SettingsCubit
-    final currencyFormat = NumberFormat.currency(locale: 'de_DE', symbol: '€', decimalDigits: 0);
+    final settingsState = context.watch<SettingsCubit>().state;
 
     if (billingTypeSpendingData.isEmpty) {
       return Card(
@@ -46,16 +58,16 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              'No billing type data available.', // TODO: Localize
+              context.l10n.translate('stats_billing_type_empty_message'),
               style: theme.textTheme.bodyMedium,
             ),
           ),
         ),
       );
     }
-    
-    final totalMonthlyEquivalentSpending = billingTypeSpendingData.fold<double>(0, (sum, item) => sum + item.totalAmount);
 
+    final totalMonthlyEquivalentSpending = billingTypeSpendingData.fold<double>(
+        0, (sum, item) => sum + item.totalAmount);
 
     return Card(
       elevation: 1.0,
@@ -65,35 +77,36 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Breakdown by Billing Cycle', // TODO: Localize
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              context.l10n.translate('stats_billing_type_title'),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-             Text(
-              '(Based on Monthly Equivalent Cost)', // TODO: Localize
-              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            Text(
+              context.l10n.translate('stats_billing_type_subtitle'),
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 16),
             if (totalMonthlyEquivalentSpending > 0)
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  return ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Row(
-                      children: billingTypeSpendingData.map((item) {
-                        final percentage = item.percentageOfTotal;
-                        return Expanded(
-                          flex: (percentage * 100).toInt().clamp(1, 100),
-                          child: Container(
-                            height: 24,
-                            color: _getBillingCycleColor(context, item.billingCycle),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                }
-              ),
+              LayoutBuilder(builder: (context, constraints) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Row(
+                    children: billingTypeSpendingData.map((item) {
+                      final percentage = item.percentageOfTotal;
+                      return Expanded(
+                        flex: (percentage * 100).toInt().clamp(1, 100),
+                        child: Container(
+                          height: 24,
+                          color:
+                              _getBillingCycleColor(context, item.billingCycle),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                );
+              }),
             const SizedBox(height: 16),
             ...billingTypeSpendingData.map((item) {
               return Padding(
@@ -104,7 +117,8 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                       width: 12,
                       height: 12,
                       decoration: BoxDecoration(
-                        color: _getBillingCycleColor(context, item.billingCycle),
+                        color:
+                            _getBillingCycleColor(context, item.billingCycle),
                         borderRadius: BorderRadius.circular(3.0),
                       ),
                     ),
@@ -120,8 +134,13 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${item.subscriptionCount} sub${item.subscriptionCount == 1 ? "" : "s"}', // TODO: Localize
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        '${item.subscriptionCount} ${item.subscriptionCount == 1
+                                ? context.l10n
+                                    .translate('stats_subscription_abbrev_single')
+                                : context.l10n.translate(
+                                    'stats_subscription_abbrev_multiple')}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,
                       ),
                     ),
@@ -129,20 +148,27 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: Text(
-                        currencyFormat.format(item.totalAmount),
-                        style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                        CurrencyFormatter.format(
+                          item.totalAmount,
+                          currencyCode: settingsState.currencyCode,
+                          locale: settingsState.locale,
+                          decimalDigits: 0,
+                        ),
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(fontWeight: FontWeight.w600),
                         textAlign: TextAlign.end,
                       ),
                     ),
-                     const SizedBox(width: 8.0),
-                     Expanded(
-                       flex: 2,
-                       child: Text(
+                    const SizedBox(width: 8.0),
+                    Expanded(
+                      flex: 2,
+                      child: Text(
                         '(${(item.percentageOfTotal * 100).toStringAsFixed(0)}%)',
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,
-                                         ),
-                     ),
+                      ),
+                    ),
                   ],
                 ),
               );

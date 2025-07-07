@@ -19,6 +19,9 @@ mixin _$SettingsState {
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   Locale get locale => throw _privateConstructorUsedError;
   String get currencyCode => throw _privateConstructorUsedError;
+  double? get salary => throw _privateConstructorUsedError;
+  SalaryCycle get salaryCycle => throw _privateConstructorUsedError;
+  bool get hasThirteenthSalary => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   String? get error => throw _privateConstructorUsedError;
 
@@ -39,6 +42,9 @@ abstract class $SettingsStateCopyWith<$Res> {
       {ThemeMode themeMode,
       Locale locale,
       String currencyCode,
+      double? salary,
+      SalaryCycle salaryCycle,
+      bool hasThirteenthSalary,
       bool isLoading,
       String? error});
 }
@@ -61,6 +67,9 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
+    Object? salary = freezed,
+    Object? salaryCycle = null,
+    Object? hasThirteenthSalary = null,
     Object? isLoading = null,
     Object? error = freezed,
   }) {
@@ -77,6 +86,18 @@ class _$SettingsStateCopyWithImpl<$Res, $Val extends SettingsState>
           ? _value.currencyCode
           : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
+      salary: freezed == salary
+          ? _value.salary
+          : salary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      salaryCycle: null == salaryCycle
+          ? _value.salaryCycle
+          : salaryCycle // ignore: cast_nullable_to_non_nullable
+              as SalaryCycle,
+      hasThirteenthSalary: null == hasThirteenthSalary
+          ? _value.hasThirteenthSalary
+          : hasThirteenthSalary // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -101,6 +122,9 @@ abstract class _$$SettingsStateImplCopyWith<$Res>
       {ThemeMode themeMode,
       Locale locale,
       String currencyCode,
+      double? salary,
+      SalaryCycle salaryCycle,
+      bool hasThirteenthSalary,
       bool isLoading,
       String? error});
 }
@@ -121,6 +145,9 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
+    Object? salary = freezed,
+    Object? salaryCycle = null,
+    Object? hasThirteenthSalary = null,
     Object? isLoading = null,
     Object? error = freezed,
   }) {
@@ -137,6 +164,18 @@ class __$$SettingsStateImplCopyWithImpl<$Res>
           ? _value.currencyCode
           : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
+      salary: freezed == salary
+          ? _value.salary
+          : salary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      salaryCycle: null == salaryCycle
+          ? _value.salaryCycle
+          : salaryCycle // ignore: cast_nullable_to_non_nullable
+              as SalaryCycle,
+      hasThirteenthSalary: null == hasThirteenthSalary
+          ? _value.hasThirteenthSalary
+          : hasThirteenthSalary // ignore: cast_nullable_to_non_nullable
+              as bool,
       isLoading: null == isLoading
           ? _value.isLoading
           : isLoading // ignore: cast_nullable_to_non_nullable
@@ -156,6 +195,9 @@ class _$SettingsStateImpl implements _SettingsState {
       {required this.themeMode,
       required this.locale,
       required this.currencyCode,
+      this.salary,
+      this.salaryCycle = SalaryCycle.monthly,
+      this.hasThirteenthSalary = false,
       this.isLoading = false,
       this.error});
 
@@ -166,6 +208,14 @@ class _$SettingsStateImpl implements _SettingsState {
   @override
   final String currencyCode;
   @override
+  final double? salary;
+  @override
+  @JsonKey()
+  final SalaryCycle salaryCycle;
+  @override
+  @JsonKey()
+  final bool hasThirteenthSalary;
+  @override
   @JsonKey()
   final bool isLoading;
   @override
@@ -173,7 +223,7 @@ class _$SettingsStateImpl implements _SettingsState {
 
   @override
   String toString() {
-    return 'SettingsState(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode, isLoading: $isLoading, error: $error)';
+    return 'SettingsState(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode, salary: $salary, salaryCycle: $salaryCycle, hasThirteenthSalary: $hasThirteenthSalary, isLoading: $isLoading, error: $error)';
   }
 
   @override
@@ -186,14 +236,19 @@ class _$SettingsStateImpl implements _SettingsState {
             (identical(other.locale, locale) || other.locale == locale) &&
             (identical(other.currencyCode, currencyCode) ||
                 other.currencyCode == currencyCode) &&
+            (identical(other.salary, salary) || other.salary == salary) &&
+            (identical(other.salaryCycle, salaryCycle) ||
+                other.salaryCycle == salaryCycle) &&
+            (identical(other.hasThirteenthSalary, hasThirteenthSalary) ||
+                other.hasThirteenthSalary == hasThirteenthSalary) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading) &&
             (identical(other.error, error) || other.error == error));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, themeMode, locale, currencyCode, isLoading, error);
+  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode,
+      salary, salaryCycle, hasThirteenthSalary, isLoading, error);
 
   /// Create a copy of SettingsState
   /// with the given fields replaced by the non-null parameter values.
@@ -209,6 +264,9 @@ abstract class _SettingsState implements SettingsState {
       {required final ThemeMode themeMode,
       required final Locale locale,
       required final String currencyCode,
+      final double? salary,
+      final SalaryCycle salaryCycle,
+      final bool hasThirteenthSalary,
       final bool isLoading,
       final String? error}) = _$SettingsStateImpl;
 
@@ -218,6 +276,12 @@ abstract class _SettingsState implements SettingsState {
   Locale get locale;
   @override
   String get currencyCode;
+  @override
+  double? get salary;
+  @override
+  SalaryCycle get salaryCycle;
+  @override
+  bool get hasThirteenthSalary;
   @override
   bool get isLoading;
   @override

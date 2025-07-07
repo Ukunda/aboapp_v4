@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:aboapp/features/subscriptions/data/models/subscription_model.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 abstract class SubscriptionLocalDataSource {
   Future<List<SubscriptionModel>> getAllSubscriptions();
@@ -15,22 +15,22 @@ const String cachedSubscriptionsKey = 'CACHED_SUBSCRIPTIONS';
 
 @LazySingleton(as: SubscriptionLocalDataSource)
 class SubscriptionLocalDataSourceImpl implements SubscriptionLocalDataSource {
-  final SharedPreferences sharedPreferences;
+  final FlutterSecureStorage secureStorage;
 
-  SubscriptionLocalDataSourceImpl(this.sharedPreferences);
+  SubscriptionLocalDataSourceImpl(this.secureStorage);
 
   @override
   Future<List<SubscriptionModel>> getAllSubscriptions() async {
-    final jsonStringList = sharedPreferences.getStringList(cachedSubscriptionsKey);
-    if (jsonStringList != null) {
+    final jsonString = await secureStorage.read(key: cachedSubscriptionsKey);
+    if (jsonString != null) {
       try {
-        return jsonStringList
-            .map((jsonString) =>
-                SubscriptionModel.fromJson(jsonDecode(jsonString) as Map<String, dynamic>))
+        final List<dynamic> decoded = jsonDecode(jsonString) as List<dynamic>;
+        return decoded
+            .map((json) => SubscriptionModel.fromJson(json as Map<String, dynamic>))
             .toList();
       } catch (e) {
         // Handle corrupted data, e.g., by clearing it or logging
-        await sharedPreferences.remove(cachedSubscriptionsKey);
+        await secureStorage.delete(key: cachedSubscriptionsKey);
         throw Exception('Failed to parse subscriptions from local storage: $e');
       }
     } else {
@@ -40,9 +40,9 @@ class SubscriptionLocalDataSourceImpl implements SubscriptionLocalDataSource {
 
   @override
   Future<void> cacheSubscriptions(List<SubscriptionModel> subscriptions) async {
-    final List<String> jsonStringList =
-        subscriptions.map((sub) => jsonEncode(sub.toJson())).toList();
-    await sharedPreferences.setStringList(cachedSubscriptionsKey, jsonStringList);
+    final jsonString =
+        jsonEncode(subscriptions.map((sub) => sub.toJson()).toList());
+    await secureStorage.write(key: cachedSubscriptionsKey, value: jsonString);
   }
 
   @override
