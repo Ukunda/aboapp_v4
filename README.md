@@ -6,6 +6,7 @@ AboApp verwaltet deine Abonnements, analysiert deren Kosten und bietet Salary In
 - **Subscription-Verwaltung** zum einfachen Hinzufügen und Kündigen von Verträgen
 - **Statistiken** mit Diagrammen und Übersichten deiner Ausgaben
 - **Salary Insights** zur Planung deines Budgets im Monatsverlauf
+- **E-Mail Import** scannt dein Postfach lokal nach Aborechnungen und macht Vorschläge
 
 ## Installation
 1. Stelle sicher, dass Flutter installiert ist.
@@ -13,6 +14,7 @@ AboApp verwaltet deine Abonnements, analysiert deren Kosten und bietet Salary In
 3. Starte ein Gerät oder einen Emulator und führe `flutter run` aus.
 
 Unterstützte Plattformen: Android, iOS, Web und Desktop (Windows, macOS, Linux).
+Der optionale E-Mail-Import verarbeitet alle Nachrichten **lokal** auf deinem Gerät.
 
 ## Weitere Informationen
 - [Datenschutzerklärung](PRIVACY_POLICY.md)

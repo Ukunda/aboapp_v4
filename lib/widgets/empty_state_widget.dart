@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:aboapp/core/localization/l10n_extensions.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final IconData icon;
@@ -29,7 +30,7 @@ class EmptyStateWidget extends StatelessWidget {
             Icon(
               icon,
               size: 72,
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6), // Kept withOpacity
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 153),
             ),
             const SizedBox(height: 24),
             Text(
@@ -51,7 +52,8 @@ class EmptyStateWidget extends StatelessWidget {
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.refresh_rounded),
-                label: Text(retryText ?? 'Try Again'), 
+                label:
+                    Text(retryText ?? context.l10n.translate('retry')),
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

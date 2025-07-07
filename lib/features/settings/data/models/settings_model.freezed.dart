@@ -24,7 +24,12 @@ mixin _$SettingsModel {
   ThemeMode get themeMode => throw _privateConstructorUsedError;
   @LocaleConverter()
   Locale get locale => throw _privateConstructorUsedError;
-  String get currencyCode => throw _privateConstructorUsedError;
+  String get currencyCode =>
+      throw _privateConstructorUsedError; // --- NEUE FELDER ---
+  double? get salary => throw _privateConstructorUsedError;
+  @SalaryCycleConverter()
+  SalaryCycle get salaryCycle => throw _privateConstructorUsedError;
+  bool get hasThirteenthSalary => throw _privateConstructorUsedError;
 
   /// Serializes this SettingsModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -45,7 +50,10 @@ abstract class $SettingsModelCopyWith<$Res> {
   $Res call(
       {@ThemeModeConverter() ThemeMode themeMode,
       @LocaleConverter() Locale locale,
-      String currencyCode});
+      String currencyCode,
+      double? salary,
+      @SalaryCycleConverter() SalaryCycle salaryCycle,
+      bool hasThirteenthSalary});
 }
 
 /// @nodoc
@@ -66,6 +74,9 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
+    Object? salary = freezed,
+    Object? salaryCycle = null,
+    Object? hasThirteenthSalary = null,
   }) {
     return _then(_value.copyWith(
       themeMode: null == themeMode
@@ -80,6 +91,18 @@ class _$SettingsModelCopyWithImpl<$Res, $Val extends SettingsModel>
           ? _value.currencyCode
           : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
+      salary: freezed == salary
+          ? _value.salary
+          : salary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      salaryCycle: null == salaryCycle
+          ? _value.salaryCycle
+          : salaryCycle // ignore: cast_nullable_to_non_nullable
+              as SalaryCycle,
+      hasThirteenthSalary: null == hasThirteenthSalary
+          ? _value.hasThirteenthSalary
+          : hasThirteenthSalary // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -95,7 +118,10 @@ abstract class _$$SettingsModelImplCopyWith<$Res>
   $Res call(
       {@ThemeModeConverter() ThemeMode themeMode,
       @LocaleConverter() Locale locale,
-      String currencyCode});
+      String currencyCode,
+      double? salary,
+      @SalaryCycleConverter() SalaryCycle salaryCycle,
+      bool hasThirteenthSalary});
 }
 
 /// @nodoc
@@ -114,6 +140,9 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
     Object? themeMode = null,
     Object? locale = null,
     Object? currencyCode = null,
+    Object? salary = freezed,
+    Object? salaryCycle = null,
+    Object? hasThirteenthSalary = null,
   }) {
     return _then(_$SettingsModelImpl(
       themeMode: null == themeMode
@@ -128,6 +157,18 @@ class __$$SettingsModelImplCopyWithImpl<$Res>
           ? _value.currencyCode
           : currencyCode // ignore: cast_nullable_to_non_nullable
               as String,
+      salary: freezed == salary
+          ? _value.salary
+          : salary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      salaryCycle: null == salaryCycle
+          ? _value.salaryCycle
+          : salaryCycle // ignore: cast_nullable_to_non_nullable
+              as SalaryCycle,
+      hasThirteenthSalary: null == hasThirteenthSalary
+          ? _value.hasThirteenthSalary
+          : hasThirteenthSalary // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -138,7 +179,10 @@ class _$SettingsModelImpl extends _SettingsModel {
   const _$SettingsModelImpl(
       {@ThemeModeConverter() required this.themeMode,
       @LocaleConverter() required this.locale,
-      required this.currencyCode})
+      required this.currencyCode,
+      this.salary,
+      @SalaryCycleConverter() this.salaryCycle = SalaryCycle.monthly,
+      this.hasThirteenthSalary = false})
       : super._();
 
   factory _$SettingsModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -152,10 +196,20 @@ class _$SettingsModelImpl extends _SettingsModel {
   final Locale locale;
   @override
   final String currencyCode;
+// --- NEUE FELDER ---
+  @override
+  final double? salary;
+  @override
+  @JsonKey()
+  @SalaryCycleConverter()
+  final SalaryCycle salaryCycle;
+  @override
+  @JsonKey()
+  final bool hasThirteenthSalary;
 
   @override
   String toString() {
-    return 'SettingsModel(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode)';
+    return 'SettingsModel(themeMode: $themeMode, locale: $locale, currencyCode: $currencyCode, salary: $salary, salaryCycle: $salaryCycle, hasThirteenthSalary: $hasThirteenthSalary)';
   }
 
   @override
@@ -167,12 +221,18 @@ class _$SettingsModelImpl extends _SettingsModel {
                 other.themeMode == themeMode) &&
             (identical(other.locale, locale) || other.locale == locale) &&
             (identical(other.currencyCode, currencyCode) ||
-                other.currencyCode == currencyCode));
+                other.currencyCode == currencyCode) &&
+            (identical(other.salary, salary) || other.salary == salary) &&
+            (identical(other.salaryCycle, salaryCycle) ||
+                other.salaryCycle == salaryCycle) &&
+            (identical(other.hasThirteenthSalary, hasThirteenthSalary) ||
+                other.hasThirteenthSalary == hasThirteenthSalary));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode);
+  int get hashCode => Object.hash(runtimeType, themeMode, locale, currencyCode,
+      salary, salaryCycle, hasThirteenthSalary);
 
   /// Create a copy of SettingsModel
   /// with the given fields replaced by the non-null parameter values.
@@ -194,7 +254,10 @@ abstract class _SettingsModel extends SettingsModel {
   const factory _SettingsModel(
       {@ThemeModeConverter() required final ThemeMode themeMode,
       @LocaleConverter() required final Locale locale,
-      required final String currencyCode}) = _$SettingsModelImpl;
+      required final String currencyCode,
+      final double? salary,
+      @SalaryCycleConverter() final SalaryCycle salaryCycle,
+      final bool hasThirteenthSalary}) = _$SettingsModelImpl;
   const _SettingsModel._() : super._();
 
   factory _SettingsModel.fromJson(Map<String, dynamic> json) =
@@ -207,7 +270,14 @@ abstract class _SettingsModel extends SettingsModel {
   @LocaleConverter()
   Locale get locale;
   @override
-  String get currencyCode;
+  String get currencyCode; // --- NEUE FELDER ---
+  @override
+  double? get salary;
+  @override
+  @SalaryCycleConverter()
+  SalaryCycle get salaryCycle;
+  @override
+  bool get hasThirteenthSalary;
 
   /// Create a copy of SettingsModel
   /// with the given fields replaced by the non-null parameter values.

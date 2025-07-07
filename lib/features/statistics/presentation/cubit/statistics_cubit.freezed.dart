@@ -28,7 +28,9 @@ mixin _$StatisticsState {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(String message) empty,
@@ -46,7 +48,9 @@ mixin _$StatisticsState {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(String message)? empty,
@@ -64,7 +68,9 @@ mixin _$StatisticsState {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(String message)? empty,
@@ -173,7 +179,9 @@ class _$InitialImpl implements _Initial {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(String message) empty,
@@ -194,7 +202,9 @@ class _$InitialImpl implements _Initial {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(String message)? empty,
@@ -215,7 +225,9 @@ class _$InitialImpl implements _Initial {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(String message)? empty,
@@ -323,7 +335,9 @@ class _$LoadingImpl implements _Loading {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(String message) empty,
@@ -344,7 +358,9 @@ class _$LoadingImpl implements _Loading {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(String message)? empty,
@@ -365,7 +381,9 @@ class _$LoadingImpl implements _Loading {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(String message)? empty,
@@ -436,7 +454,9 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       MonthlySpendingTrendData spendingTrendData,
       double totalMonthlyEquivalentSpending,
       double totalYearlyEquivalentSpending,
-      int selectedYearForTrend});
+      int selectedYearForTrend,
+      double? yearlySalary,
+      double? percentageOfSalary});
 }
 
 /// @nodoc
@@ -460,6 +480,8 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? totalMonthlyEquivalentSpending = null,
     Object? totalYearlyEquivalentSpending = null,
     Object? selectedYearForTrend = null,
+    Object? yearlySalary = freezed,
+    Object? percentageOfSalary = freezed,
   }) {
     return _then(_$LoadedImpl(
       activeSubscriptions: null == activeSubscriptions
@@ -494,6 +516,14 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.selectedYearForTrend
           : selectedYearForTrend // ignore: cast_nullable_to_non_nullable
               as int,
+      yearlySalary: freezed == yearlySalary
+          ? _value.yearlySalary
+          : yearlySalary // ignore: cast_nullable_to_non_nullable
+              as double?,
+      percentageOfSalary: freezed == percentageOfSalary
+          ? _value.percentageOfSalary
+          : percentageOfSalary // ignore: cast_nullable_to_non_nullable
+              as double?,
     ));
   }
 }
@@ -509,7 +539,9 @@ class _$LoadedImpl implements _Loaded {
       required this.spendingTrendData,
       required this.totalMonthlyEquivalentSpending,
       required this.totalYearlyEquivalentSpending,
-      required this.selectedYearForTrend})
+      required this.selectedYearForTrend,
+      this.yearlySalary,
+      this.percentageOfSalary})
       : _activeSubscriptions = activeSubscriptions,
         _categorySpendingData = categorySpendingData,
         _billingTypeSpendingData = billingTypeSpendingData,
@@ -524,9 +556,7 @@ class _$LoadedImpl implements _Loaded {
     return EqualUnmodifiableListView(_activeSubscriptions);
   }
 
-// Source data
   final List<CategorySpending> _categorySpendingData;
-// Source data
   @override
   List<CategorySpending> get categorySpendingData {
     if (_categorySpendingData is EqualUnmodifiableListView)
@@ -553,7 +583,6 @@ class _$LoadedImpl implements _Loaded {
     return EqualUnmodifiableListView(_topSpendingSubscriptions);
   }
 
-// Top N subscriptions by monthly equiv.
   @override
   final MonthlySpendingTrendData spendingTrendData;
   @override
@@ -562,10 +591,15 @@ class _$LoadedImpl implements _Loaded {
   final double totalYearlyEquivalentSpending;
   @override
   final int selectedYearForTrend;
+// --- NEUE PARAMETER ---
+  @override
+  final double? yearlySalary;
+  @override
+  final double? percentageOfSalary;
 
   @override
   String toString() {
-    return 'StatisticsState.loaded(activeSubscriptions: $activeSubscriptions, categorySpendingData: $categorySpendingData, billingTypeSpendingData: $billingTypeSpendingData, topSpendingSubscriptions: $topSpendingSubscriptions, spendingTrendData: $spendingTrendData, totalMonthlyEquivalentSpending: $totalMonthlyEquivalentSpending, totalYearlyEquivalentSpending: $totalYearlyEquivalentSpending, selectedYearForTrend: $selectedYearForTrend)';
+    return 'StatisticsState.loaded(activeSubscriptions: $activeSubscriptions, categorySpendingData: $categorySpendingData, billingTypeSpendingData: $billingTypeSpendingData, topSpendingSubscriptions: $topSpendingSubscriptions, spendingTrendData: $spendingTrendData, totalMonthlyEquivalentSpending: $totalMonthlyEquivalentSpending, totalYearlyEquivalentSpending: $totalYearlyEquivalentSpending, selectedYearForTrend: $selectedYearForTrend, yearlySalary: $yearlySalary, percentageOfSalary: $percentageOfSalary)';
   }
 
   @override
@@ -592,7 +626,11 @@ class _$LoadedImpl implements _Loaded {
                 other.totalYearlyEquivalentSpending ==
                     totalYearlyEquivalentSpending) &&
             (identical(other.selectedYearForTrend, selectedYearForTrend) ||
-                other.selectedYearForTrend == selectedYearForTrend));
+                other.selectedYearForTrend == selectedYearForTrend) &&
+            (identical(other.yearlySalary, yearlySalary) ||
+                other.yearlySalary == yearlySalary) &&
+            (identical(other.percentageOfSalary, percentageOfSalary) ||
+                other.percentageOfSalary == percentageOfSalary));
   }
 
   @override
@@ -605,7 +643,9 @@ class _$LoadedImpl implements _Loaded {
       spendingTrendData,
       totalMonthlyEquivalentSpending,
       totalYearlyEquivalentSpending,
-      selectedYearForTrend);
+      selectedYearForTrend,
+      yearlySalary,
+      percentageOfSalary);
 
   /// Create a copy of StatisticsState
   /// with the given fields replaced by the non-null parameter values.
@@ -628,7 +668,9 @@ class _$LoadedImpl implements _Loaded {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(String message) empty,
@@ -641,7 +683,9 @@ class _$LoadedImpl implements _Loaded {
         spendingTrendData,
         totalMonthlyEquivalentSpending,
         totalYearlyEquivalentSpending,
-        selectedYearForTrend);
+        selectedYearForTrend,
+        yearlySalary,
+        percentageOfSalary);
   }
 
   @override
@@ -657,7 +701,9 @@ class _$LoadedImpl implements _Loaded {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(String message)? empty,
@@ -670,7 +716,9 @@ class _$LoadedImpl implements _Loaded {
         spendingTrendData,
         totalMonthlyEquivalentSpending,
         totalYearlyEquivalentSpending,
-        selectedYearForTrend);
+        selectedYearForTrend,
+        yearlySalary,
+        percentageOfSalary);
   }
 
   @override
@@ -686,7 +734,9 @@ class _$LoadedImpl implements _Loaded {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(String message)? empty,
@@ -701,7 +751,9 @@ class _$LoadedImpl implements _Loaded {
           spendingTrendData,
           totalMonthlyEquivalentSpending,
           totalYearlyEquivalentSpending,
-          selectedYearForTrend);
+          selectedYearForTrend,
+          yearlySalary,
+          percentageOfSalary);
     }
     return orElse();
   }
@@ -756,17 +808,20 @@ abstract class _Loaded implements StatisticsState {
       required final MonthlySpendingTrendData spendingTrendData,
       required final double totalMonthlyEquivalentSpending,
       required final double totalYearlyEquivalentSpending,
-      required final int selectedYearForTrend}) = _$LoadedImpl;
+      required final int selectedYearForTrend,
+      final double? yearlySalary,
+      final double? percentageOfSalary}) = _$LoadedImpl;
 
-  List<SubscriptionEntity> get activeSubscriptions; // Source data
+  List<SubscriptionEntity> get activeSubscriptions;
   List<CategorySpending> get categorySpendingData;
   List<BillingTypeSpending> get billingTypeSpendingData;
-  List<SubscriptionEntity>
-      get topSpendingSubscriptions; // Top N subscriptions by monthly equiv.
+  List<SubscriptionEntity> get topSpendingSubscriptions;
   MonthlySpendingTrendData get spendingTrendData;
   double get totalMonthlyEquivalentSpending;
   double get totalYearlyEquivalentSpending;
-  int get selectedYearForTrend;
+  int get selectedYearForTrend; // --- NEUE PARAMETER ---
+  double? get yearlySalary;
+  double? get percentageOfSalary;
 
   /// Create a copy of StatisticsState
   /// with the given fields replaced by the non-null parameter values.
@@ -853,7 +908,9 @@ class _$ErrorImpl implements _Error {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(String message) empty,
@@ -874,7 +931,9 @@ class _$ErrorImpl implements _Error {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(String message)? empty,
@@ -895,7 +954,9 @@ class _$ErrorImpl implements _Error {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(String message)? empty,
@@ -1038,7 +1099,9 @@ class _$EmptyImpl implements _Empty {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)
         loaded,
     required TResult Function(String message) error,
     required TResult Function(String message) empty,
@@ -1059,7 +1122,9 @@ class _$EmptyImpl implements _Empty {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult? Function(String message)? error,
     TResult? Function(String message)? empty,
@@ -1080,7 +1145,9 @@ class _$EmptyImpl implements _Empty {
             MonthlySpendingTrendData spendingTrendData,
             double totalMonthlyEquivalentSpending,
             double totalYearlyEquivalentSpending,
-            int selectedYearForTrend)?
+            int selectedYearForTrend,
+            double? yearlySalary,
+            double? percentageOfSalary)?
         loaded,
     TResult Function(String message)? error,
     TResult Function(String message)? empty,

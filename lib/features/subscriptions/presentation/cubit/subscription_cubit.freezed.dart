@@ -24,8 +24,8 @@ mixin _$SubscriptionState {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -39,8 +39,8 @@ mixin _$SubscriptionState {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -54,8 +54,8 @@ mixin _$SubscriptionState {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -157,8 +157,8 @@ class _$InitialImpl implements _Initial {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -175,8 +175,8 @@ class _$InitialImpl implements _Initial {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -193,8 +193,8 @@ class _$InitialImpl implements _Initial {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -295,8 +295,8 @@ class _$LoadingImpl implements _Loading {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -313,8 +313,8 @@ class _$LoadingImpl implements _Loading {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -331,8 +331,8 @@ class _$LoadingImpl implements _Loading {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -396,8 +396,8 @@ abstract class _$$LoadedImplCopyWith<$Res> {
       {List<SubscriptionEntity> allSubscriptions,
       List<SubscriptionEntity> filteredSubscriptions,
       SortOption? currentSortOption,
-      SubscriptionCategory? filterCategory,
-      BillingCycle? filterBillingCycle,
+      List<SubscriptionCategory>? filterCategories,
+      List<BillingCycle>? filterBillingCycles,
       String? searchTerm});
 }
 
@@ -417,8 +417,8 @@ class __$$LoadedImplCopyWithImpl<$Res>
     Object? allSubscriptions = null,
     Object? filteredSubscriptions = null,
     Object? currentSortOption = freezed,
-    Object? filterCategory = freezed,
-    Object? filterBillingCycle = freezed,
+    Object? filterCategories = freezed,
+    Object? filterBillingCycles = freezed,
     Object? searchTerm = freezed,
   }) {
     return _then(_$LoadedImpl(
@@ -434,14 +434,14 @@ class __$$LoadedImplCopyWithImpl<$Res>
           ? _value.currentSortOption
           : currentSortOption // ignore: cast_nullable_to_non_nullable
               as SortOption?,
-      filterCategory: freezed == filterCategory
-          ? _value.filterCategory
-          : filterCategory // ignore: cast_nullable_to_non_nullable
-              as SubscriptionCategory?,
-      filterBillingCycle: freezed == filterBillingCycle
-          ? _value.filterBillingCycle
-          : filterBillingCycle // ignore: cast_nullable_to_non_nullable
-              as BillingCycle?,
+      filterCategories: freezed == filterCategories
+          ? _value._filterCategories
+          : filterCategories // ignore: cast_nullable_to_non_nullable
+              as List<SubscriptionCategory>?,
+      filterBillingCycles: freezed == filterBillingCycles
+          ? _value._filterBillingCycles
+          : filterBillingCycles // ignore: cast_nullable_to_non_nullable
+              as List<BillingCycle>?,
       searchTerm: freezed == searchTerm
           ? _value.searchTerm
           : searchTerm // ignore: cast_nullable_to_non_nullable
@@ -457,11 +457,13 @@ class _$LoadedImpl implements _Loaded {
       {required final List<SubscriptionEntity> allSubscriptions,
       required final List<SubscriptionEntity> filteredSubscriptions,
       this.currentSortOption,
-      this.filterCategory,
-      this.filterBillingCycle,
+      final List<SubscriptionCategory>? filterCategories,
+      final List<BillingCycle>? filterBillingCycles,
       this.searchTerm})
       : _allSubscriptions = allSubscriptions,
-        _filteredSubscriptions = filteredSubscriptions;
+        _filteredSubscriptions = filteredSubscriptions,
+        _filterCategories = filterCategories,
+        _filterBillingCycles = filterBillingCycles;
 
   final List<SubscriptionEntity> _allSubscriptions;
   @override
@@ -481,20 +483,37 @@ class _$LoadedImpl implements _Loaded {
     return EqualUnmodifiableListView(_filteredSubscriptions);
   }
 
-// For UI display after filtering/sorting
-// Add other relevant data for the UI, e.g., sorting options, filter values
   @override
   final SortOption? currentSortOption;
+  final List<SubscriptionCategory>? _filterCategories;
   @override
-  final SubscriptionCategory? filterCategory;
+  List<SubscriptionCategory>? get filterCategories {
+    final value = _filterCategories;
+    if (value == null) return null;
+    if (_filterCategories is EqualUnmodifiableListView)
+      return _filterCategories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<BillingCycle>? _filterBillingCycles;
   @override
-  final BillingCycle? filterBillingCycle;
+  List<BillingCycle>? get filterBillingCycles {
+    final value = _filterBillingCycles;
+    if (value == null) return null;
+    if (_filterBillingCycles is EqualUnmodifiableListView)
+      return _filterBillingCycles;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+// NEU: Liste für Zyklen
   @override
   final String? searchTerm;
 
   @override
   String toString() {
-    return 'SubscriptionState.loaded(allSubscriptions: $allSubscriptions, filteredSubscriptions: $filteredSubscriptions, currentSortOption: $currentSortOption, filterCategory: $filterCategory, filterBillingCycle: $filterBillingCycle, searchTerm: $searchTerm)';
+    return 'SubscriptionState.loaded(allSubscriptions: $allSubscriptions, filteredSubscriptions: $filteredSubscriptions, currentSortOption: $currentSortOption, filterCategories: $filterCategories, filterBillingCycles: $filterBillingCycles, searchTerm: $searchTerm)';
   }
 
   @override
@@ -508,10 +527,10 @@ class _$LoadedImpl implements _Loaded {
                 .equals(other._filteredSubscriptions, _filteredSubscriptions) &&
             (identical(other.currentSortOption, currentSortOption) ||
                 other.currentSortOption == currentSortOption) &&
-            (identical(other.filterCategory, filterCategory) ||
-                other.filterCategory == filterCategory) &&
-            (identical(other.filterBillingCycle, filterBillingCycle) ||
-                other.filterBillingCycle == filterBillingCycle) &&
+            const DeepCollectionEquality()
+                .equals(other._filterCategories, _filterCategories) &&
+            const DeepCollectionEquality()
+                .equals(other._filterBillingCycles, _filterBillingCycles) &&
             (identical(other.searchTerm, searchTerm) ||
                 other.searchTerm == searchTerm));
   }
@@ -522,8 +541,8 @@ class _$LoadedImpl implements _Loaded {
       const DeepCollectionEquality().hash(_allSubscriptions),
       const DeepCollectionEquality().hash(_filteredSubscriptions),
       currentSortOption,
-      filterCategory,
-      filterBillingCycle,
+      const DeepCollectionEquality().hash(_filterCategories),
+      const DeepCollectionEquality().hash(_filterBillingCycles),
       searchTerm);
 
   /// Create a copy of SubscriptionState
@@ -543,14 +562,14 @@ class _$LoadedImpl implements _Loaded {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
   }) {
     return loaded(allSubscriptions, filteredSubscriptions, currentSortOption,
-        filterCategory, filterBillingCycle, searchTerm);
+        filterCategories, filterBillingCycles, searchTerm);
   }
 
   @override
@@ -562,14 +581,14 @@ class _$LoadedImpl implements _Loaded {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
   }) {
     return loaded?.call(allSubscriptions, filteredSubscriptions,
-        currentSortOption, filterCategory, filterBillingCycle, searchTerm);
+        currentSortOption, filterCategories, filterBillingCycles, searchTerm);
   }
 
   @override
@@ -581,8 +600,8 @@ class _$LoadedImpl implements _Loaded {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,
@@ -590,7 +609,7 @@ class _$LoadedImpl implements _Loaded {
   }) {
     if (loaded != null) {
       return loaded(allSubscriptions, filteredSubscriptions, currentSortOption,
-          filterCategory, filterBillingCycle, searchTerm);
+          filterCategories, filterBillingCycles, searchTerm);
     }
     return orElse();
   }
@@ -638,17 +657,15 @@ abstract class _Loaded implements SubscriptionState {
       {required final List<SubscriptionEntity> allSubscriptions,
       required final List<SubscriptionEntity> filteredSubscriptions,
       final SortOption? currentSortOption,
-      final SubscriptionCategory? filterCategory,
-      final BillingCycle? filterBillingCycle,
+      final List<SubscriptionCategory>? filterCategories,
+      final List<BillingCycle>? filterBillingCycles,
       final String? searchTerm}) = _$LoadedImpl;
 
   List<SubscriptionEntity> get allSubscriptions;
-  List<SubscriptionEntity>
-      get filteredSubscriptions; // For UI display after filtering/sorting
-// Add other relevant data for the UI, e.g., sorting options, filter values
+  List<SubscriptionEntity> get filteredSubscriptions;
   SortOption? get currentSortOption;
-  SubscriptionCategory? get filterCategory;
-  BillingCycle? get filterBillingCycle;
+  List<SubscriptionCategory>? get filterCategories;
+  List<BillingCycle>? get filterBillingCycles; // NEU: Liste für Zyklen
   String? get searchTerm;
 
   /// Create a copy of SubscriptionState
@@ -732,8 +749,8 @@ class _$ErrorImpl implements _Error {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)
         loaded,
     required TResult Function(String message) error,
@@ -750,8 +767,8 @@ class _$ErrorImpl implements _Error {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult? Function(String message)? error,
@@ -768,8 +785,8 @@ class _$ErrorImpl implements _Error {
             List<SubscriptionEntity> allSubscriptions,
             List<SubscriptionEntity> filteredSubscriptions,
             SortOption? currentSortOption,
-            SubscriptionCategory? filterCategory,
-            BillingCycle? filterBillingCycle,
+            List<SubscriptionCategory>? filterCategories,
+            List<BillingCycle>? filterBillingCycles,
             String? searchTerm)?
         loaded,
     TResult Function(String message)? error,

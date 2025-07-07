@@ -1,3 +1,4 @@
+// lib/features/settings/presentation/cubit/settings_state.dart
 part of 'settings_cubit.dart';
 
 @freezed
@@ -6,13 +7,19 @@ class SettingsState with _$SettingsState {
     required ThemeMode themeMode,
     required Locale locale,
     required String currencyCode,
+    double? salary,
+    @Default(SalaryCycle.monthly) SalaryCycle salaryCycle,
+    @Default(false) bool hasThirteenthSalary,
     @Default(false) bool isLoading,
     String? error,
   }) = _SettingsState;
 
-  factory SettingsState.initial() => const SettingsState( // Added const
-        themeMode: ThemeMode.system, 
-        locale: Locale('en', 'US'), 
-        currencyCode: 'USD', 
+  factory SettingsState.initial() => const SettingsState(
+        themeMode: ThemeMode.system,
+        locale: Locale('en', 'US'),
+        currencyCode: 'USD',
+        salary: null,
+        salaryCycle: SalaryCycle.monthly,
+        hasThirteenthSalary: false,
       );
 }
