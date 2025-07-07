@@ -147,5 +147,16 @@
   "stats_spending_trend_empty_message": "Keine Ausgabentrend-Daten für {year} verfügbar.",
   "stats_top_subscriptions_title": "Top Ausgaben Abos",
   "stats_top_subscriptions_subtitle": "(Basierend auf monatlichen Äquivalentkosten)",
-  "stats_top_subscriptions_empty_message": "Keine Abos in der Top-Liste anzuzeigen."
+  "stats_top_subscriptions_empty_message": "Keine Abos in der Top-Liste anzuzeigen.",
+  "onboarding_page1_title": "Willkommen bei AboApp!",
+  "onboarding_page1_desc": "Verwalte deine Abonnements und spare mühelos Geld.",
+  "onboarding_page2_title": "Abos einfach hinzufügen",
+  "onboarding_page2_desc": "Füge schnell alle deine wiederkehrenden Zahlungen verschiedener Dienste hinzu.",
+  "onboarding_page3_title": "Behalte die Kosten im Blick",
+  "onboarding_page3_desc": "Sieh klare Zusammenfassungen deiner monatlichen und jährlichen Ausgaben.",
+  "onboarding_page4_title": "Verpasse nie eine Zahlung",
+  "onboarding_page4_desc": "Erhalte rechtzeitige Erinnerungen bevor deine Abonnements fällig werden.",
+  "onboarding_skip_button": "Überspringen",
+  "onboarding_next_button": "Weiter",
+  "onboarding_get_started_button": "Loslegen"
 }

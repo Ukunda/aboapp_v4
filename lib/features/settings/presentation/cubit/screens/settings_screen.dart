@@ -1,3 +1,4 @@
+import 'package:aboapp/core/localization/app_localizations.dart';
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,21 +7,23 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
+    final localizations = AppLocalizations.of(context)!;
     switch (themeMode) {
       case ThemeMode.system:
-        return 'System Default'; 
+        return localizations.translate('settings_theme_system');
       case ThemeMode.light:
-        return 'Light'; 
+        return localizations.translate('settings_theme_light');
       case ThemeMode.dark:
-        return 'Dark'; 
+        return localizations.translate('settings_theme_dark');
     }
   }
 
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
+    final localizations = AppLocalizations.of(context)!;
     if (locale.languageCode == 'en') {
-      return 'English'; 
+      return localizations.translate('settings_language_english');
     } else if (locale.languageCode == 'de') {
-      return 'Deutsch (German)'; 
+      return localizations.translate('settings_language_german');
     }
     return locale.toLanguageTag(); 
   }
@@ -36,7 +39,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final theme = Theme.of(context); // Unused variable
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: BlocBuilder<SettingsCubit, SettingsState>(
@@ -45,46 +48,46 @@ class SettingsScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator.adaptive());
           }
           if (state.error != null) {
-            return Center(child: Text('Error loading settings: ${state.error}')); // TODO: Localize
+            return Center(child: Text('${localizations.translate('error_occurred')}: ${state.error}'));
           }
 
           return ListView(
             padding: const EdgeInsets.all(8.0),
             children: <Widget>[
-              _buildSectionHeader(context, 'Appearance'), 
+              _buildSectionHeader(context, localizations.translate('settings_section_appearance')),
               ListTile(
                 leading: const Icon(Icons.brightness_6_rounded),
-                title: const Text('Theme'), 
+                title: Text(localizations.translate('settings_theme_title')),
                 subtitle: Text(_getThemeModeDisplayName(context, state.themeMode)),
                 onTap: () => _showThemeModeDialog(context, state.themeMode),
               ),
               const Divider(),
-              _buildSectionHeader(context, 'Regional'), 
+              _buildSectionHeader(context, localizations.translate('settings_section_regional')),
               ListTile(
                 leading: const Icon(Icons.language_rounded),
-                title: const Text('Language'), 
+                title: Text(localizations.translate('settings_language_title')),
                 subtitle: Text(_getLocaleDisplayName(context, state.locale)),
                 onTap: () => _showLocaleDialog(context, state.locale),
               ),
               ListTile(
                 leading: const Icon(Icons.attach_money_rounded),
-                title: const Text('Currency'), 
+                title: Text(localizations.translate('settings_currency_title')),
                 subtitle: Text(_supportedCurrencies[state.currencyCode] ?? state.currencyCode),
                 onTap: () => _showCurrencyDialog(context, state.currencyCode),
               ),
               const Divider(),
-              _buildSectionHeader(context, 'About'), 
+              _buildSectionHeader(context, localizations.translate('settings_section_about')),
               ListTile(
                 leading: const Icon(Icons.info_outline_rounded),
-                title: const Text('About AboApp'), 
-                subtitle: const Text('Version 3.0.0 - Refactored'), 
+                title: Text(localizations.translate('settings_about_app_title')),
+                subtitle: Text(localizations.translate('settings_app_version', args: {'version': '3.0.0'})),
                 onTap: () {
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      title: const Text('About AboApp'), 
-                      content: const Text('Subscription management made easy.\nVersion 3.0.0'), 
-                      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close'))], 
+                      title: Text(localizations.translate('settings_about_app_title')),
+                      content: Text(localizations.translate('settings_app_description_long')),
+                      actions: [TextButton(onPressed: () => Navigator.of(ctx).pop(), child: Text(localizations.translate('close')))],
                     ),
                   );
                 },
@@ -110,11 +113,12 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showThemeModeDialog(BuildContext context, ThemeMode currentThemeMode) {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Select Theme'), 
+          title: Text(localizations.translate('settings_dialog_select_theme_title')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: ThemeMode.values.map((themeMode) {
@@ -133,7 +137,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'), 
+              child: Text(localizations.translate('cancel')),
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -143,6 +147,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLocaleDialog(BuildContext context, Locale currentLocale) {
+    final localizations = AppLocalizations.of(context)!;
     const List<Locale> supportedLocales = [
       Locale('en', 'US'),
       Locale('de', 'DE'),
@@ -152,7 +157,7 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Select Language'), 
+          title: Text(localizations.translate('settings_dialog_select_language_title')),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(
@@ -176,7 +181,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'), 
+              child: Text(localizations.translate('cancel')),
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],
@@ -186,11 +191,12 @@ class SettingsScreen extends StatelessWidget {
   }
   
   void _showCurrencyDialog(BuildContext context, String currentCurrencyCode) {
+    final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Select Currency'), 
+          title: Text(localizations.translate('settings_dialog_select_currency_title')),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView(
@@ -212,7 +218,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'), 
+              child: Text(localizations.translate('cancel')),
               onPressed: () => Navigator.of(dialogContext).pop(),
             ),
           ],

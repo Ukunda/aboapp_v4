@@ -1,3 +1,4 @@
+import 'package:aboapp/core/localization/app_localizations.dart';
 import 'package:aboapp/core/routing/app_router.dart';
 // import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart'; // Unused
 // import 'package:aboapp/features/subscriptions/presentation/screens/add_edit_subscription_screen.dart'; // Unused
@@ -83,16 +84,16 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
         break;
       case 3: // For 'About' item
         // Example action: Show a dialog or navigate to an 'About' screen (if defined)
+        final localizations = AppLocalizations.of(context)!;
         showDialog(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('About AboApp'), // TODO: Localize
-            content: const Text(
-                'Version 3.0.0\nSubscription Management Made Easy.'), // TODO: Localize
+            title: Text(localizations.translate('settings_about_app_title')),
+            content: Text(localizations.translate('settings_app_description_long')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Close'), // TODO: Localize
+                child: Text(localizations.translate('close')),
               )
             ],
           ),
@@ -122,6 +123,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: widget.child,
@@ -131,7 +133,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
                 app_haptics.HapticFeedback.lightImpact();
                 context.pushNamed(AppRoutes.addSubscription);
               },
-              tooltip: 'Add Subscription',
+              tooltip: localizations.translate('home_add_subscription_tooltip'),
               child: const Icon(Icons.add_rounded),
             )
           : null,
@@ -148,7 +150,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             _buildBottomNavItem(
               context: context,
               icon: Icons.list_alt_rounded,
-              label: 'Subscriptions',
+              label: localizations.translate('bottom_nav_subscriptions'),
               index: 0,
               isSelected: _currentPageIndex == 0,
               onTap: () => _onBottomNavItemTapped(0),
@@ -156,7 +158,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             _buildBottomNavItem(
               context: context,
               icon: Icons.bar_chart_rounded,
-              label: 'Statistics',
+              label: localizations.translate('bottom_nav_statistics'),
               index: 1,
               isSelected: _currentPageIndex == 1,
               onTap: () => _onBottomNavItemTapped(1),
@@ -165,7 +167,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             _buildBottomNavItem(
               context: context,
               icon: Icons.settings_rounded,
-              label: 'Settings',
+              label: localizations.translate('bottom_nav_settings'),
               index: 2,
               isSelected: _currentPageIndex == 2,
               onTap: () => _onBottomNavItemTapped(2),
@@ -173,7 +175,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             _buildBottomNavItem(
               context: context,
               icon: Icons.info_outline_rounded,
-              label: 'About',
+              label: localizations.translate('bottom_nav_about'),
               index: 3,
               isSelected:
                   false, // 'About' is not a page in PageView, so never "selected" in that sense
