@@ -24,6 +24,8 @@ class SettingsScreen extends StatelessWidget {
       return context.tr('settings_language_german'); 
     } else if (locale.languageCode == 'fr') {
       return context.tr('settings_language_french'); 
+    } else if (locale.languageCode == 'es') {
+      return context.tr('settings_language_spanish'); 
     }
     return locale.toLanguageTag(); 
   }
@@ -150,6 +152,7 @@ class SettingsScreen extends StatelessWidget {
       Locale('en', 'US'),
       Locale('de', 'DE'),
       Locale('fr', 'FR'),
+      Locale('es', 'ES'),
     ];
 
     showDialog(

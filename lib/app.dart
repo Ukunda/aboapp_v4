@@ -44,6 +44,7 @@ class AboApp extends StatelessWidget {
               Locale('en', 'US'),
               Locale('de', 'DE'),
               Locale('fr', 'FR'),
+              Locale('es', 'ES'),
             ],
             localizationsDelegates: const [
               AppLocalizations.delegate,
