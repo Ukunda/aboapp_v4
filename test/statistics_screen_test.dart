@@ -162,15 +162,15 @@ void main() {
         BlocProvider.value(value: settingsCubit),
         BlocProvider.value(value: statisticsCubit),
       ],
-      child: MaterialApp(
-        localizationsDelegates: const [
+      child: const MaterialApp(
+        localizationsDelegates: [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        supportedLocales: const [Locale('en', 'US')],
-        home: const StatisticsScreen(),
+        supportedLocales: [Locale('en', 'US')],
+        home: StatisticsScreen(),
       ),
     ));
 

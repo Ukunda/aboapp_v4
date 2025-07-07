@@ -115,7 +115,10 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
               const SettingsScreen(),
             ],
           ),
-          widget.child,
+               IgnorePointer(
+            ignoring: widget.child is SizedBox,
+            child: widget.child,
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -164,7 +167,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
     final theme = Theme.of(context);
     final isSelected = _currentIndex == index;
     // Import screen is accessed via navigation
-    final bool isDisabled = false;
+    const bool isDisabled = false;
 
     final color = isDisabled
         ? theme.colorScheme.onSurface.withValues(alpha: 77)

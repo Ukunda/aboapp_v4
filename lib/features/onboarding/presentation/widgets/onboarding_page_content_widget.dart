@@ -44,7 +44,7 @@ class OnboardingPageContentWidget extends StatelessWidget {
             textAlign: TextAlign.center,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onBackground,
+              color: theme.colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16.0),

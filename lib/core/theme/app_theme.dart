@@ -99,8 +99,6 @@ abstract class AppTheme {
         onSecondary: onPrimaryColor,
         surface: surfaceColor,
         onSurface: onSurfaceColor,
-        background: backgroundColor,
-        onBackground: onSurfaceColor,
         error: Colors.red.shade400,
         onError: Colors.white,
         // onSurfaceVariant wird hier gesetzt und im Theme verwendet

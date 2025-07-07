@@ -135,7 +135,7 @@ abstract class ClassicTheme {
         foregroundColor: AppColors.onPrimary,
         elevation: 4.0,
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceLight,
         selectedItemColor: AppColors.primary,
         unselectedItemColor: AppColors.onSurfaceVariantLight,
@@ -277,7 +277,7 @@ abstract class ClassicTheme {
         foregroundColor: AppColors.primaryDark,
         elevation: 4.0,
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: AppColors.surfaceDark,
         selectedItemColor: AppColors.primaryLight,
         unselectedItemColor: AppColors.onSurfaceVariantDark,

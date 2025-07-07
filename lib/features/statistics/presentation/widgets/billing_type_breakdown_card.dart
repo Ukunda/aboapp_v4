@@ -134,12 +134,11 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '${item.subscriptionCount} ' +
-                            (item.subscriptionCount == 1
+                        '${item.subscriptionCount} ${item.subscriptionCount == 1
                                 ? context.l10n
                                     .translate('stats_subscription_abbrev_single')
                                 : context.l10n.translate(
-                                    'stats_subscription_abbrev_multiple')),
+                                    'stats_subscription_abbrev_multiple')}',
                         style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,

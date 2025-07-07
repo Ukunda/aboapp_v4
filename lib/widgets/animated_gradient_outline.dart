@@ -210,7 +210,7 @@ class GradientOutlinePainter extends CustomPainter {
 
       if (labelWidth > 0) {
         const double gapPadding = 4.0;
-        final double gapStart = 12.0;
+        const double gapStart = 12.0;
         final double gapExtent = labelWidth + gapPadding * 2;
         final Path gapPath = Path();
         gapPath.addRect(

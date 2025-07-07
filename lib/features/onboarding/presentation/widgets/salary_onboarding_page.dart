@@ -87,11 +87,11 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
                     value: SalaryCycle.monthly,
                     label:
                         Text(context.l10n.translate('billing_cycle_monthly')),
-                    icon: Icon(Icons.calendar_view_month)),
+                    icon: const Icon(Icons.calendar_view_month)),
                 ButtonSegment(
                     value: SalaryCycle.yearly,
                     label: Text(context.l10n.translate('billing_cycle_yearly')),
-                    icon: Icon(Icons.calendar_today)),
+                    icon: const Icon(Icons.calendar_today)),
               ],
               selected: {_salaryCycle},
               onSelectionChanged: (newSelection) {

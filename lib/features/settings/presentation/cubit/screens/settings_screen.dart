@@ -101,10 +101,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
-    if (locale.languageCode == 'en')
+    if (locale.languageCode == 'en') {
       return context.l10n.translate('settings_language_english');
-    if (locale.languageCode == 'de')
+    }
+    if (locale.languageCode == 'de') {
       return context.l10n.translate('settings_language_german');
+    }
     return locale.toLanguageTag();
   }
 
