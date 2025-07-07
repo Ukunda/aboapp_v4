@@ -1,6 +1,7 @@
 import 'package:aboapp/features/settings/presentation/cubit/settings_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:aboapp/core/localization/localization_extension.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -8,19 +9,21 @@ class SettingsScreen extends StatelessWidget {
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.system:
-        return 'System Default'; 
+        return context.tr(L10nKeys.settingsThemeSystem); 
       case ThemeMode.light:
-        return 'Light'; 
+        return context.tr(L10nKeys.settingsThemeLight); 
       case ThemeMode.dark:
-        return 'Dark'; 
+        return context.tr(L10nKeys.settingsThemeDark); 
     }
   }
 
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
     if (locale.languageCode == 'en') {
-      return 'English'; 
+      return context.tr('settings_language_english'); 
     } else if (locale.languageCode == 'de') {
-      return 'Deutsch (German)'; 
+      return context.tr('settings_language_german'); 
+    } else if (locale.languageCode == 'fr') {
+      return context.tr('settings_language_french'); 
     }
     return locale.toLanguageTag(); 
   }
@@ -146,13 +149,14 @@ class SettingsScreen extends StatelessWidget {
     const List<Locale> supportedLocales = [
       Locale('en', 'US'),
       Locale('de', 'DE'),
+      Locale('fr', 'FR'),
     ];
 
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Select Language'), 
+          title: Text(context.tr('settings_dialog_select_language_title')), 
           content: SizedBox(
             width: double.maxFinite,
             child: ListView.builder(

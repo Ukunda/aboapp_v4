@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:aboapp/core/utils/haptic_feedback.dart' as app_haptics;
 import 'package:aboapp/core/theme/app_colors.dart'; // Import AppColors
+import 'package:aboapp/core/localization/localization_extension.dart';
+import 'package:aboapp/core/localization/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -91,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen>
                   focusNode: _searchFocusNode,
                   autofocus: true,
                   decoration: InputDecoration(
-                      hintText: 'Search subscriptions...',
+                      hintText: context.tr(L10nKeys.homeSearchHint),
                       border: InputBorder.none,
                       isDense: true,
                       hintStyle: theme.appBarTheme.titleTextStyle?.copyWith(
@@ -104,14 +106,14 @@ class _HomeScreenState extends State<HomeScreen>
                       .read<SubscriptionCubit>()
                       .searchSubscriptions(query),
                 )
-              : const Text('My Subscriptions'),
+              : Text(context.tr(L10nKeys.homeMySubscriptions)),
         ),
         actions: [
           IconButton(
             icon:
                 Icon(_isSearching ? Icons.close_rounded : Icons.search_rounded),
             onPressed: () => _toggleSearch(context),
-            tooltip: _isSearching ? 'Close Search' : 'Search',
+            tooltip: _isSearching ? context.tr(L10nKeys.homeCloseSearchTooltip) : context.tr(L10nKeys.homeSearchTooltip),
           ),
         ],
       ),
@@ -241,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen>
                     (_searchController.text.isNotEmpty && _isSearching))
                   TextButton.icon(
                     icon: const Icon(Icons.clear_all_rounded, size: 18),
-                    label: const Text('Clear Filters'),
+                    label: Text(context.tr(L10nKeys.homeClearFiltersButton)),
                     onPressed: () =>
                         context.read<SubscriptionCubit>().clearAllFilters(),
                     style: TextButton.styleFrom(
@@ -257,7 +259,7 @@ class _HomeScreenState extends State<HomeScreen>
               child: Row(
                 children: [
                   FilterChip(
-                    label: const Text('All Cats'),
+                    label: Text(context.tr(L10nKeys.homeFilterAllCategories)),
                     selected: currentCat == null,
                     onSelected: (_) =>
                         context.read<SubscriptionCubit>().clearCategoryFilter(),

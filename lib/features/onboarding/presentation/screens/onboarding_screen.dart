@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:aboapp/core/di/injection.dart'; 
+import 'package:aboapp/core/localization/localization_extension.dart'; 
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -105,7 +106,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   padding: const EdgeInsets.only(top: 8.0, right: 16.0),
                   child: TextButton(
                     onPressed: _completeOnboarding,
-                    child: Text('Skip', style: TextStyle(color: theme.colorScheme.primary)), 
+                    child: Text(context.tr(L10nKeys.onboardingSkipButton), style: TextStyle(color: theme.colorScheme.primary)), 
                   ),
                 ),
               )
@@ -124,8 +125,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final pageData = _onboardingPages[index];
                   return OnboardingPageContentWidget(
-                    title: pageData.titleKey.replaceAll('_', ' ').split(' ').map((e) => e[0].toUpperCase() + e.substring(1)).join(' '), 
-                    description: pageData.descriptionKey.replaceAll('_', ' ').split(' ').map((e) => e[0].toUpperCase() + e.substring(1)).join(' '), 
+                    title: context.tr(pageData.titleKey), 
+                    description: context.tr(pageData.descriptionKey), 
                     iconData: pageData.iconData,
                     iconColor: pageData.iconColor,
                   );
@@ -166,8 +167,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     _currentPageIndex < _onboardingPages.length - 1
-                        ? 'Next' 
-                        : 'Get Started', 
+                        ? context.tr(L10nKeys.onboardingNextButton) 
+                        : context.tr(L10nKeys.onboardingGetStartedButton), 
                     style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
