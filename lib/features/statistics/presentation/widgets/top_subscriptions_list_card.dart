@@ -28,8 +28,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              context.l10n
-                  .translate('stats_top_subscriptions_empty_message'),
+              context.l10n.stats_top_subscriptions_empty_message,
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -48,7 +47,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
               padding: const EdgeInsets.only(
                   left: 16.0, top: 8.0, right: 16.0, bottom: 4.0),
               child: Text(
-                context.l10n.translate('stats_top_subscriptions_title'),
+                context.l10n.stats_top_subscriptions_title,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
@@ -57,7 +56,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
               padding:
                   const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
               child: Text(
-                context.l10n.translate('stats_top_subscriptions_subtitle'),
+                context.l10n.stats_top_subscriptions_subtitle,
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
               ),
@@ -106,7 +105,7 @@ class TopSubscriptionsListCard extends StatelessWidget {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        context.l10n.translate('stats_per_month_label'),
+                        context.l10n.stats_per_month_label,
                         style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                       )

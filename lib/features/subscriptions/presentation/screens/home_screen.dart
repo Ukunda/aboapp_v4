@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 focusNode: _searchFocusNode,
                                 autofocus: true,
                                 decoration: InputDecoration(
-                                    hintText: context.l10n.translate('home_search_subscriptions_hint'),
+                                    hintText: context.l10n.home_search_subscriptions_hint,
                                     border: InputBorder.none,
                                     isDense: true,
                                     hintStyle: theme.appBarTheme.titleTextStyle
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     .read<SubscriptionCubit>()
                                     .searchSubscriptions(query),
                               )
-                            : Text(context.l10n.translate('home_my_subscriptions')),
+                            : Text(context.l10n.home_my_subscriptions),
                       ),
                       actions: [
                         if (!_isSearching)
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               );
                             },
-                            tooltip: context.l10n.translate('home_filter_sort_tooltip'),
+                            tooltip: context.l10n.home_filter_sort_tooltip,
                           ),
                         IconButton(
                           icon: Icon(_isSearching
@@ -129,8 +129,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               : Icons.search_rounded),
                           onPressed: () => _toggleSearch(context),
                           tooltip: _isSearching
-                              ? context.l10n.translate('home_close_search_tooltip')
-                              : context.l10n.translate('home_search_tooltip'),
+                              ? context.l10n.home_close_search_tooltip
+                              : context.l10n.home_search_tooltip,
                         ),
                       ],
                       floating: true,
@@ -156,12 +156,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Center(
                           child: EmptyStateWidget(
                             icon: Icons.search_off_rounded,
-                            title: context.l10n.translate('home_no_subscriptions_found_title'),
-                            message: context.l10n.translate('home_no_results_message'),
+                            title: context.l10n.home_no_subscriptions_found_title,
+                            message: context.l10n.home_no_results_message,
                             onRetry: () => context
                                 .read<SubscriptionCubit>()
                                 .clearAllFilters(),
-                            retryText: context.l10n.translate('home_clear_filters_button'),
+                            retryText: context.l10n.home_clear_filters_button,
                           ),
                         ),
                       )
@@ -193,11 +193,11 @@ class _HomeScreenState extends State<HomeScreen> {
             error: (message) => Center(
               child: EmptyStateWidget(
                 icon: Icons.error_outline_rounded,
-                title: context.l10n.translate('error_occurred'),
+                title: context.l10n.error_occurred,
                 message: message,
                 onRetry: () =>
                     context.read<SubscriptionCubit>().loadSubscriptions(),
-                retryText: context.l10n.translate('retry'),
+                retryText: context.l10n.retry,
               ),
             ),
           );
@@ -291,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.edit_rounded),
-              title: Text(context.l10n.translate('subscription_action_edit')),
+              title: Text(context.l10n.subscription_action_edit),
               onTap: () {
                 Navigator.pop(builderContext);
                 context.pushNamed(
@@ -306,8 +306,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Icons.pause_circle_outline_rounded
                   : Icons.play_circle_outline_rounded),
               title: Text(subscription.isActive
-                  ? context.l10n.translate('subscription_action_pause')
-                  : context.l10n.translate('subscription_action_resume')),
+                  ? context.l10n.subscription_action_pause
+                  : context.l10n.subscription_action_resume),
               onTap: () {
                 Navigator.pop(builderContext);
                 context
@@ -320,8 +320,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? Icons.notifications_off_rounded
                   : Icons.notifications_active_rounded),
               title: Text(subscription.notificationsEnabled
-                  ? context.l10n.translate('subscription_action_disable_notifications')
-                  : context.l10n.translate('subscription_action_enable_notifications')),
+                  ? context.l10n.subscription_action_disable_notifications
+                  : context.l10n.subscription_action_enable_notifications),
               onTap: () {
                 Navigator.pop(builderContext);
                 context
@@ -333,30 +333,27 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.delete_forever_rounded,
                   color: theme.colorScheme.error),
               title: Text(
-                context.l10n.translate('subscription_action_delete'),
+                context.l10n.subscription_action_delete,
                 style: TextStyle(color: theme.colorScheme.error),
               ),
               onTap: () async {
                 Navigator.pop(builderContext);
+                final cubit = context.read<SubscriptionCubit>();
                 final confirmDelete = await showDialog<bool>(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
-                    title: Text(context.l10n
-                        .translate('subscription_delete_confirm_title')),
+                    title: Text(context.l10n.subscription_delete_confirm_title),
                     content: Text(
-                      context.l10n.translate(
-                        'subscription_delete_confirm_message',
-                        args: {'name': subscription.name},
-                      ),
+                      context.l10n.subscription_delete_confirm_message(subscription.name),
                     ),
                     actions: <Widget>[
                       TextButton(
-                        child: Text(context.l10n.translate('cancel')),
+                        child: Text(context.l10n.cancel),
                         onPressed: () => Navigator.of(dialogContext).pop(false),
                       ),
                       TextButton(
                         child: Text(
-                          context.l10n.translate('delete'),
+                          context.l10n.delete,
                           style: TextStyle(color: theme.colorScheme.error),
                         ),
                         onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -365,9 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
                 if (confirmDelete == true && mounted) {
-                  context
-                      .read<SubscriptionCubit>()
-                      .deleteSubscription(subscription.id);
+                  cubit.deleteSubscription(subscription.id);
                 }
               },
             ),

@@ -78,6 +78,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  String _getLocalizedTitle(BuildContext context, String key) {
+    switch (key) {
+      case 'onboarding_page1_title':
+        return context.l10n.onboarding_page1_title;
+      case 'onboarding_page2_title':
+        return context.l10n.onboarding_page2_title;
+      case 'onboarding_salary_optional_title':
+        return context.l10n.onboarding_salary_optional_title;
+      case 'onboarding_page4_title':
+        return context.l10n.onboarding_page4_title;
+      default:
+        return key;
+    }
+  }
+
+  String _getLocalizedDescription(BuildContext context, String key) {
+    switch (key) {
+      case 'onboarding_page1_desc':
+        return context.l10n.onboarding_page1_desc;
+      case 'onboarding_page2_desc':
+        return context.l10n.onboarding_page2_desc;
+      case 'onboarding_salary_optional_desc':
+        return context.l10n.onboarding_salary_optional_desc;
+      case 'onboarding_page4_desc':
+        return context.l10n.onboarding_page4_desc;
+      default:
+        return key;
+    }
+  }
+
   Future<void> _completeOnboarding() async {
     app_haptics.HapticFeedback.lightImpact();
     final salaryPageState = _salaryPageKey.currentState;
@@ -110,8 +140,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: TextButton(
                   onPressed: _completeOnboarding,
                   child: Text(isLastPage
-                      ? context.l10n.translate('onboarding_get_started_button')
-                      : context.l10n.translate('onboarding_skip_button')),
+                      ? context.l10n.onboarding_get_started_button
+                      : context.l10n.onboarding_skip_button),
                 ),
               ),
             ),
@@ -134,8 +164,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   }
                   return SingleChildScrollView(
                     child: OnboardingPageContentWidget(
-                      title: context.l10n.translate(pageData.titleKey),
-                      description: context.l10n.translate(pageData.descriptionKey),
+                      title: _getLocalizedTitle(context, pageData.titleKey),
+                      description: _getLocalizedDescription(context, pageData.descriptionKey),
                       iconData: pageData.iconData,
                       iconColor: pageData.iconColor,
                     ),
@@ -180,8 +210,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: Text(
                     isLastPage
-                        ? context.l10n.translate('onboarding_get_started_button')
-                        : context.l10n.translate('onboarding_next_button'),
+                        ? context.l10n.onboarding_get_started_button
+                        : context.l10n.onboarding_next_button,
                   ),
                 ),
               ),

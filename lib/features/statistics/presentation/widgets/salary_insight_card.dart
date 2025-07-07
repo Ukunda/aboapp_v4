@@ -54,19 +54,13 @@ class SalaryInsightCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    context.l10n.translate('stats_salary_contribution_title'),
+                    context.l10n.stats_salary_contribution_title,
                     style: theme.textTheme.titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    context.l10n.translate(
-                      'stats_salary_contribution_message',
-                      args: {
-                        'percentage': formattedPercentage,
-                        'salary': formattedSalary,
-                      },
-                    ),
+                    context.l10n.stats_salary_contribution_message('$formattedPercentage%', formattedSalary),
                     style: theme.textTheme.bodyMedium
                         ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                   ),

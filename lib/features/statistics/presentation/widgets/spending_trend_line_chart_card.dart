@@ -26,10 +26,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              context.l10n.translate(
-                'stats_spending_trend_empty_message',
-                args: {'year': spendingTrendData.year.toString()},
-              ),
+              context.l10n.stats_spending_trend_empty_message(spendingTrendData.year.toString()),
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -44,10 +41,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l10n.translate(
-                'stats_spending_trend_title',
-                args: {'year': spendingTrendData.year.toString()},
-              ),
+              context.l10n.stats_spending_trend_title(spendingTrendData.year.toString()),
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -76,7 +70,7 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                                 .clamp(10.0, double.infinity),
                         getDrawingHorizontalLine: (value) {
                           return FlLine(
-                            color: theme.dividerColor.withOpacity(0.5),
+                            color: theme.dividerColor.withAlpha((255 * 0.5).round()),
                             strokeWidth: 0.5,
                           );
                         },
@@ -170,8 +164,8 @@ class SpendingTrendLineChartCard extends StatelessWidget {
                             show: true,
                             gradient: LinearGradient(
                               colors: [
-                                theme.colorScheme.primary.withOpacity(0.2),
-                                theme.colorScheme.secondary.withOpacity(0.05),
+                                theme.colorScheme.primary.withAlpha((255 * 0.2).round()),
+                                theme.colorScheme.secondary.withAlpha((255 * 0.05).round()),
                               ],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,

@@ -19,17 +19,17 @@ class BillingTypeBreakdownCard extends StatelessWidget {
   String _getBillingCycleLabel(BuildContext context, BillingCycle cycle) {
     switch (cycle) {
       case BillingCycle.weekly:
-        return context.l10n.translate('billing_cycle_weekly');
+        return context.l10n.billing_cycle_weekly;
       case BillingCycle.monthly:
-        return context.l10n.translate('billing_cycle_monthly');
+        return context.l10n.billing_cycle_monthly;
       case BillingCycle.quarterly:
-        return context.l10n.translate('billing_cycle_quarterly');
+        return context.l10n.billing_cycle_quarterly;
       case BillingCycle.biAnnual:
-        return context.l10n.translate('billing_cycle_biAnnual');
+        return context.l10n.billing_cycle_biAnnual;
       case BillingCycle.yearly:
-        return context.l10n.translate('billing_cycle_yearly');
+        return context.l10n.billing_cycle_yearly;
       case BillingCycle.custom:
-        return context.l10n.translate('billing_cycle_custom');
+        return context.l10n.billing_cycle_custom;
     }
   }
 
@@ -58,7 +58,7 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              context.l10n.translate('stats_billing_type_empty_message'),
+              context.l10n.stats_billing_type_empty_message,
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -77,13 +77,13 @@ class BillingTypeBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l10n.translate('stats_billing_type_title'),
+              context.l10n.stats_billing_type_title,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              context.l10n.translate('stats_billing_type_subtitle'),
+              context.l10n.stats_billing_type_subtitle,
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -135,10 +135,8 @@ class BillingTypeBreakdownCard extends StatelessWidget {
                       flex: 2,
                       child: Text(
                         '${item.subscriptionCount} ${item.subscriptionCount == 1
-                                ? context.l10n
-                                    .translate('stats_subscription_abbrev_single')
-                                : context.l10n.translate(
-                                    'stats_subscription_abbrev_multiple')}',
+                                ? context.l10n.stats_subscription_abbrev_single
+                                : context.l10n.stats_subscription_abbrev_multiple}',
                         style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant),
                         textAlign: TextAlign.end,

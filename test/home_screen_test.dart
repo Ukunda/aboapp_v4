@@ -17,7 +17,7 @@ import 'package:aboapp/features/settings/domain/usecases/save_theme_setting_usec
 import 'package:aboapp/features/settings/domain/usecases/save_locale_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_currency_setting_usecase.dart';
 import 'package:aboapp/features/settings/domain/usecases/save_salary_settings_usecase.dart';
-import 'package:aboapp/core/localization/app_localizations.dart';
+import 'package:aboapp/l10n/generated/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:uuid/uuid.dart';
 

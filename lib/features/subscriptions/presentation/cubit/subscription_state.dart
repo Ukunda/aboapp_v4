@@ -30,19 +30,19 @@ extension SortOptionDisplay on SortOption {
   String displayName(BuildContext context) {
     switch (this) {
       case SortOption.nameAsc:
-        return context.l10n.translate('sort_option_nameAsc');
+        return context.l10n.sort_option_nameAsc;
       case SortOption.nameDesc:
-        return context.l10n.translate('sort_option_nameDesc');
+        return context.l10n.sort_option_nameDesc;
       case SortOption.priceAsc:
-        return context.l10n.translate('sort_option_priceAsc');
+        return context.l10n.sort_option_priceAsc;
       case SortOption.priceDesc:
-        return context.l10n.translate('sort_option_priceDesc');
+        return context.l10n.sort_option_priceDesc;
       case SortOption.nextBillingDateAsc:
-        return context.l10n.translate('sort_option_nextBillingDateAsc');
+        return context.l10n.sort_option_nextBillingDateAsc;
       case SortOption.nextBillingDateDesc:
-        return context.l10n.translate('sort_option_nextBillingDateDesc');
+        return context.l10n.sort_option_nextBillingDateDesc;
       case SortOption.category:
-        return context.l10n.translate('sort_option_category');
+        return context.l10n.sort_option_category;
     }
   }
 }

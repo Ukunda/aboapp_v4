@@ -25,17 +25,17 @@ class SubscriptionCardWidget extends StatelessWidget {
   String _getBillingCycleShortLabel(BuildContext context, BillingCycle cycle) {
     switch (cycle) {
       case BillingCycle.weekly:
-        return context.l10n.translate('billing_cycle_short_weekly');
+        return context.l10n.billing_cycle_short_weekly;
       case BillingCycle.monthly:
-        return context.l10n.translate('billing_cycle_short_monthly');
+        return context.l10n.billing_cycle_short_monthly;
       case BillingCycle.quarterly:
-        return context.l10n.translate('billing_cycle_short_quarterly');
+        return context.l10n.billing_cycle_short_quarterly;
       case BillingCycle.biAnnual:
-        return context.l10n.translate('billing_cycle_short_biAnnual');
+        return context.l10n.billing_cycle_short_biAnnual;
       case BillingCycle.yearly:
-        return context.l10n.translate('billing_cycle_short_yearly');
+        return context.l10n.billing_cycle_short_yearly;
       case BillingCycle.custom:
-        return context.l10n.translate('billing_cycle_short_custom');
+        return context.l10n.billing_cycle_short_custom;
     }
   }
 
@@ -56,13 +56,13 @@ class SubscriptionCardWidget extends StatelessWidget {
     final daysLabel = DateFormatter.formatDaysUntil(
       subscription.nextBillingDate,
       todayText:
-          context.l10n.translate('subscription_card_days_until_label_today'),
+          context.l10n.subscription_card_days_until_label_today,
       tomorrowText:
-          context.l10n.translate('subscription_card_days_until_label_tomorrow'),
+          context.l10n.subscription_card_days_until_label_tomorrow,
       daysAgoText:
-          '${context.l10n.translate('subscription_card_days_until_label_overdue_prefix')} {days} ${context.l10n.translate('subscription_card_days_until_label_overdue_suffix')}',
+          '${context.l10n.subscription_card_days_until_label_overdue_prefix} {days} ${context.l10n.subscription_card_days_until_label_overdue_suffix}',
       daysFutureText:
-          '${context.l10n.translate('subscription_card_days_until_label_prefix')} {days} ${context.l10n.translate('subscription_card_days_until_label_suffix')}',
+          '${context.l10n.subscription_card_days_until_label_prefix} {days} ${context.l10n.subscription_card_days_until_label_suffix}',
     );
 
     final bool isInactive = !subscription.isActive;
@@ -121,8 +121,7 @@ class SubscriptionCardWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            context.l10n
-                                .translate('subscription_card_trial_badge'),
+                            context.l10n.subscription_card_trial_badge,
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: theme.colorScheme.onTertiaryContainer,
                               fontWeight: FontWeight.bold,
@@ -306,25 +305,25 @@ extension CategoryDisplayHelpers on SubscriptionCategory {
   String displayName(BuildContext context) {
     switch (this) {
       case SubscriptionCategory.streaming:
-        return context.l10n.translate('category_streaming');
+        return context.l10n.category_streaming;
       case SubscriptionCategory.software:
-        return context.l10n.translate('category_software');
+        return context.l10n.category_software;
       case SubscriptionCategory.gaming:
-        return context.l10n.translate('category_gaming');
+        return context.l10n.category_gaming;
       case SubscriptionCategory.fitness:
-        return context.l10n.translate('category_fitness');
+        return context.l10n.category_fitness;
       case SubscriptionCategory.music:
-        return context.l10n.translate('category_music');
+        return context.l10n.category_music;
       case SubscriptionCategory.news:
-        return context.l10n.translate('category_news');
+        return context.l10n.category_news;
       case SubscriptionCategory.cloud:
-        return context.l10n.translate('category_cloud');
+        return context.l10n.category_cloud;
       case SubscriptionCategory.utilities:
-        return context.l10n.translate('category_utilities');
+        return context.l10n.category_utilities;
       case SubscriptionCategory.education:
-        return context.l10n.translate('category_education');
+        return context.l10n.category_education;
       case SubscriptionCategory.other:
-        return context.l10n.translate('category_other');
+        return context.l10n.category_other;
     }
   }
 

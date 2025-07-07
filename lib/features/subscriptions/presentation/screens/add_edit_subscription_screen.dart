@@ -351,17 +351,17 @@ extension on BillingCycle {
   String displayName(BuildContext context) {
     switch (this) {
       case BillingCycle.weekly:
-        return context.l10n.translate('billing_cycle_weekly');
+        return context.l10n.billing_cycle_weekly;
       case BillingCycle.monthly:
-        return context.l10n.translate('billing_cycle_monthly');
+        return context.l10n.billing_cycle_monthly;
       case BillingCycle.quarterly:
-        return context.l10n.translate('billing_cycle_quarterly');
+        return context.l10n.billing_cycle_quarterly;
       case BillingCycle.biAnnual:
-        return context.l10n.translate('billing_cycle_biAnnual');
+        return context.l10n.billing_cycle_biAnnual;
       case BillingCycle.yearly:
-        return context.l10n.translate('billing_cycle_yearly');
+        return context.l10n.billing_cycle_yearly;
       case BillingCycle.custom:
-        return context.l10n.translate('billing_cycle_custom');
+        return context.l10n.billing_cycle_custom;
     }
   }
 }

@@ -53,7 +53,7 @@ class EmptyStateWidget extends StatelessWidget {
               ElevatedButton.icon(
                 icon: const Icon(Icons.refresh_rounded),
                 label:
-                    Text(retryText ?? context.l10n.translate('retry')),
+                    Text(retryText ?? context.l10n.retry),
                 onPressed: onRetry,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

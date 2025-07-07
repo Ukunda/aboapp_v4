@@ -27,7 +27,7 @@ abstract class AppTheme {
 
   static final _cardShapeLight = RoundedRectangleBorder(
     borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-    side: BorderSide(color: _borderLight.withOpacity(0.7), width: 1.0),
+    side: BorderSide(color: _borderLight.withAlpha((255 * 0.7).round()), width: 1.0),
   );
 
   static const _cardShapeDark = RoundedRectangleBorder(
@@ -185,6 +185,6 @@ abstract class AppTheme {
 // Helper extension to comply with original code structure if needed elsewhere.
 extension ColorWithValues on Color {
   Color withValues({int? alpha}) {
-    return withAlpha(alpha ?? this.alpha);
+    return withAlpha(alpha ?? (this.value >> 24) & 0xFF);
   }
 }

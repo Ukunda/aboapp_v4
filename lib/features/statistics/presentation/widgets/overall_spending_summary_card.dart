@@ -34,7 +34,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              context.l10n.translate('stats_overall_spending_title'),
+              context.l10n.stats_overall_spending_title,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -44,7 +44,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                 _buildMetric(
                   context: context,
                   currencyFormat: currencyFormat,
-                  label: context.l10n.translate('billing_cycle_monthly'),
+                  label: context.l10n.billing_cycle_monthly,
                   value: totalMonthlySpending,
                   style: theme.textTheme.headlineMedium!.copyWith(
                     color: theme.colorScheme.primary,
@@ -56,7 +56,7 @@ class OverallSpendingSummaryCard extends StatelessWidget {
                 _buildMetric(
                   context: context,
                   currencyFormat: currencyFormat,
-                  label: context.l10n.translate('billing_cycle_yearly'),
+                  label: context.l10n.billing_cycle_yearly,
                   value: totalYearlySpending,
                   style: theme.textTheme.headlineMedium!.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,

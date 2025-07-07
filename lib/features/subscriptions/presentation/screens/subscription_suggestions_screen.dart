@@ -11,7 +11,7 @@ class SubscriptionSuggestionsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.l10n.translate('suggestions_title')),
+        title: Text(context.l10n.suggestions_title),
       ),
       body: BlocBuilder<SubscriptionSuggestionCubit, SubscriptionSuggestionState>(
         builder: (context, state) {
@@ -20,7 +20,7 @@ class SubscriptionSuggestionsScreen extends StatelessWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             loaded: (suggestions) => _buildList(context, suggestions),
             empty: () => Center(
-                child: Text(context.l10n.translate('suggestions_empty'))),
+                child: Text(context.l10n.suggestions_empty)),
             error: (msg) => Center(child: Text(msg)),
           );
         },
@@ -38,7 +38,7 @@ class SubscriptionSuggestionsScreen extends StatelessWidget {
               username: 'name@example.com',
               password: 'password',
             ),
-        child: Text(context.l10n.translate('suggestions_start_scan')),
+        child: Text(context.l10n.suggestions_start_scan),
       ),
     );
   }

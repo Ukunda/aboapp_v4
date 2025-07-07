@@ -40,16 +40,16 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 const Center(child: CircularProgressIndicator.adaptive()),
             empty: (message) => EmptyStateWidget(
               icon: Icons.insights_rounded,
-              title: context.l10n.translate('stats_empty_title'),
+              title: context.l10n.stats_empty_title,
               message: message,
             ),
             error: (message) => EmptyStateWidget(
               icon: Icons.error_outline_rounded,
-              title: context.l10n.translate('stats_error_title'),
+              title: context.l10n.stats_error_title,
               message: message,
               onRetry: () =>
                   context.read<StatisticsCubit>().generateStatistics(),
-              retryText: context.l10n.translate('retry'),
+              retryText: context.l10n.retry,
             ),
             loaded: (
               activeSubscriptions,
@@ -94,7 +94,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   child: CustomScrollView(
                     slivers: <Widget>[
                       SliverAppBar(
-                        title: Text(context.l10n.translate('stats_title')),
+                        title: Text(context.l10n.stats_title),
                         floating: true,
                         snap: true,
                         actions: [

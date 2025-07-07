@@ -86,22 +86,22 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(context.l10n.translate('filter_sheet_title'),
+                Text(context.l10n.filter_sheet_title,
                     style: theme.textTheme.headlineSmall),
                 TextButton(
                   onPressed: _resetFilters,
-                  child: Text(context.l10n.translate('filter_sheet_reset')),
+                  child: Text(context.l10n.filter_sheet_reset),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            Text(context.l10n.translate('filter_sheet_sort_by').toUpperCase(),
+            Text(context.l10n.filter_sheet_sort_by.toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
             _buildSortDropdown(theme),
             const SizedBox(height: 24),
-            Text(context.l10n.translate('filter_sheet_categories').toUpperCase(),
+            Text(context.l10n.filter_sheet_categories.toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -121,9 +121,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
               getLabel: (item) => item.displayName(context),
             ),
             const SizedBox(height: 24),
-            Text(context.l10n
-                    .translate('filter_sheet_billing_cycles')
-                    .toUpperCase(),
+            Text(context.l10n.filter_sheet_billing_cycles.toUpperCase(),
                 style: theme.textTheme.labelMedium
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 8),
@@ -153,7 +151,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet>
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: theme.colorScheme.onPrimary,
               ),
-              child: Text(context.l10n.translate('filter_sheet_apply')),
+              child: Text(context.l10n.filter_sheet_apply),
             ),
             const SizedBox(height: 8),
           ],

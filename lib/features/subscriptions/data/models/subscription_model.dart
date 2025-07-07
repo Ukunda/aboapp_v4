@@ -17,11 +17,9 @@ class SubscriptionModel with _$SubscriptionModel {
     required String id,
     required String name,
     required double price,
-    @JsonKey(unknownEnumValue: BillingCycle.custom)
-    required BillingCycle billingCycle,
+    @JsonKey(unknownEnumValue: BillingCycle.custom) required BillingCycle billingCycle,
     required DateTime nextBillingDate,
-    @JsonKey(unknownEnumValue: SubscriptionCategory.other)
-    required SubscriptionCategory category,
+    @JsonKey(unknownEnumValue: SubscriptionCategory.other) required SubscriptionCategory category,
     DateTime? startDate,
     String? description,
     String? logoUrl,

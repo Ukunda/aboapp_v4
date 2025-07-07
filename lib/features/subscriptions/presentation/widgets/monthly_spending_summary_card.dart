@@ -54,7 +54,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  context.l10n.translate('home_monthly_spending_title'),
+                  context.l10n.home_monthly_spending_title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -67,8 +67,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
-                    context.l10n.translate('home_active_count',
-                        args: {'count': activeSubscriptions.length.toString()}),
+                    context.l10n.home_active_count(activeSubscriptions.length),
                     style: theme.textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
@@ -103,7 +102,7 @@ class MonthlySpendingSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  context.l10n.translate('stats_yearly_total_label'),
+                  context.l10n.stats_yearly_total_label,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

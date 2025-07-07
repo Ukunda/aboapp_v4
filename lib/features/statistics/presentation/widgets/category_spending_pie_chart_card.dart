@@ -35,7 +35,7 @@ class _CategorySpendingPieChartCardState
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              context.l10n.translate('stats_category_empty_message'),
+              context.l10n.stats_category_empty_message,
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -51,7 +51,7 @@ class _CategorySpendingPieChartCardState
           padding: const EdgeInsets.all(16.0),
           child: Center(
             child: Text(
-              context.l10n.translate('stats_category_empty_significant_message'),
+              context.l10n.stats_category_empty_significant_message,
               style: theme.textTheme.bodyMedium,
             ),
           ),
@@ -66,7 +66,7 @@ class _CategorySpendingPieChartCardState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l10n.translate('stats_category_spending_title'),
+              context.l10n.stats_category_spending_title,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -155,7 +155,7 @@ class _CategorySpendingPieChartCardState
             color: isTouched
                 ? categoryData.category
                     .categoryDisplayIconColor(theme)
-                    .withOpacity(0.2)
+                    .withAlpha((255 * 0.2).round())
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),

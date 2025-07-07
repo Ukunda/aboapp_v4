@@ -90,7 +90,7 @@ class AppRouter {
       ],
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(
-          title: Text(context.l10n.translate('page_not_found_title')),
+          title: Text(context.l10n.page_not_found_title),
         ),
         body: Center(child: Text('Error: \n${state.error}')),
       ),

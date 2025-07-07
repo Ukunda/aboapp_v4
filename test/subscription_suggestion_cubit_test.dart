@@ -16,7 +16,6 @@ class FakeDataSource implements EmailSubscriptionDataSource {
     required String password,
   }) async => [];
 
-  @override
   SubscriptionSuggestionModel? parseEmail(String text) => null;
 }
 

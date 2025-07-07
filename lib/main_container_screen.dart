@@ -116,7 +116,9 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
             ],
           ),
                IgnorePointer(
-            ignoring: widget.child is SizedBox,
+            ignoring: widget.location == AppRoutes.home ||
+                widget.location == AppRoutes.statistics ||
+                widget.location == AppRoutes.settings,
             child: widget.child,
           ),
         ],
@@ -126,7 +128,7 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           app_haptics.HapticFeedback.lightImpact();
           context.pushNamed(AppRoutes.addSubscription);
         },
-        tooltip: context.l10n.translate('home_add_subscription_tooltip'),
+        tooltip: context.l10n.home_add_subscription_tooltip,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -138,20 +140,20 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
           children: <Widget>[
             _buildBottomNavItem(
                 icon: Icons.home_filled,
-                label: context.l10n.translate('bottom_nav_subscriptions'),
+                label: context.l10n.bottom_nav_subscriptions,
                 index: 0),
             _buildBottomNavItem(
                 icon: Icons.pie_chart_rounded,
-                label: context.l10n.translate('bottom_nav_statistics'),
+                label: context.l10n.bottom_nav_statistics,
                 index: 1),
             const SizedBox(width: 48), // The notch space
             _buildBottomNavItem(
                 icon: Icons.settings_rounded,
-                label: context.l10n.translate('bottom_nav_settings'),
+                label: context.l10n.bottom_nav_settings,
                 index: 2),
             _buildBottomNavItem(
                 icon: Icons.mail_rounded,
-                label: context.l10n.translate('bottom_nav_import'),
+                label: context.l10n.bottom_nav_import,
                 index: 3),
           ],
         ),
@@ -167,17 +169,13 @@ class _MainContainerScreenState extends State<MainContainerScreen> {
     final theme = Theme.of(context);
     final isSelected = _currentIndex == index;
     // Import screen is accessed via navigation
-    const bool isDisabled = false;
-
-    final color = isDisabled
-        ? theme.colorScheme.onSurface.withValues(alpha: 77)
-        : isSelected
+    final color = isSelected
             ? theme.colorScheme.primary
             : theme.colorScheme.onSurfaceVariant;
 
     return Expanded(
       child: TapScaleEffect(
-        onTap: isDisabled ? null : () => _onBottomNavItemTapped(index),
+        onTap: () => _onBottomNavItemTapped(index),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(

@@ -1,0 +1,18 @@
+# l10n.yaml - Konfiguration für Flutter-Lokalisierung
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+output-dir: lib/l10n/generated
+# Unterstützte Sprachen
+preferred-supported-locales:
+  - en
+  - de
+# Keine Beschreibungen in separaten Dateien
+use-deferred-loading: false
+# Aktiviere Null-Safety
+nullable-getter: false
+# Synthetische Pakete für bessere Performance
+synthetic-package: false
+# Unterstützte Sprachen
+untranslated-messages-file: lib/l10n/untranslated_messages.json

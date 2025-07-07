@@ -1,0 +1,967 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2025-01-07T12:48:00.000Z",
+  "@@x-template": "app_en.arb",
+  "@@context": "Main application strings",
+  
+  "app_title": "AboApp V4",
+  "@app_title": {
+    "description": "The title of the application"
+  },
+  
+  "ok": "OK",
+  "@ok": {
+    "description": "Standard OK button text"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Standard Cancel button text"
+  },
+  
+  "save": "Save",
+  "@save": {
+    "description": "Standard Save button text"
+  },
+  
+  "delete": "Delete",
+  "@delete": {
+    "description": "Standard Delete button text"
+  },
+  
+  "retry": "Retry",
+  "@retry": {
+    "description": "Standard Retry button text"
+  },
+  
+  "close": "Close",
+  "@close": {
+    "description": "Standard Close button text"
+  },
+  
+  "error_occurred": "An Error Occurred",
+  "@error_occurred": {
+    "description": "Generic error message"
+  },
+  
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Standard Confirm button text"
+  },
+  
+  "bottom_nav_subscriptions": "Subscriptions",
+  "@bottom_nav_subscriptions": {
+    "description": "Bottom navigation label for subscriptions"
+  },
+  
+  "bottom_nav_statistics": "Statistics",
+  "@bottom_nav_statistics": {
+    "description": "Bottom navigation label for statistics"
+  },
+  
+  "bottom_nav_settings": "Settings",
+  "@bottom_nav_settings": {
+    "description": "Bottom navigation label for settings"
+  },
+  
+  "bottom_nav_about": "About",
+  "@bottom_nav_about": {
+    "description": "Bottom navigation label for about"
+  },
+  
+  "bottom_nav_import": "Import",
+  "@bottom_nav_import": {
+    "description": "Bottom navigation label for import"
+  },
+  
+  "home_my_subscriptions": "My Subscriptions",
+  "@home_my_subscriptions": {
+    "description": "Header text for subscriptions list"
+  },
+  
+  "home_search_subscriptions_hint": "Search subscriptions...",
+  "@home_search_subscriptions_hint": {
+    "description": "Hint text for subscription search field"
+  },
+  
+  "home_search_tooltip": "Search",
+  "@home_search_tooltip": {
+    "description": "Tooltip for search button"
+  },
+  
+  "home_close_search_tooltip": "Close Search",
+  "@home_close_search_tooltip": {
+    "description": "Tooltip for close search button"
+  },
+  
+  "home_add_subscription_tooltip": "Add Subscription",
+  "@home_add_subscription_tooltip": {
+    "description": "Tooltip for add subscription button"
+  },
+  
+  "home_no_subscriptions_title": "No Subscriptions Yet",
+  "@home_no_subscriptions_title": {
+    "description": "Title when no subscriptions exist"
+  },
+  
+  "home_no_subscriptions_message": "Tap the '+' button to add your first one!",
+  "@home_no_subscriptions_message": {
+    "description": "Message when no subscriptions exist"
+  },
+  
+  "home_no_results_title": "No Results Found",
+  "@home_no_results_title": {
+    "description": "Title when search returns no results"
+  },
+  
+  "home_no_results_message": "Try adjusting your search or filters.",
+  "@home_no_results_message": {
+    "description": "Message when search returns no results"
+  },
+  
+  "home_clear_filters_button": "Clear Filters",
+  "@home_clear_filters_button": {
+    "description": "Button to clear all filters"
+  },
+  
+  "home_sort_by_label": "Sort by:",
+  "@home_sort_by_label": {
+    "description": "Label for sort dropdown"
+  },
+  
+  "home_filter_all_categories": "All Categories",
+  "@home_filter_all_categories": {
+    "description": "Option to show all categories in filter"
+  },
+  
+  "home_filter_all_cycles": "All Cycles",
+  "@home_filter_all_cycles": {
+    "description": "Option to show all billing cycles in filter"
+  },
+  
+  "home_monthly_spending_title": "Monthly Spending",
+  "@home_monthly_spending_title": {
+    "description": "Title for monthly spending summary"
+  },
+  
+  "home_active_count": "{count} Active",
+  "@home_active_count": {
+    "description": "Shows number of active subscriptions",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "description": "Number of active subscriptions"
+      }
+    }
+  },
+  
+  "home_filter_sort_tooltip": "Filter & Sort",
+  "@home_filter_sort_tooltip": {
+    "description": "Tooltip for filter and sort button"
+  },
+  
+  "home_no_subscriptions_found_title": "No Subscriptions Found",
+  "@home_no_subscriptions_found_title": {
+    "description": "Title when no subscriptions match the filter"
+  },
+  
+  "filter_sheet_title": "Sort & Filter",
+  "@filter_sheet_title": {
+    "description": "Title for filter bottom sheet"
+  },
+  
+  "filter_sheet_reset": "Reset",
+  "@filter_sheet_reset": {
+    "description": "Button to reset all filters"
+  },
+  
+  "filter_sheet_sort_by": "Sort by",
+  "@filter_sheet_sort_by": {
+    "description": "Section header for sort options"
+  },
+  
+  "filter_sheet_categories": "Categories",
+  "@filter_sheet_categories": {
+    "description": "Section header for category filters"
+  },
+  
+  "filter_sheet_billing_cycles": "Billing Cycles",
+  "@filter_sheet_billing_cycles": {
+    "description": "Section header for billing cycle filters"
+  },
+  
+  "filter_sheet_apply": "Apply Filters",
+  "@filter_sheet_apply": {
+    "description": "Button to apply selected filters"
+  },
+  
+  "sort_option_nameAsc": "Name (A-Z)",
+  "@sort_option_nameAsc": {
+    "description": "Sort option: Name ascending"
+  },
+  
+  "sort_option_nameDesc": "Name (Z-A)",
+  "@sort_option_nameDesc": {
+    "description": "Sort option: Name descending"
+  },
+  
+  "sort_option_priceAsc": "Price (Low-High)",
+  "@sort_option_priceAsc": {
+    "description": "Sort option: Price ascending"
+  },
+  
+  "sort_option_priceDesc": "Price (High-Low)",
+  "@sort_option_priceDesc": {
+    "description": "Sort option: Price descending"
+  },
+  
+  "sort_option_nextBillingDateAsc": "Next Billing (Soonest)",
+  "@sort_option_nextBillingDateAsc": {
+    "description": "Sort option: Next billing date ascending"
+  },
+  
+  "sort_option_nextBillingDateDesc": "Next Billing (Latest)",
+  "@sort_option_nextBillingDateDesc": {
+    "description": "Sort option: Next billing date descending"
+  },
+  
+  "sort_option_category": "Category",
+  "@sort_option_category": {
+    "description": "Sort option: By category"
+  },
+  
+  "subscription_card_trial_badge": "TRIAL",
+  "@subscription_card_trial_badge": {
+    "description": "Badge text for trial subscriptions"
+  },
+  
+  "subscription_card_days_until_label_prefix": "",
+  "@subscription_card_days_until_label_prefix": {
+    "description": "Text before days until billing"
+  },
+  
+  "subscription_card_days_until_label_suffix": "days",
+  "@subscription_card_days_until_label_suffix": {
+    "description": "Text after days until billing"
+  },
+  
+  "subscription_card_days_until_label_today": "Today",
+  "@subscription_card_days_until_label_today": {
+    "description": "Text for today's billing"
+  },
+  
+  "subscription_card_days_until_label_tomorrow": "Tomorrow",
+  "@subscription_card_days_until_label_tomorrow": {
+    "description": "Text for tomorrow's billing"
+  },
+  
+  "subscription_card_days_until_label_overdue_prefix": "",
+  "@subscription_card_days_until_label_overdue_prefix": {
+    "description": "Text before overdue days"
+  },
+  
+  "subscription_card_days_until_label_overdue_suffix": "days ago",
+  "@subscription_card_days_until_label_overdue_suffix": {
+    "description": "Text after overdue days"
+  },
+  
+  "subscription_action_edit": "Edit Subscription",
+  "@subscription_action_edit": {
+    "description": "Action menu item to edit subscription"
+  },
+  
+  "subscription_action_pause": "Pause Subscription",
+  "@subscription_action_pause": {
+    "description": "Action menu item to pause subscription"
+  },
+  
+  "subscription_action_resume": "Resume Subscription",
+  "@subscription_action_resume": {
+    "description": "Action menu item to resume subscription"
+  },
+  
+  "subscription_action_disable_notifications": "Disable Notifications",
+  "@subscription_action_disable_notifications": {
+    "description": "Action menu item to disable notifications"
+  },
+  
+  "subscription_action_enable_notifications": "Enable Notifications",
+  "@subscription_action_enable_notifications": {
+    "description": "Action menu item to enable notifications"
+  },
+  
+  "subscription_action_delete": "Delete Subscription",
+  "@subscription_action_delete": {
+    "description": "Action menu item to delete subscription"
+  },
+  
+  "subscription_delete_confirm_title": "Confirm Delete",
+  "@subscription_delete_confirm_title": {
+    "description": "Title for delete confirmation dialog"
+  },
+  
+  "subscription_delete_confirm_message": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+  "@subscription_delete_confirm_message": {
+    "description": "Message for delete confirmation dialog",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "description": "Name of the subscription being deleted"
+      }
+    }
+  },
+  
+  "subscription_deleted_snackbar": "\"{name}\" deleted.",
+  "@subscription_deleted_snackbar": {
+    "description": "Snackbar message after successful deletion",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "description": "Name of the deleted subscription"
+      }
+    }
+  },
+  
+  "subscription_undo_snackbar_action": "Undo",
+  "@subscription_undo_snackbar_action": {
+    "description": "Action button in snackbar to undo deletion"
+  },
+  
+  "add_edit_screen_title_add": "Add Subscription",
+  "@add_edit_screen_title_add": {
+    "description": "Title for add subscription screen"
+  },
+  
+  "add_edit_screen_title_edit": "Edit Subscription",
+  "@add_edit_screen_title_edit": {
+    "description": "Title for edit subscription screen"
+  },
+  
+  "add_edit_screen_save_tooltip": "Save Subscription",
+  "@add_edit_screen_save_tooltip": {
+    "description": "Tooltip for save button"
+  },
+  
+  "add_edit_screen_section_basic": "Basic Information",
+  "@add_edit_screen_section_basic": {
+    "description": "Section header for basic information"
+  },
+  
+  "add_edit_screen_label_name": "Name",
+  "@add_edit_screen_label_name": {
+    "description": "Label for name input field"
+  },
+  
+  "add_edit_screen_error_name_required": "Name is required.",
+  "@add_edit_screen_error_name_required": {
+    "description": "Error message when name is empty"
+  },
+  
+  "add_edit_screen_label_price": "Price",
+  "@add_edit_screen_label_price": {
+    "description": "Label for price input field"
+  },
+  
+  "add_edit_screen_error_price_required": "Price is required.",
+  "@add_edit_screen_error_price_required": {
+    "description": "Error message when price is empty"
+  },
+  
+  "add_edit_screen_error_price_invalid": "Invalid price format.",
+  "@add_edit_screen_error_price_invalid": {
+    "description": "Error message when price format is invalid"
+  },
+  
+  "add_edit_screen_label_category": "Category",
+  "@add_edit_screen_label_category": {
+    "description": "Label for category selection"
+  },
+  
+  "add_edit_screen_label_description": "Description (Optional)",
+  "@add_edit_screen_label_description": {
+    "description": "Label for description input field"
+  },
+  
+  "add_edit_screen_section_billing": "Billing Details",
+  "@add_edit_screen_section_billing": {
+    "description": "Section header for billing information"
+  },
+  
+  "add_edit_screen_label_billing_cycle": "Billing Cycle",
+  "@add_edit_screen_label_billing_cycle": {
+    "description": "Label for billing cycle selection"
+  },
+  
+  "add_edit_screen_label_custom_cycle_days": "Custom Cycle (in days)",
+  "@add_edit_screen_label_custom_cycle_days": {
+    "description": "Label for custom cycle days input"
+  },
+  
+  "add_edit_screen_error_custom_cycle_days_required": "Cycle days are required for custom cycle.",
+  "@add_edit_screen_error_custom_cycle_days_required": {
+    "description": "Error message when custom cycle days are empty"
+  },
+  
+  "add_edit_screen_error_custom_cycle_days_invalid": "Must be greater than 0 days.",
+  "@add_edit_screen_error_custom_cycle_days_invalid": {
+    "description": "Error message when custom cycle days are invalid"
+  },
+  
+  "add_edit_screen_label_next_billing_date": "Next Billing Date",
+  "@add_edit_screen_label_next_billing_date": {
+    "description": "Label for next billing date selection"
+  },
+  
+  "add_edit_screen_label_start_date": "Subscription Start Date",
+  "@add_edit_screen_label_start_date": {
+    "description": "Label for subscription start date"
+  },
+  
+  "add_edit_screen_date_not_set": "Not Set",
+  "@add_edit_screen_date_not_set": {
+    "description": "Text when date is not set"
+  },
+  
+  "add_edit_screen_date_please_select": "Please select a date",
+  "@add_edit_screen_date_please_select": {
+    "description": "Placeholder text for date selection"
+  },
+  
+  "add_edit_screen_section_optional": "Optional Details",
+  "@add_edit_screen_section_optional": {
+    "description": "Section header for optional information"
+  },
+  
+  "add_edit_screen_label_is_active": "Active Subscription",
+  "@add_edit_screen_label_is_active": {
+    "description": "Label for active subscription toggle"
+  },
+  
+  "add_edit_screen_label_is_trial": "In Trial Period",
+  "@add_edit_screen_label_is_trial": {
+    "description": "Label for trial period toggle"
+  },
+  
+  "add_edit_screen_label_trial_end_date": "Trial End Date",
+  "@add_edit_screen_label_trial_end_date": {
+    "description": "Label for trial end date selection"
+  },
+  
+  "add_edit_screen_label_notifications": "Enable Notifications",
+  "@add_edit_screen_label_notifications": {
+    "description": "Label for notifications toggle"
+  },
+  
+  "add_edit_screen_label_notify_days_before": "Notify Days Before Renewal",
+  "@add_edit_screen_label_notify_days_before": {
+    "description": "Label for notification days before renewal"
+  },
+  
+  "add_edit_screen_label_logo_url": "Logo URL (Optional)",
+  "@add_edit_screen_label_logo_url": {
+    "description": "Label for logo URL input"
+  },
+  
+  "add_edit_screen_label_notes": "Notes (Optional)",
+  "@add_edit_screen_label_notes": {
+    "description": "Label for notes input field"
+  },
+  
+  "add_edit_screen_button_add": "Add Subscription",
+  "@add_edit_screen_button_add": {
+    "description": "Button text to add new subscription"
+  },
+  
+  "add_edit_screen_button_update": "Update Subscription",
+  "@add_edit_screen_button_update": {
+    "description": "Button text to update existing subscription"
+  },
+  
+  "add_edit_screen_snackbar_invalid_custom_cycle": "Invalid custom cycle days. Please correct.",
+  "@add_edit_screen_snackbar_invalid_custom_cycle": {
+    "description": "Snackbar message for invalid custom cycle"
+  },
+  
+  "billing_cycle_weekly": "Weekly",
+  "@billing_cycle_weekly": {
+    "description": "Weekly billing cycle option"
+  },
+  
+  "billing_cycle_monthly": "Monthly",
+  "@billing_cycle_monthly": {
+    "description": "Monthly billing cycle option"
+  },
+  
+  "billing_cycle_quarterly": "Quarterly",
+  "@billing_cycle_quarterly": {
+    "description": "Quarterly billing cycle option"
+  },
+  
+  "billing_cycle_biAnnual": "Every 6 Months",
+  "@billing_cycle_biAnnual": {
+    "description": "Bi-annual billing cycle option"
+  },
+  
+  "billing_cycle_yearly": "Yearly",
+  "@billing_cycle_yearly": {
+    "description": "Yearly billing cycle option"
+  },
+  
+  "billing_cycle_custom": "Custom (Days)",
+  "@billing_cycle_custom": {
+    "description": "Custom billing cycle option"
+  },
+  
+  "billing_cycle_short_weekly": "wk",
+  "@billing_cycle_short_weekly": {
+    "description": "Short form for weekly billing cycle"
+  },
+  
+  "billing_cycle_short_monthly": "mo",
+  "@billing_cycle_short_monthly": {
+    "description": "Short form for monthly billing cycle"
+  },
+  
+  "billing_cycle_short_quarterly": "qtr",
+  "@billing_cycle_short_quarterly": {
+    "description": "Short form for quarterly billing cycle"
+  },
+  
+  "billing_cycle_short_biAnnual": "6mo",
+  "@billing_cycle_short_biAnnual": {
+    "description": "Short form for bi-annual billing cycle"
+  },
+  
+  "billing_cycle_short_yearly": "yr",
+  "@billing_cycle_short_yearly": {
+    "description": "Short form for yearly billing cycle"
+  },
+  
+  "billing_cycle_short_custom": "cust",
+  "@billing_cycle_short_custom": {
+    "description": "Short form for custom billing cycle"
+  },
+  
+  "category_streaming": "Streaming",
+  "@category_streaming": {
+    "description": "Streaming category"
+  },
+  
+  "category_software": "Software",
+  "@category_software": {
+    "description": "Software category"
+  },
+  
+  "category_gaming": "Gaming",
+  "@category_gaming": {
+    "description": "Gaming category"
+  },
+  
+  "category_fitness": "Fitness",
+  "@category_fitness": {
+    "description": "Fitness category"
+  },
+  
+  "category_music": "Music",
+  "@category_music": {
+    "description": "Music category"
+  },
+  
+  "category_news": "News",
+  "@category_news": {
+    "description": "News category"
+  },
+  
+  "category_cloud": "Cloud",
+  "@category_cloud": {
+    "description": "Cloud storage category"
+  },
+  
+  "category_utilities": "Utilities",
+  "@category_utilities": {
+    "description": "Utilities category"
+  },
+  
+  "category_education": "Education",
+  "@category_education": {
+    "description": "Education category"
+  },
+  
+  "category_other": "Other",
+  "@category_other": {
+    "description": "Other category"
+  },
+  
+  "settings_title": "Settings",
+  "@settings_title": {
+    "description": "Title for settings screen"
+  },
+  
+  "settings_section_appearance": "Appearance",
+  "@settings_section_appearance": {
+    "description": "Section header for appearance settings"
+  },
+  
+  "settings_theme_title": "Theme",
+  "@settings_theme_title": {
+    "description": "Label for theme setting"
+  },
+  
+  "settings_theme_system": "System Default",
+  "@settings_theme_system": {
+    "description": "System default theme option"
+  },
+  
+  "settings_theme_light": "Light",
+  "@settings_theme_light": {
+    "description": "Light theme option"
+  },
+  
+  "settings_theme_dark": "Dark",
+  "@settings_theme_dark": {
+    "description": "Dark theme option"
+  },
+  
+  "settings_dialog_select_theme_title": "Select Theme",
+  "@settings_dialog_select_theme_title": {
+    "description": "Title for theme selection dialog"
+  },
+  
+  "settings_section_regional": "Regional",
+  "@settings_section_regional": {
+    "description": "Section header for regional settings"
+  },
+  
+  "settings_language_title": "Language",
+  "@settings_language_title": {
+    "description": "Label for language setting"
+  },
+  
+  "settings_language_english": "English",
+  "@settings_language_english": {
+    "description": "English language option"
+  },
+  
+  "settings_language_german": "Deutsch (German)",
+  "@settings_language_german": {
+    "description": "German language option"
+  },
+  
+  "settings_dialog_select_language_title": "Select Language",
+  "@settings_dialog_select_language_title": {
+    "description": "Title for language selection dialog"
+  },
+  
+  "settings_currency_title": "Currency",
+  "@settings_currency_title": {
+    "description": "Label for currency setting"
+  },
+  
+  "settings_dialog_select_currency_title": "Select Currency",
+  "@settings_dialog_select_currency_title": {
+    "description": "Title for currency selection dialog"
+  },
+  
+  "settings_section_about": "About",
+  "@settings_section_about": {
+    "description": "Section header for about information"
+  },
+  
+  "settings_about_app_title": "About AboApp",
+  "@settings_about_app_title": {
+    "description": "Title for about app section"
+  },
+  
+  "settings_app_version": "Version {version}",
+  "@settings_app_version": {
+    "description": "App version display text",
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "description": "Application version string"
+      }
+    }
+  },
+  
+  "settings_app_description_long": "Subscription management made easy, keeping you in control of your recurring expenses.",
+  "@settings_app_description_long": {
+    "description": "Long description of the app"
+  },
+  
+  "settings_section_salary": "Salary Insights",
+  "@settings_section_salary": {
+    "description": "Section header for salary settings"
+  },
+  
+  "settings_section_advanced": "Advanced",
+  "@settings_section_advanced": {
+    "description": "Section header for advanced settings"
+  },
+  
+  "settings_rerun_onboarding_title": "Rerun Welcome Screen?",
+  "@settings_rerun_onboarding_title": {
+    "description": "Title for rerun onboarding option"
+  },
+  
+  "settings_rerun_onboarding_message": "This will show the welcome screen the next time you open the app. Your existing subscriptions and settings will not be deleted.",
+  "@settings_rerun_onboarding_message": {
+    "description": "Message explaining what rerun onboarding does"
+  },
+  
+  "settings_rerun_onboarding_subtitle": "Shows the initial setup screens again",
+  "@settings_rerun_onboarding_subtitle": {
+    "description": "Subtitle for rerun onboarding option"
+  },
+  
+  "settings_salary_title": "Your Salary",
+  "@settings_salary_title": {
+    "description": "Title for salary settings"
+  },
+  
+  "settings_salary_description": "This is optional and helps generate personal spending statistics. The data is stored only on your device.",
+  "@settings_salary_description": {
+    "description": "Description for salary settings"
+  },
+  
+  "settings_salary_amount_label": "Salary Amount",
+  "@settings_salary_amount_label": {
+    "description": "Label for salary amount input"
+  },
+  
+  "settings_salary_13th_checkbox": "I receive a 13th salary",
+  "@settings_salary_13th_checkbox": {
+    "description": "Checkbox label for 13th salary"
+  },
+  
+  "stats_title": "Statistics",
+  "@stats_title": {
+    "description": "Title for statistics screen"
+  },
+  
+  "stats_year_selector_tooltip": "Select Year",
+  "@stats_year_selector_tooltip": {
+    "description": "Tooltip for year selector"
+  },
+  
+  "stats_empty_title": "No Statistics Yet",
+  "@stats_empty_title": {
+    "description": "Title when no statistics are available"
+  },
+  
+  "stats_error_title": "Error Loading Statistics",
+  "@stats_error_title": {
+    "description": "Title for statistics loading error"
+  },
+  
+  "stats_overall_spending_title": "Spending Overview",
+  "@stats_overall_spending_title": {
+    "description": "Title for overall spending section"
+  },
+  
+  "stats_monthly_total_label": "Monthly Total",
+  "@stats_monthly_total_label": {
+    "description": "Label for monthly total spending"
+  },
+  
+  "stats_yearly_total_label": "Yearly Total",
+  "@stats_yearly_total_label": {
+    "description": "Label for yearly total spending"
+  },
+  
+  "stats_category_spending_title": "Spending by Category",
+  "@stats_category_spending_title": {
+    "description": "Title for category spending section"
+  },
+  
+  "stats_category_empty_message": "No category spending data available.",
+  "@stats_category_empty_message": {
+    "description": "Message when no category data is available"
+  },
+  
+  "stats_category_empty_significant_message": "No significant category spending.",
+  "@stats_category_empty_significant_message": {
+    "description": "Message when no significant category spending exists"
+  },
+  
+  "stats_billing_type_title": "Breakdown by Billing Cycle",
+  "@stats_billing_type_title": {
+    "description": "Title for billing cycle breakdown section"
+  },
+  
+  "stats_billing_type_subtitle": "(Based on Monthly Equivalent Cost)",
+  "@stats_billing_type_subtitle": {
+    "description": "Subtitle for billing cycle breakdown"
+  },
+  
+  "stats_billing_type_empty_message": "No billing type data available.",
+  "@stats_billing_type_empty_message": {
+    "description": "Message when no billing type data is available"
+  },
+  
+  "stats_spending_trend_title": "Spending Trend - {year}",
+  "@stats_spending_trend_title": {
+    "description": "Title for spending trend section",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "description": "Year for the spending trend"
+      }
+    }
+  },
+  
+  "stats_spending_trend_empty_message": "No spending trend data available for {year}.",
+  "@stats_spending_trend_empty_message": {
+    "description": "Message when no spending trend data is available",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "description": "Year for the spending trend"
+      }
+    }
+  },
+  
+  "stats_top_subscriptions_title": "Top Spending Subscriptions",
+  "@stats_top_subscriptions_title": {
+    "description": "Title for top subscriptions section"
+  },
+  
+  "stats_top_subscriptions_subtitle": "(Based on Monthly Equivalent Cost)",
+  "@stats_top_subscriptions_subtitle": {
+    "description": "Subtitle for top subscriptions section"
+  },
+  
+  "stats_top_subscriptions_empty_message": "No subscriptions to display in top list.",
+  "@stats_top_subscriptions_empty_message": {
+    "description": "Message when no top subscriptions are available"
+  },
+  
+  "stats_per_month_label": "per month",
+  "@stats_per_month_label": {
+    "description": "Label for per month indication"
+  },
+  
+  "stats_subscription_abbrev_single": "sub",
+  "@stats_subscription_abbrev_single": {
+    "description": "Abbreviation for single subscription"
+  },
+  
+  "stats_subscription_abbrev_multiple": "subs",
+  "@stats_subscription_abbrev_multiple": {
+    "description": "Abbreviation for multiple subscriptions"
+  },
+  
+  "stats_salary_contribution_title": "Salary Contribution",
+  "@stats_salary_contribution_title": {
+    "description": "Title for salary contribution section"
+  },
+  
+  "stats_salary_contribution_message": "You're spending {percentage}% of your yearly salary ({salary}) on subscriptions.",
+  "@stats_salary_contribution_message": {
+    "description": "Message showing salary contribution percentage",
+    "placeholders": {
+      "percentage": {
+        "type": "String",
+        "description": "Percentage of salary spent on subscriptions"
+      },
+      "salary": {
+        "type": "String",
+        "description": "Yearly salary amount"
+      }
+    }
+  },
+  
+  "onboarding_page1_title": "Welcome to AboApp!",
+  "@onboarding_page1_title": {
+    "description": "Title for first onboarding page"
+  },
+  
+  "onboarding_page1_desc": "Track your subscriptions and save money effortlessly.",
+  "@onboarding_page1_desc": {
+    "description": "Description for first onboarding page"
+  },
+  
+  "onboarding_page2_title": "Add Subscriptions Easily",
+  "@onboarding_page2_title": {
+    "description": "Title for second onboarding page"
+  },
+  
+  "onboarding_page2_desc": "Quickly add all your recurring payments from various services.",
+  "@onboarding_page2_desc": {
+    "description": "Description for second onboarding page"
+  },
+  
+  "onboarding_page3_title": "Stay on Top of Costs",
+  "@onboarding_page3_title": {
+    "description": "Title for third onboarding page"
+  },
+  
+  "onboarding_page3_desc": "See clear summaries of your monthly and yearly expenses.",
+  "@onboarding_page3_desc": {
+    "description": "Description for third onboarding page"
+  },
+  
+  "onboarding_page4_title": "Never Miss a Payment",
+  "@onboarding_page4_title": {
+    "description": "Title for fourth onboarding page"
+  },
+  
+  "onboarding_page4_desc": "Get timely reminders before your subscriptions are due.",
+  "@onboarding_page4_desc": {
+    "description": "Description for fourth onboarding page"
+  },
+  
+  "onboarding_skip_button": "Skip",
+  "@onboarding_skip_button": {
+    "description": "Button to skip onboarding"
+  },
+  
+  "onboarding_next_button": "Next",
+  "@onboarding_next_button": {
+    "description": "Button to go to next onboarding page"
+  },
+  
+  "onboarding_get_started_button": "Get Started",
+  "@onboarding_get_started_button": {
+    "description": "Button to complete onboarding"
+  },
+  
+  "onboarding_salary_optional_title": "Optional: Salary Insights",
+  "@onboarding_salary_optional_title": {
+    "description": "Title for salary onboarding page"
+  },
+  
+  "onboarding_salary_optional_desc": "Enter your salary to see what percentage of it goes to subscriptions. This is optional and stored only on your device.",
+  "@onboarding_salary_optional_desc": {
+    "description": "Description for salary onboarding page"
+  },
+  
+  "onboarding_salary_hint": "e.g., 5000",
+  "@onboarding_salary_hint": {
+    "description": "Hint text for salary input"
+  },
+  
+  "suggestions_title": "Email Suggestions",
+  "@suggestions_title": {
+    "description": "Title for email suggestions screen"
+  },
+  
+  "suggestions_empty": "No suggestions found",
+  "@suggestions_empty": {
+    "description": "Message when no email suggestions are found"
+  },
+  
+  "suggestions_start_scan": "Scan Emails",
+  "@suggestions_start_scan": {
+    "description": "Button to start scanning emails"
+  },
+  
+  "page_not_found_title": "Page Not Found",
+  "@page_not_found_title": {
+    "description": "Title for page not found error"
+  }
+}

@@ -61,17 +61,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(context.l10n.translate('settings_rerun_onboarding_title')),
+        title: Text(context.l10n.settings_rerun_onboarding_title),
         content: Text(
-            context.l10n.translate('settings_rerun_onboarding_message')),
+            context.l10n.settings_rerun_onboarding_message),
         actions: <Widget>[
           TextButton(
-            child: Text(context.l10n.translate('cancel')),
+            child: Text(context.l10n.cancel),
             onPressed: () => Navigator.of(dialogContext).pop(),
           ),
           TextButton(
             child: Text(
-              context.l10n.translate('confirm'),
+              context.l10n.confirm,
               style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
             onPressed: () async {
@@ -92,20 +92,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _getThemeModeDisplayName(BuildContext context, ThemeMode themeMode) {
     switch (themeMode) {
       case ThemeMode.system:
-        return context.l10n.translate('settings_theme_system');
+        return context.l10n.settings_theme_system;
       case ThemeMode.light:
-        return context.l10n.translate('settings_theme_light');
+        return context.l10n.settings_theme_light;
       case ThemeMode.dark:
-        return context.l10n.translate('settings_theme_dark');
+        return context.l10n.settings_theme_dark;
     }
   }
 
   String _getLocaleDisplayName(BuildContext context, Locale locale) {
     if (locale.languageCode == 'en') {
-      return context.l10n.translate('settings_language_english');
+      return context.l10n.settings_language_english;
     }
     if (locale.languageCode == 'de') {
-      return context.l10n.translate('settings_language_german');
+      return context.l10n.settings_language_german;
     }
     return locale.toLanguageTag();
   }
@@ -128,7 +128,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(context.l10n.translate('settings_title')),
+          title: Text(context.l10n.settings_title),
         ),
         body: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
@@ -143,19 +143,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
             return ListView(
               padding: const EdgeInsets.all(16.0),
               children: <Widget>[
-                _buildSectionHeader(context, context.l10n.translate('settings_section_appearance')),
+                _buildSectionHeader(context, context.l10n.settings_section_appearance),
                 _buildAppearanceSection(context, state),
                 const Divider(height: 32),
-                _buildSectionHeader(context, context.l10n.translate('settings_section_regional')),
+                _buildSectionHeader(context, context.l10n.settings_section_regional),
                 _buildRegionalSection(context, state),
                 const Divider(height: 32),
-                _buildSectionHeader(context, context.l10n.translate('settings_section_salary')),
+                _buildSectionHeader(context, context.l10n.settings_section_salary),
                 _buildSalarySection(context, state),
                 const Divider(height: 32),
-                _buildSectionHeader(context, context.l10n.translate('settings_section_advanced')),
+                _buildSectionHeader(context, context.l10n.settings_section_advanced),
                 _buildAdvancedSection(context),
                 const Divider(height: 32),
-                _buildSectionHeader(context, context.l10n.translate('settings_section_about')),
+                _buildSectionHeader(context, context.l10n.settings_section_about),
                 _buildAboutSection(context),
               ],
             );
@@ -169,7 +169,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.brightness_6_rounded),
-        title: Text(context.l10n.translate('settings_theme_title')),
+        title: Text(context.l10n.settings_theme_title),
         subtitle: Text(_getThemeModeDisplayName(context, state.themeMode)),
         onTap: () => _showThemeModeDialog(context, state.themeMode),
       ),
@@ -182,14 +182,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           ListTile(
             leading: const Icon(Icons.language_rounded),
-            title: Text(context.l10n.translate('settings_language_title')),
+            title: Text(context.l10n.settings_language_title),
             subtitle: Text(_getLocaleDisplayName(context, state.locale)),
             onTap: () => _showLocaleDialog(context, state.locale),
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
           ListTile(
             leading: const Icon(Icons.attach_money_rounded),
-            title: Text(context.l10n.translate('settings_currency_title')),
+            title: Text(context.l10n.settings_currency_title),
             subtitle: Text(
                 _supportedCurrencies[state.currencyCode] ?? state.currencyCode),
             onTap: () => _showCurrencyDialog(context, state.currencyCode),
@@ -211,12 +211,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.l10n.translate('settings_salary_title'),
+              context.l10n.settings_salary_title,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: 4),
             Text(
-              context.l10n.translate('settings_salary_description'),
+              context.l10n.settings_salary_description,
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
@@ -224,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             TextFormField(
               controller: _salaryController,
               decoration: InputDecoration(
-                labelText: context.l10n.translate('settings_salary_amount_label'),
+                labelText: context.l10n.settings_salary_amount_label,
                 prefixText: "$currencySymbol ",
               ),
               keyboardType:
@@ -239,10 +239,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
               segments: [
                 ButtonSegment(
                     value: SalaryCycle.monthly,
-                    label: Text(context.l10n.translate('billing_cycle_monthly'))),
+                    label: Text(context.l10n.billing_cycle_monthly)),
                 ButtonSegment(
                     value: SalaryCycle.yearly,
-                    label: Text(context.l10n.translate('billing_cycle_yearly'))),
+                    label: Text(context.l10n.billing_cycle_yearly)),
               ],
               selected: {_salaryCycle ?? SalaryCycle.monthly},
               onSelectionChanged: (newSelection) {
@@ -252,7 +252,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             if (_salaryCycle == SalaryCycle.monthly)
               SwitchListTile.adaptive(
-                title: Text(context.l10n.translate('settings_salary_13th_checkbox')),
+                title: Text(context.l10n.settings_salary_13th_checkbox),
                 value: _hasThirteenthSalary ?? false,
                 onChanged: (value) {
                   setState(() => _hasThirteenthSalary = value);
@@ -274,10 +274,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
         leading: Icon(Icons.replay_circle_filled_rounded,
             color: theme.colorScheme.error),
         title: Text(
-            context.l10n.translate('settings_rerun_onboarding_title'),
+            context.l10n.settings_rerun_onboarding_title,
             style: TextStyle(color: theme.colorScheme.onErrorContainer)),
         subtitle: Text(
-            context.l10n.translate('settings_rerun_onboarding_subtitle'),
+            context.l10n.settings_rerun_onboarding_subtitle,
             style: TextStyle(
                 color: theme.colorScheme.onErrorContainer.withAlpha(204))), // ~80% opacity
         onTap: _showRerunOnboardingDialog,
@@ -289,21 +289,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Card(
       child: ListTile(
         leading: const Icon(Icons.info_outline_rounded),
-        title: Text(context.l10n.translate('settings_about_app_title')),
+        title: Text(context.l10n.settings_about_app_title),
         subtitle:
-            Text(context.l10n.translate('settings_app_version', args: {'version': '4.0.0'})),
+            Text(context.l10n.settings_app_version('4.0.0')),
         onTap: () {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: Text(context.l10n.translate('settings_about_app_title')),
+              title: Text(context.l10n.settings_about_app_title),
               content: Text(
-                '${context.l10n.translate('settings_app_description_long')}\n${context.l10n.translate('settings_app_version', args: {'version': '4.0.0'})}',
+                '${context.l10n.settings_app_description_long}\n${context.l10n.settings_app_version('4.0.0')}',
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text(context.l10n.translate('close')),
+                  child: Text(context.l10n.close),
                 )
               ],
             ),
@@ -332,7 +332,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.translate('settings_dialog_select_theme_title')),
+        title: Text(context.l10n.settings_dialog_select_theme_title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: ThemeMode.values.map((themeMode) {
@@ -358,7 +358,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.translate('settings_dialog_select_language_title')),
+        title: Text(context.l10n.settings_dialog_select_language_title),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: supportedLocales.map((locale) {
@@ -383,7 +383,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(context.l10n.translate('settings_dialog_select_currency_title')),
+        title: Text(context.l10n.settings_dialog_select_currency_title),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView(

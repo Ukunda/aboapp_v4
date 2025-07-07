@@ -53,14 +53,14 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             Icon(Icons.insights_rounded, size: 80, color: Colors.blue.shade600),
             const SizedBox(height: 24),
             Text(
-              context.l10n.translate('onboarding_salary_optional_title'),
+              context.l10n.onboarding_salary_optional_title,
               textAlign: TextAlign.center,
               style: theme.textTheme.headlineSmall
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             Text(
-              context.l10n.translate('onboarding_salary_optional_desc'),
+              context.l10n.onboarding_salary_optional_desc,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge
                   ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
@@ -70,8 +70,8 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
               controller: _salaryController,
               decoration: InputDecoration(
                 labelText:
-                    context.l10n.translate('settings_salary_amount_label'),
-                hintText: context.l10n.translate('onboarding_salary_hint'),
+                    context.l10n.settings_salary_amount_label,
+                hintText: context.l10n.onboarding_salary_hint,
                 prefixIcon: const Icon(Icons.attach_money_rounded),
               ),
               keyboardType:
@@ -86,11 +86,11 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
                 ButtonSegment(
                     value: SalaryCycle.monthly,
                     label:
-                        Text(context.l10n.translate('billing_cycle_monthly')),
+                        Text(context.l10n.billing_cycle_monthly),
                     icon: const Icon(Icons.calendar_view_month)),
                 ButtonSegment(
                     value: SalaryCycle.yearly,
-                    label: Text(context.l10n.translate('billing_cycle_yearly')),
+                    label: Text(context.l10n.billing_cycle_yearly),
                     icon: const Icon(Icons.calendar_today)),
               ],
               selected: {_salaryCycle},
@@ -110,7 +110,7 @@ class SalaryOnboardingPageState extends State<SalaryOnboardingPage> {
             if (_salaryCycle == SalaryCycle.monthly)
               SwitchListTile.adaptive(
                 title: Text(
-                    context.l10n.translate('settings_salary_13th_checkbox')),
+                    context.l10n.settings_salary_13th_checkbox),
                 value: _hasThirteenthSalary,
                 onChanged: (value) {
                   app_haptics.HapticFeedback.lightImpact();

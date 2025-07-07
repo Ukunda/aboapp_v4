@@ -10,9 +10,7 @@ import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_cu
 import 'package:aboapp/features/subscriptions/presentation/cubit/subscription_suggestion_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:aboapp/core/localization/app_localizations.dart';
-import 'package:aboapp/core/localization/l10n_extensions.dart';
+import 'package:aboapp/l10n/generated/app_localizations.dart';
 
 class AboApp extends StatelessWidget {
   const AboApp({super.key});
@@ -39,7 +37,7 @@ class AboApp extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settingsState) {
           return MaterialApp.router(
-            onGenerateTitle: (context) => context.l10n.translate('app_title'),
+            onGenerateTitle: (context) => AppLocalizations.of(context).app_title,
             debugShowCheckedModeBanner: false,
             // VEREINFACHT: Wir verwenden jetzt immer das AppTheme.
             theme: AppTheme.lightTheme,
@@ -47,16 +45,8 @@ class AboApp extends StatelessWidget {
             themeMode: settingsState.themeMode,
             routerConfig: appRouter.config(),
             locale: settingsState.locale,
-            supportedLocales: const [
-              Locale('en', 'US'),
-              Locale('de', 'DE'),
-            ],
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             localeResolutionCallback: (locale, supportedLocales) {
               for (var supportedLocale in supportedLocales) {
                 if (supportedLocale.languageCode == locale?.languageCode) {

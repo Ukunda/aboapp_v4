@@ -93,16 +93,16 @@ Future<_i174.GetIt> $initGetIt(
   gh.lazySingleton<_i384.SubscriptionRepository>(() =>
       _i944.SubscriptionRepositoryImpl(
           localDataSource: gh<_i327.SubscriptionLocalDataSource>()));
-  gh.lazySingleton<_i851.SaveCurrencySettingUseCase>(
-      () => _i851.SaveCurrencySettingUseCase(gh<_i674.SettingsRepository>()));
-  gh.lazySingleton<_i969.SaveSalarySettingsUseCase>(
-      () => _i969.SaveSalarySettingsUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i1029.GetSettingsUseCase>(
       () => _i1029.GetSettingsUseCase(gh<_i674.SettingsRepository>()));
-  gh.lazySingleton<_i150.SaveThemeSettingUseCase>(
-      () => _i150.SaveThemeSettingUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i851.SaveCurrencySettingUseCase>(
+      () => _i851.SaveCurrencySettingUseCase(gh<_i674.SettingsRepository>()));
   gh.lazySingleton<_i682.SaveLocaleSettingUseCase>(
       () => _i682.SaveLocaleSettingUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i969.SaveSalarySettingsUseCase>(
+      () => _i969.SaveSalarySettingsUseCase(gh<_i674.SettingsRepository>()));
+  gh.lazySingleton<_i150.SaveThemeSettingUseCase>(
+      () => _i150.SaveThemeSettingUseCase(gh<_i674.SettingsRepository>()));
   gh.factory<_i694.SubscriptionSuggestionCubit>(() =>
       _i694.SubscriptionSuggestionCubit(
           gh<_i711.ScanEmailSubscriptionsUseCase>()));

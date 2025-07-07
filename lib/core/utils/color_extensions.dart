@@ -5,10 +5,10 @@ extension ColorWithValues on Color {
   /// Components that are null retain their existing value.
   Color withValues({int? alpha, int? red, int? green, int? blue}) {
     return Color.fromARGB(
-      alpha ?? this.alpha,
-      red ?? this.red,
-      green ?? this.green,
-      blue ?? this.blue,
+      alpha ?? (value >> 24) & 0xFF,
+      red ?? (value >> 16) & 0xFF,
+      green ?? (value >> 8) & 0xFF,
+      blue ?? value & 0xFF,
     );
   }
 }
