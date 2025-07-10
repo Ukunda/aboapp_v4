@@ -185,6 +185,6 @@ abstract class AppTheme {
 // Helper extension to comply with original code structure if needed elsewhere.
 extension ColorWithValues on Color {
   Color withValues({int? alpha}) {
-    return withAlpha(alpha ?? (this.value >> 24) & 0xFF);
+    return withAlpha(alpha ?? (value >> 24) & 0xFF);
   }
 }

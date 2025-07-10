@@ -1,3 +1,4 @@
+import 'package:enough_mail/enough_mail.dart';
 import 'package:injectable/injectable.dart';
 import '../models/subscription_suggestion_model.dart';
 import '../../domain/entities/subscription_entity.dart';
@@ -22,14 +23,83 @@ class EmailSubscriptionDataSourceImpl implements EmailSubscriptionDataSource {
     required String username,
     required String password,
   }) async {
-    // Placeholder implementation. Real IMAP fetching is omitted in tests.
-    return [];
+    final client = ImapClient(isLogEnabled: false);
+    final suggestions = <SubscriptionSuggestionModel>[];
+    try {
+      await client.connectToServer(host, port, isSecure: isSecure);
+      await client.login(username, password);
+      await client.selectInbox();
+      final sinceDate = DateTime.now().subtract(const Duration(days: 90));
+      final imapDate =
+          '${sinceDate.day}-${_getShortMonth(sinceDate.month)}-${sinceDate.year}';
+
+      final froms = [
+        'netflix.com',
+        'spotify.com',
+        'amazon.com',
+        'disney.com',
+        'apple.com',
+        'google.com'
+      ];
+
+      for (final from in froms) {
+        final query = '(SENTSINCE $imapDate FROM "$from")';
+        final searchResult = await client.searchMessages(query);
+        if (searchResult.matchingSequence != null) {
+          final fetchedMessages = await client.fetchMessages(
+              searchResult.matchingSequence!, 'BODY.PEEK[]');
+          for (final message in fetchedMessages.messages) {
+            final text = message.decodeContentText() ?? '';
+            final suggestion = parseEmail(text);
+            if (suggestion != null) {
+              // Avoid duplicates
+              if (!suggestions.any((s) =>
+                  s.service == suggestion.service &&
+                  s.amount == suggestion.amount &&
+                  s.cycle == suggestion.cycle)) {
+                suggestions.add(suggestion);
+              }
+            }
+          }
+        }
+      }
+
+      await client.logout();
+      return suggestions;
+    } catch (e) {
+      // Log error or handle it as per app's error handling strategy
+      rethrow;
+    } finally {
+      if (client.isConnected) {
+        await client.disconnect();
+      }
+    }
+  }
+
+  String _getShortMonth(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
+    ];
+    return months[month - 1];
   }
 
   SubscriptionSuggestionModel? parseEmail(String text) {
-    final servicePattern = RegExp(r'(Netflix|Spotify|Prime|Disney|Apple|Google)', caseSensitive: false);
+    final servicePattern =
+        RegExp(r'(Netflix|Spotify|Prime|Disney|Apple|Google)', caseSensitive: false);
     final amountPattern = RegExp(r'(\d+[,.]\d{2})');
-    final cyclePattern = RegExp(r'(weekly|monthly|quarterly|bi-annual|yearly|annual)', caseSensitive: false);
+    final cyclePattern = RegExp(r'(weekly|monthly|quarterly|bi-annual|yearly|annual)',
+        caseSensitive: false);
 
     final serviceMatch = servicePattern.firstMatch(text);
     final amountMatch = amountPattern.firstMatch(text);
@@ -56,6 +126,7 @@ class EmailSubscriptionDataSourceImpl implements EmailSubscriptionDataSource {
       default:
         cycle = BillingCycle.monthly;
     }
-    return SubscriptionSuggestionModel(service: service, amount: amount, cycle: cycle);
+    return SubscriptionSuggestionModel(
+        service: service, amount: amount, cycle: cycle);
   }
 }
